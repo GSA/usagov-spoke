@@ -1,0 +1,202 @@
+<?php
+
+/* HOOK_init */
+function childsite_misc_kids_init() {
+
+	ob_start();
+
+    // If this is the front page...
+    if ( request_uri_path() === '/' ) {
+
+        // ...then force this taxonomy term to be rendered [as the front page]
+        menu_set_active_item('taxonomy/term/10633'); // btw, calls to menu_set_active_item() MUST be in HOOK_init()
+    }
+
+	/* If a user is expecting to land on a piece of content that has an alias-path of /something/index.shtml, but is 
+	requesting a URL-path of /something/, when the user needs to be redirected instead of being given a 404 page. */
+    drupal_register_shutdown_function(
+        function () {
+            
+            $status = drupal_get_http_header("status");
+            if ( $status == "404 Not Found" ) {
+            	$ruri = trim(request_uri_path(), '/');
+
+            	// Build an array of paths that the user may really want to goto
+            	$testPaths = array(
+            		$ruri, /* test the request-url (trimmed, as is) */
+            		$ruri.'/', /* test the same path with an ending slash */
+            		$ruri.'/index.shtml', /* test the same path with an ending ~/index.shtml */
+            		$ruri.'/index.html', /* test the same path with an ending ~/index.html */
+            		str_replace('index.shtml', '', $ruri) , /* test the same path with no "index.shtml" */
+            		trim(str_replace('index.shtml', '', $ruri), '/') , /* test the same path with no "index.shtml", trimmed */
+            		str_replace('index.html', '', $ruri) , /* test the same path with no "index.shtml" */
+            		trim(str_replace('index.html', '', $ruri), '/') , /* test the same path with no "index.shtml", trimmed */
+            		str_replace('index.html', 'index.shtml', $ruri) , /* test for a mistyped extension */
+            		str_replace('index.shtml', 'index.html', $ruri) , /* test for a mistyped extension */
+        		);
+
+            	foreach ($testPaths as $testPath) {
+
+            		// Is this $testPath as valid URL path in this Drupal environment?
+	                $thisTestPassed = db_query("SELECT COUNT(*) FROM url_alias WHERE alias='{$testPath}' ")->fetchColumn();
+
+	                if ( intval($thisTestPassed) !== 0 ) {
+	                	// Ah-ha, we found a valid-URL path, that the user probably really wants to goto - redirect them
+	                	@ob_end_clean();
+	                	while ( @ob_end_clean() );
+				        http_response_code(301);
+				        drupal_add_http_header('status', 301);
+				        header('Location: /'.$testPath);
+
+	                	print "<script>document.getElementsByTagName('html')[0].style.display='none';</script>";
+	                	print "<script>document.location='/{$testPath}';</script>";
+	                	print "<script>document.getElementsByTagName('body')[0].style.display='none';</script>";
+				        error_log(__FUNCTION__."() is now redirecting the user to: /{$testPath}");
+	                    @drupal_goto($testPath,array(),301);
+	                    exit();
+	            		return;
+	                }
+            	}
+
+            }
+        }
+    );
+
+}
+
+
+/*
+ * Implements HOOK_views_post_execute
+ *
+ * The order of rows from the carousel_area and content_area Views need to be watched...
+ * The theme gives these Views a list of NIDs to show in the View's rows, but the Views system 
+ * seems to be ignoreing the order of NIDs supplied to it. We will fix this here.
+ */
+function childsite_misc_kids_views_post_execute(&$view) {
+
+	// This HOOK fires for all Views, but we only want to effect carousel_area, html_assets and content_area here
+	$hookShallEffectViewsNamed = array('carousel_area', 'content_area', 'html_assets', 'text_assets');
+	if ( !in_array($view->name, $hookShallEffectViewsNamed) ) {
+		return;
+	}
+
+	// View-state validation
+	if ( empty($view->args) || !is_array($view->args) || count($view->args) === 0 ) {
+		return;
+	}
+
+	// Build a "results pool", while mapping NID => ViewRow
+	$resultPool = array();
+	foreach ( $view->result as $result ) {
+		$resultPool[$result->nid] = $result;
+	}
+
+	// Build an array of [row] results, with the order corrected (as the the order of arguments)
+	$argumentNids = explode('+', $view->args[0]); // $view->args[0] is the 1st contextual filter
+	$rsltFixedOrder = array();
+	foreach ( $argumentNids as $nid) {
+		if ( isset($resultPool[$nid]) ) {
+			$rsltFixedOrder[] = $resultPool[$nid];
+		}
+	}
+
+	// Set the corrected order back into the view
+	$view->result = $rsltFixedOrder;
+
+}
+
+/*
+ * Implements HOOK_menu_block_tree_alter - called from the "Menu Block" module through drupal_alter()
+ *
+ * For pages that do not have a menu-trail set by Drupal already (basically, these are pages that do not have a 
+ * men-item), we will force a menu-active-trail through the "Menu Block" module.
+ */
+function childsite_misc_kids_menu_block_tree_alter(&$tree, &$config) {
+
+	/* ---------- FIRST LEVEL MENU LOGIC ---------- */
+
+	// Determin if any menu item is set active in the first level
+	$firstLevelHasAnActiveItem = false;
+	foreach ( $tree as $menuItemData ) {
+		if ( !empty($menuItemData['link']['in_active_trail']) && $menuItemData['link']['in_active_trail'] === true ) {
+			$firstLevelHasAnActiveItem = true;
+			break;
+		}
+	}
+
+	// If the 1st-level menu has an active item already, there is no need to force anything, we will bail 
+	if ( $firstLevelHasAnActiveItem === true ) {
+		return;
+	}
+
+	// Get the Site-Structure taxonomy-term that represents this page that is being loaded
+	$menuRouterItem = menu_get_item();
+	if ( empty($menuRouterItem['page_arguments'][0]) || !is_object($menuRouterItem['page_arguments'][0]) || empty($menuRouterItem['page_arguments'][0]->tid) ) {
+		$menuRouterItem['page_arguments'] = array( taxonomy_term_load(10633) );
+	}
+	$term = $menuRouterItem['page_arguments'][0];
+
+	// Get the highest-parent of this term (but one level down from the root - the terms that generate the 1st lvl menu)
+	$termParents = array_reverse( taxonomy_get_parents_all($term->tid) );
+	$topMostTermParentName = $termParents[1]->name;
+
+	// Force-set the active tail for the 1st lvl menu (based on what the $topMostTermParentName is)
+	foreach ($tree as $key => &$menuItem) {
+		if ( strpos($key, $topMostTermParentName) !== false ) {
+			$menuItem['link']['in_active_trail'] = true;
+		}
+	}
+
+	/* ---------- SECOND LEVEL MENU LOGIC ---------- */
+
+	// If this line is hit, then there must be an active 1st lvl menu item at this time, grab its child (2nd lvl menu)
+	$secondLevelMenu = false;
+	foreach ( $tree as $key => $menuItemData ) {
+		if ( !empty($menuItemData['link']['in_active_trail']) && $menuItemData['link']['in_active_trail'] === true ) {
+			$secondLevelMenu = &$menuItemData['below'];
+			$firstLevelMenuKey = $key;
+			break;
+		}
+	}
+
+	// Sanity check
+	if ( $secondLevelMenu === false ) {
+		return;
+	}
+
+	// Determin if any menu item is set active in this second level
+	$secondLevelHasAnActiveItem = false;
+	foreach ( $secondLevelMenu as $menuItemData ) {
+		if ( !empty($menuItemData['link']['in_active_trail']) && $menuItemData['link']['in_active_trail'] === true ) {
+			$secondLevelHasAnActiveItem = true;
+			break;
+		}
+	}
+
+	// If the 2nd-level menu has an active item already, there is no need to force anything, we will bail 
+	if ( $secondLevelHasAnActiveItem === true ) {
+		return;
+	}
+
+	// Get the Site-Structure taxonomy-term that represents this page that is being loaded
+	$menuRouterItem = menu_get_item();
+	if ( empty($menuRouterItem['page_arguments'][0]) || !is_object($menuRouterItem['page_arguments'][0]) || empty($menuRouterItem['page_arguments'][0]->tid) ) {
+		$ruir = request_uri_path();
+		/* error_log("Error - Could not force-set active-trail in menu for this page ({$ruir}) as this page does not seem "
+			."to be related to (a landing page of) a Site-Structure taxonomy-term."); */
+		return;
+	}
+	$term = $menuRouterItem['page_arguments'][0];
+
+	// Get the highest-parent of this term (but 2 levels down from the root - the terms that generate the 2nd lvl menu)
+	$termParents = array_reverse( taxonomy_get_parents_all($term->tid) );
+	$topMostTermParentName = $termParents[2]->name;
+
+	// Force-set the active tail for the 1st lvl menu (based on what the $topMostTermParentName is)
+	foreach ($secondLevelMenu as $key => &$menuItem) {
+		if ( strpos($key, $topMostTermParentName) !== false ) {
+			$tree[$firstLevelMenuKey]['below'][$key]['link']['in_active_trail'] = true;
+		}
+	}
+
+}

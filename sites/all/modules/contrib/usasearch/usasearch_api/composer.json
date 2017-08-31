@@ -1,0 +1,33 @@
+{
+  "name": "drupal/usasearch_api",
+  "type": "drupal-module",
+  "description": "Use the USASearch API.",
+  "keywords": ["usasearch", "search"],
+  "license": "GPL-2.0+",
+  "authors": [
+    {
+      "name": "Tim Wood",
+      "email": "timwood@457434.no-reply.drupal.org",
+      "homepage": "http://www.commerce.gov/"
+    },
+    {
+      "name": "Adam Frazin",
+      "email": "adam_at_mobomo@1514714.no-reply.drupal.org"
+    },
+    {
+      "name": "Matthew Grasmick",
+      "email": "matt.grasmick@gmail.com",
+      "homepage": "http://grasmash.com/"
+    },
+    {
+      "name": "Daniel Schiavone",
+      "email": "daniel@snakehill.net",
+      "homepage": "http://www.snakehill.net/"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.0",
+    "guzzlehttp/guzzle": "^6.2.1"
+  }
+}
+

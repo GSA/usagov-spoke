@@ -1,0 +1,321 @@
+<?php
+
+/*
+ * Implements HOOK_menu()
+ */
+function static_site_generation_menu() {
+
+    $items = array();
+    
+    // Configuration page
+    $items['admin/config/static-site-generation'] = array(
+        'title' => 'Static Site Generation',
+        'description' => 'Genrates a static copy of your site, and saves to disk.',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('static_site_generation_form'),
+        'access arguments' => array('access administration pages'),
+        'type' => MENU_NORMAL_ITEM
+    );
+
+    return $items;
+}
+
+function static_site_generation_form() {
+
+    // Form submission handeler
+    if ( !empty($_REQUEST['op']) && $_REQUEST['op'] === 'Generate Now' ) {
+        generateStaticSiteContent( $_REQUEST['ssg_storage_location'], $_REQUEST['ssg_prod_domain'] );
+    }
+
+    $form = array();
+
+    $form['ssg_prod_domain'] = array(
+        '#type' => 'textfield',
+        '#title' => 'Assume Production domain is:',
+        '#default_value' => 'usa.gov',
+    );
+
+    $form['ssg_storage_location'] = array(
+        '#type' => 'textfield',
+        '#title' => 'Save a static version of this site to:',
+        '#default_value' => variable_get('ssg_storage_location', 'sites/default/files/static-site/'),
+    );
+
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => 'Generate Now',
+    );
+
+    return $form;
+}
+
+/**
+ * void generateStaticSiteContent([string $storageLocation = 'sites/default/files/static-site/'])
+ *
+ * Creates a static HTML dump of all pages on the site.
+ *
+ * This function works by rendering all paths found by:
+ *   - scaning the url_alias table
+ *   - the return of _getAllPagesFromSiteIndex()
+ * 
+ */
+function generateStaticSiteContent($storageLocation = 'sites/default/files/static-site/', $prodDomain = 'INPUT-DOMAIN') {
+
+    $storageLocation = rtrim($storageLocation, '/') . '/';
+
+    @mkdir($storageLocation, 0777, true);
+    if ( realpath($storageLocation) === false ) {
+        drupal_set_message('Error - Invalid path: '.$storageLocation, 'error', FALSE);
+        return;
+    }
+
+    // Copy all of the site into the destincation (to grab css/js/etc type of files)
+    exec( 'cp -r '.realpath(getcwd()).'/* '.realpath($storageLocation) );
+    exec( 'find '.realpath($storageLocation)." | grep '\\.php' | xargs rm " );
+    exec( 'find '.realpath($storageLocation)." | grep '\\.module' | xargs rm " );
+    exec( 'find '.realpath($storageLocation)." | grep '\\.inc' | xargs rm " );
+
+    // Make sure we have write access to the target location
+    @mkdir($storageLocation, 0777, true);
+    $testLoc = $storageLocation.'test.txt';
+    $testBytesWritten = file_put_contents($testLoc, 'test');
+    if ( $testBytesWritten === false ) {
+        drupal_set_message("Cant write test file \"{$testLoc}\" - are permissions set correctly?", 'error', FALSE);
+        return;
+    }
+    unlink($storageLocation.'test.txt');
+
+    $pages = _getLinksToAllPagesOnSite();
+
+    // For each page-path on this site...
+    foreach ( $pages as $page ) {
+
+        // Make sure the PHP thread does not time out
+        set_time_limit(300);
+
+        // Determin where this static file will be saved
+        $saveLocation = $storageLocation . $page;
+        $saveLocation = str_replace('//', '/', $saveLocation);
+
+        /* If the $saveLocation does not have an extension, create a 
+        directory, and save it as index.html */
+        if ( trim(pathinfo($saveLocation, PATHINFO_EXTENSION)) === '' ) {
+            $saveLocation .= '/index.html';
+        }
+
+        // If this static-file already exsists, skip to the next loop-iteration
+        if ( file_exists($saveLocation) ) {
+            error_log("The file {$saveLocation} alread exsists, skipping...");
+            continue;
+        }
+
+        // Render this page
+        $pageFullPath = 'https://'.$_SERVER['HTTP_HOST'].'/'.$page;
+        $renderedPageHTML = @file_get_contents($pageFullPath);
+
+        // Skip if we failed to obtain the markup for this page (may happen when Drupal returns a 404 code)
+        if ( $renderedPageHTML === false ) {
+            error_log("Failed to obtain markup for the page: ".$pageFullPath);
+            continue;
+        }
+
+        // Force relative paths in HTML
+        $renderedPageHTML = str_replace('https://'.$_SERVER['HTTP_HOST'], 'https://'.$prodDomain, $renderedPageHTML);
+        $renderedPageHTML = str_replace('http://'.$_SERVER['HTTP_HOST'], 'http://'.$prodDomain, $renderedPageHTML);
+        $renderedPageHTML = str_replace($_SERVER['HTTP_HOST'], $prodDomain, $renderedPageHTML);
+
+        // Save this page as a[n .html] file in sites/default/files/static-site/~
+        @mkdir(dirname($saveLocation), 0777, true);
+        if ( $bytesWritten = file_put_contents($saveLocation, $renderedPageHTML) ) {
+            @chmod($saveLocation, 0777);
+            error_log("Wrote {$bytesWritten} bytes to {$saveLocation} which represents the URL-path: ".$page);
+        } else {
+            error_log("ERROR - Failed to write to file: ".$saveLocation);
+        }
+
+    }
+
+    error_log(__FUNCTION__.'() has finished.');
+
+}
+
+/**
+ * array _getAllPagesFromIndexPage()
+ *
+ * Returns an array of relative paths to all pages that unauthenticated users can 
+ * get to on this site. The returned links are discovered by scaning the:
+ *     url_alias table
+ *     the /federal-agencies/ page
+ *     the Site-Index page
+ */
+function _getLinksToAllPagesOnSite() {
+
+    $ret = array();
+
+    // Scan the url_alias table for public pages
+    $ret = db_query("SELECT alias FROM url_alias")->fetchCol();
+    if ( !is_array($ret) ) {
+        $ret = array(); // catch the unlikely case the SQL query returned nothing
+    }
+
+    // Scan the Site-Index page for public pages
+    if ( $siteIndexPageUrl = _autodetectSiteIndexPath() ) {
+
+        $ret[] = $siteIndexPageUrl;
+
+        $pages = _getAllPagesFromIndexPage($siteIndexPageUrl);
+        foreach ( $pages as $page ) {
+            $page = ltrim($page, '/');
+            if ( !in_array($page, $ret) ) {
+                $ret[] = $page;
+            }
+        }
+    }
+
+    // Scan the /federal-agencies/ page for public pages
+    $pages = _getAllPagesFromIndexPage('federal-agencies');
+    $pages = array_merge($pages, _getAllPagesFromIndexPage('agencias-federales'));
+    foreach ( $pages as $page ) {
+        $page = ltrim($page, '/');
+        if ( !in_array($page, $ret) ) {
+            $ret[] = $page;
+        }
+    }
+
+    // Add in some known pages - its ok if some of these 404, that will be caught later
+    $ret[] = 'federal-agencies';
+    $ret[] = 'agencias-federales';
+
+    // Scan for the paths to all directory-records
+    if ( function_exists('directory_pages_getUrlToDirectoryRecord') ) {
+        $drNodeIds = db_query("SELECT nid FROM node WHERE type = 'directory_record_content_type' ")->fetchCol();
+        foreach ($drNodeIds as $drNodeId ) {
+            $path = directory_pages_getUrlToDirectoryRecord($drNodeId);
+            $path = ltrim($path, '/');
+            if ( !in_array($path, $ret) ) {
+                $ret[] = $path;
+            }
+        }
+    }
+
+    return $ret;
+}
+
+/**
+ * array _getAllPagesFromIndexPage()
+ *
+ * Returns an array of relative paths to pages found on the given Index page
+ *
+ * This function works by scanning for all links found in the rendered target page. 
+ *
+ * Hence, should anything else alter/update the Index page, this function will 
+ * still pick up on it.
+ */
+function _getAllPagesFromIndexPage($siteIndexPath) {
+
+    $ret = array();
+    $azPages = array();
+
+    $fullSiteIndexPath = 'https://'.$_SERVER['HTTP_HOST'].'/'.$siteIndexPath;
+
+    // Get the rendered HTML of the Site-Index page
+    $siteIndexPageHTML = file_get_contents($fullSiteIndexPath);
+    if ( $siteIndexPageHTML === false ) {
+        error_log(__FUNCTION__.'() failed to pull data from: '.$fullSiteIndexPath);
+    }
+
+    // Prepare to parse the page
+    $doc = new DOMDocument();
+    @$doc->loadHTML($siteIndexPageHTML);
+    $xpath = new DOMXPath($doc);
+
+    // Find all links on this Site-Index page, we shall assume they are exist within a content-region 
+    $links = $xpath->query("//div[@class='content']//a|//main[@id='content']//a"); // Equivalent to jQuery('div.content a')
+    foreach ( $links as $link ) {
+        $linkTarget = $link->getAttribute('href');
+
+        if ( strpos($linkTarget, 'http://') !== false || strpos($linkTarget, 'https://') !== false ) {
+            continue;
+        }
+
+        if ( strpos($linkTarget, $siteIndexPath) !== false && !in_array($linkTarget, $azPages) ) {
+            $azPages[] = $linkTarget;
+        }
+    }
+
+    // Pull and parse each letter-page
+    foreach ($azPages as $azPage ) {
+        
+        $fullAzPage = 'https://'.$_SERVER['HTTP_HOST'].'/'.$azPage;
+
+        // Get the rendered HTML of this letter-page
+        $letterPageHTML = file_get_contents($fullAzPage);
+        if ( $siteIndexPageHTML === false ) {
+            error_log(__FUNCTION__.'() failed to pull data from: '.$fullAzPage);
+        }
+
+        // Prepare to parse the page
+        $doc = new DOMDocument();
+        @$doc->loadHTML($letterPageHTML);
+        $xpath = new DOMXPath($doc);
+
+        // Find all links on this letter-page, we shall assume they are exist within a content-region 
+        $links = $xpath->query("//div[@class='content']//a|//main[@id='content']//a"); // Equivalent to jQuery('div.content a')
+        foreach ( $links as $link ) {
+            $linkTarget = $link->getAttribute('href');
+
+            // Ignore links to fragments
+            if ( substr($linkTarget, 0, 1) === '#' ) {
+                continue;
+            }
+
+            // Ignore links to off-site domains
+            if ( substr($linkTarget, 0, 1) !== '/' || substr($linkTarget, 0, 2) === '//' ) {
+                continue;
+            }
+
+            // Ignore dynamic pages
+            if ( strpos($linkTarget, '?') !== false ) {
+                continue;
+            }
+
+            // If this link's target is not already in the return buffer...
+            if ( !in_array($linkTarget, $ret) ) {
+                // ...then add it to the return buffer.
+                $ret[] = $linkTarget;
+            }
+        }
+
+    }
+
+    return $ret;
+}
+
+/**
+ * string/bool _autodetectSiteIndexPath()
+ *
+ * By rendering the front page of the site, and scanning its links, this function
+ * determines the URL-path for the Site-Index of this site.
+ *
+ * This function returns a relative URL path, or FALSE on failure.
+ */
+function _autodetectSiteIndexPath() {
+
+    // Get the rendered HTML of the front-page
+    $frontPageHTML = file_get_contents('https://'.$_SERVER['HTTP_HOST'].'/');
+
+    // Prepare to parse the page
+    $doc = new DOMDocument();
+    @$doc->loadHTML($frontPageHTML);
+    $xpath = new DOMXPath($doc);
+
+    // Get the path that the "Site Index" or "Site Map" anchor points to
+    $siteIndexPath = false;
+    $siteIndexLinks = $xpath->query("//a[text()='Site Index']|//a[text()='Site Map']");
+    foreach ($siteIndexLinks as $entry) {
+        $siteIndexPath = $entry->getAttribute('href');
+        break;
+    }
+
+    return ltrim($siteIndexPath, '/');
+}

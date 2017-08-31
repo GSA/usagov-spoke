@@ -1,0 +1,2616 @@
+/* REMOVE LATER: added CMP edit link */
+#cmp-edit-link {
+  display: block;
+  width: 100%;
+  line-height: 40px;
+  background-color: red;
+  color: #fff;
+  text-align: center;
+  font-weight: bold;
+  position: absolute;
+  top: 0px;
+}
+.roundCorners {
+  -moz-border-radius: 5px;
+  -moz-border-topleft: 5px;
+  -moz-border-topright: 5px;
+  -moz-border-bottomleft: 5px;
+  -moz-border-bottomright: 5px;
+  -webkit-border-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -o-border-radius: 5px;
+  -o-border-top-left-radius: 5px;
+  -o-border-top-right-radius: 5px;
+  -o-border-bottom-left-radius: 5px;
+  -o-border-bottom-right-radius: 5px;
+  border-radius: 5px;
+}
+.boxshadows {
+  -moz-box-shadow: 0px 0px 3px 3px #d9b76d;
+  -webkit-box-shadow: 0px 0px 3px 3px #d9b76d;
+  box-shadow: 0px 0px 3px 3px #d9b76d;
+}
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+body.kids-trail .menu-block-2 {
+  padding: 0px 0px 0px 200px;
+  background: -ms-linear-gradient(top, #1a769a, #1a769a 10%, #1b88b2 90%);
+  background: -moz-linear-gradient(top, #1a769a, #1a769a 10%, #1b88b2 90%);
+  background: -webkit-linear-gradient(top, #1a769a, #1a769a 10%, #1b88b2 90%);
+  background: -o-linear-gradient(top, #1a769a, #1a769a 10%, #1b88b2 90%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#1a769a, endColorstr=#1b88b2);
+  background: linear-gradient(top, #1a769a, #1a769a 10%, #1b88b2 90%);
+}
+body.kids-trail #main {
+  border: 1px solid #1a769a;
+}
+body.kids-trail .menu-block-2 ul li {
+  background: transparent url('../images/2ndnav_Kids_Learn_off.png') no-repeat 0px 0px;
+}
+body.kids-trail .menu-block-2 ul li.active-trail {
+  background: transparent url('../images/2ndnav_Kids_Learn_on.png') no-repeat 0px 0px;
+}
+body.kids-trail .menu-block-2 ul li + li {
+  background: transparent url('../images/2ndnav_Kids_Play_off.png') no-repeat 0px 0px;
+}
+body.kids-trail .menu-block-2 ul li + li.active-trail {
+  background: transparent url('../images/2ndnav_Kids_Play_on.png') no-repeat 0px 0px;
+}
+body.kids-trail .menu-block-2 ul li + li + li {
+  background: transparent url('../images/2ndnav_Kids_Watch_off.png') no-repeat 0px 0px;
+}
+body.kids-trail .menu-block-2 ul li + li + li.active-trail {
+  background: transparent url('../images/2ndnav_Kids_Watch_on.png') no-repeat 0px 0px;
+}
+body.kids-trail .region-content > .block {
+  border: 1px solid #a8d7ea;
+}
+body.kids-trail .menu-block-3 {
+  border: 1px solid #a8d7ea;
+}
+body.kids-trail .menu-block-3 ul li.art-and-music a,
+body.kids-trail .menu-block-3 ul li.art a,
+body.kids-trail .menu-block-3 ul li.art-and-music-videos a,
+body.kids-trail .menu-block-3 ul li.art-and-music-games a,
+body.kids-trail .menu-block-3 ul li.art-and-music-activities-and-worksheets a,
+body.kids-trail .menu-block-3 ul li.art-and-music-lesson-plans a {
+  background: url('../images/Icon_Art.png') 5px no-repeat;
+}
+body.kids-trail .menu-block-3 ul li.history a {
+  background: url('../images/Icon_History.png') 5px no-repeat;
+}
+body.kids-trail .menu-block-3 ul li.online-safety-games a,
+body.kids-trail .menu-block-3 ul li.online-safety a {
+  background: url('../images/Icon_Online.png') 5px no-repeat;
+}
+body.kids-trail .menu-block-3 ul li.exercise-and-eating-healthy a {
+  background: url('../images/Icon_Exercise.png') 5px no-repeat;
+}
+body.kids-trail .menu-block-3 ul li.games-about-jobs-careers a,
+body.kids-trail .menu-block-3 ul li.jobs-careers a {
+  background: url('../images/Icon_Jobs.png') 5px no-repeat;
+}
+body.kids-trail .menu-block-3 ul li.reading-and-writing a {
+  background: url('../images/Icon_Reading.png') 5px no-repeat;
+}
+body.kids-trail .menu-block-3 ul li.government a {
+  background: url('../images/Icon_Goverment.png') 5px no-repeat;
+}
+body.kids-trail .menu-block-3 ul li.math a {
+  background: url('../images/Icon_Math.png') 5px no-repeat;
+}
+body.kids-trail .menu-block-3 ul li.science a {
+  background: url('../images/Icon_Science.png') 5px no-repeat;
+}
+body.kids-trail .menu-block-3 ul li.health-and-safety a {
+  background: url('../images/Icon_Health.png') 5px no-repeat;
+}
+body.kids-trail .menu-block-3 ul li.money a {
+  background: url('../images/Icon_Money.png') 5px no-repeat;
+}
+body.kids-trail .menu-block-3 ul li.social-studies a {
+  background: url('../images/Icon_Social.png') 5px no-repeat;
+}
+body.kids-trail .menu-block-3 ul li a:hover,
+body.kids-trail .menu-block-3 ul li a:active,
+body.kids-trail .menu-block-3 ul li a:focus {
+  background-color: #dff2fb;
+  border: 1px solid #a8d7ea;
+}
+body.kids-trail .teacher-parent-email-block {
+  border: 1px solid #a8d7ea;
+}
+body.kids-trail .teacher-parent-email-block h2 {
+  color: #1a769a;
+}
+body.kids-trail .teacher-parent-email-block .mlcntnr-email {
+  background: url('../images/Button_Subscribe_Kids.png') right bottom;
+}
+body.kids-trail h1 {
+  color: #1a769a;
+}
+body.kids-trail .sidebar-block {
+  border: 1px solid #a8d7ea;
+  background-color: #dff2fb;
+}
+body.kids-trail .sidebar-block .emails-sidebar .hdr-email {
+  background: url('../images/Kids_Rightnav_Header_Email_Signup.png') no-repeat;
+}
+body.kids-trail .sidebar-block .emails-sidebar .rght-email {
+  border: 1px solid #a8d7ea;
+}
+body.kids-trail .sidebar-block .emails-sidebar .rght-email .rght-input {
+  background: #eff8fd;
+}
+body.kids-trail .sidebar-block .emails-sidebar .rght-email .grwnup-email {
+  background: url('../images/Button_Kids_Go.png') no-repeat;
+}
+body.kids-trail .content-block span.jump-title,
+body.kids-trail .content-block h2,
+body.kids-trail .content-block h3 {
+  color: #1a769a;
+}
+body.kids-trail .content-block ul > li {
+  background: url('../images/Arrow_Blue.png') no-repeat 7px 0px;
+}
+body.kids-trail .content-block .frth_columnbox_container {
+  border: 1px solid #a8d7ea;
+  background-color: #dff2fb;
+}
+body.kids-trail .content-block .frth_columnbox_container h2 {
+  background: none;
+}
+body.kids-trail .content-block .frth_columnbox_container .frth_columnbox_container_content {
+  border: 1px solid #a8d7ea;
+  background-color: #fff;
+}
+body.kids-trail .content-block table h2 {
+  color: #1a769a;
+}
+body.kids-trail .more .content-block h3 {
+  background: url('../images/Arrow_Blue.png') no-repeat;
+}
+body.kids-trail .more .content-block p {
+  /*border-bottom: 2px dashed @colorBackground;*/
+}
+body.kids-trail .feeds {
+  border: 2px dashed #dff2fb;
+  border-left: none;
+  border-right: none;
+}
+body.kids-trail .carousel-block {
+  border: 1px solid #a8d7ea;
+  background-color: #dff2fb;
+}
+body.kids-trail .carousel-block .jcarousel-prev {
+  background: transparent url('../images/Arrow_Kids_Previous.png') no-repeat right top;
+}
+body.kids-trail .carousel-block .jcarousel-next {
+  background: transparent url('../images/Arrow_Kids_Next.png') no-repeat right top;
+}
+body.kids-trail .carousel-block .jcarousel ul li a:hover,
+body.kids-trail .carousel-block .jcarousel ul li a:active,
+body.kids-trail .carousel-block .jcarousel ul li a:focus {
+  -moz-box-shadow: 0 0 5px #1a769a;
+  -webkit-box-shadow: 0 0 5px #1a769a;
+  box-shadow: 0 0 5px #1a769a;
+}
+body.kids-trail .carousel-block .jcarousel ul li a img {
+  border: 1px solid #1a769a;
+}
+body.kids-trail .carousel-block .jcarousel ul li a .carousel-item-des {
+  background: transparent url('../images/Arrow_Kids_Go.png') no-repeat right top;
+}
+body.kids-trail .bottom-block .views-row {
+  border: 1px solid #a8d7ea;
+  background-color: #dff2fb;
+}
+body.kids-trail .bottom-block .views-row h2 {
+  margin: 0 0 0 0px;
+}
+body.kids-trail .bottom-block .views-row .img-brdr {
+  border: 1px solid #84bcd4;
+}
+body.kids-trail .learn-stuff h1.art-and-music,
+body.kids-trail .learn-stuff h1.history,
+body.kids-trail .learn-stuff h1.online-safety,
+body.kids-trail .learn-stuff h1.exercise-and-eating-healthy,
+body.kids-trail .learn-stuff h1.jobs,
+body.kids-trail .learn-stuff h1.reading-and-writing,
+body.kids-trail .learn-stuff h1.government,
+body.kids-trail .learn-stuff h1.math,
+body.kids-trail .learn-stuff h1.science,
+body.kids-trail .learn-stuff h1.health-and-safety,
+body.kids-trail .learn-stuff h1.money,
+body.kids-trail .learn-stuff h1.social-studies {
+  display: block;
+  height: 55px;
+  width: 588px;
+  text-indent: -9999px;
+}
+body.kids-trail .play-games h1.art-and-music-games,
+body.kids-trail .play-games h1.history,
+body.kids-trail .play-games h1.online-safety,
+body.kids-trail .play-games h1.exercise-and-eating-healthy,
+body.kids-trail .play-games h1.jobs,
+body.kids-trail .play-games h1.reading-and-writing,
+body.kids-trail .play-games h1.government,
+body.kids-trail .play-games h1.math,
+body.kids-trail .play-games h1.science,
+body.kids-trail .play-games h1.health-and-safety,
+body.kids-trail .play-games h1.money,
+body.kids-trail .play-games h1.social-studies {
+  display: block;
+  height: 55px;
+  width: 588px;
+  text-indent: -9999px;
+}
+body.kids-trail .watch-videos h1.art-and-music-videos,
+body.kids-trail .watch-videos h1.history,
+body.kids-trail .watch-videos h1.online-safety,
+body.kids-trail .watch-videos h1.exercise-and-eating-healthy,
+body.kids-trail .watch-videos h1.jobs,
+body.kids-trail .watch-videos h1.reading-and-writing,
+body.kids-trail .watch-videos h1.government,
+body.kids-trail .watch-videos h1.math,
+body.kids-trail .watch-videos h1.science,
+body.kids-trail .watch-videos h1.health-and-safety,
+body.kids-trail .watch-videos h1.money,
+body.kids-trail .watch-videos h1.social-studies {
+  display: block;
+  height: 55px;
+  width: 588px;
+  text-indent: -9999px;
+}
+body.kids-trail .learn-stuff h1.art-and-music {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Text_Art_Music.png') no-repeat 0px 0px;
+}
+body.kids-trail .learn-stuff h1.history {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Text_History.png') no-repeat 0px 0px;
+}
+body.kids-trail .learn-stuff h1.online-safety {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Text_Online.png') no-repeat 0px 0px;
+}
+body.kids-trail .learn-stuff h1.exercise-and-eating-healthy {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Text_Exercise.png') no-repeat 0px 0px;
+}
+body.kids-trail .learn-stuff h1.jobs {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Text_Jobs.png') no-repeat 0px 0px;
+}
+body.kids-trail .learn-stuff h1.reading-and-writing {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Text_Reading.png') no-repeat 0px 0px;
+}
+body.kids-trail .learn-stuff h1.government {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Text_Government.png') no-repeat 0px 0px;
+}
+body.kids-trail .learn-stuff h1.math {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Text_Match.png') no-repeat 0px 0px;
+}
+body.kids-trail .learn-stuff h1.science {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Text_Sceince.png') no-repeat 0px 0px;
+}
+body.kids-trail .learn-stuff h1.health-and-safety {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Text_Health.png') no-repeat 0px 0px;
+}
+body.kids-trail .learn-stuff h1.money {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Text_Money.png') no-repeat 0px 0px;
+}
+body.kids-trail .learn-stuff h1.social-studies {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Text_Social.png') no-repeat 0px 0px;
+}
+body.kids-trail .play-games h1.art-and-music-games {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Games_Art.png') no-repeat 0px 0px;
+}
+body.kids-trail .play-games h1.history {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Games_History.png') no-repeat 0px 0px;
+}
+body.kids-trail .play-games h1.online-safety {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Games_Online.png') no-repeat 0px 0px;
+}
+body.kids-trail .play-games h1.exercise-and-eating-healthy {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Games_Exercise.png') no-repeat 0px 0px;
+}
+body.kids-trail .play-games h1.jobs {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Games_Jobs.png') no-repeat 0px 0px;
+}
+body.kids-trail .play-games h1.reading-and-writing {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Games_Reading.png') no-repeat 0px 0px;
+}
+body.kids-trail .play-games h1.government {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Text_Government.png') no-repeat 0px 0px;
+}
+body.kids-trail .play-games h1.math {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Games_Math.png') no-repeat 0px 0px;
+}
+body.kids-trail .play-games h1.science {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Games_Science.png') no-repeat 0px 0px;
+}
+body.kids-trail .play-games h1.health-and-safety {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Games_Health.png') no-repeat 0px 0px;
+}
+body.kids-trail .play-games h1.money {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Games_Money.png') no-repeat 0px 0px;
+}
+body.kids-trail .play-games h1.social-studies {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Games_Social.png') no-repeat 0px 0px;
+}
+body.kids-trail .watch-videos h1.art-and-music-videos {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Videos_Art.png') no-repeat 0px 0px;
+}
+body.kids-trail .watch-videos h1.history {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Videos_History.png') no-repeat 0px 0px;
+}
+body.kids-trail .watch-videos h1.online-safety {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Videos_Online.png') no-repeat 0px 0px;
+}
+body.kids-trail .watch-videos h1.exercise-and-eating-healthy {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Videos_Exercise.png') no-repeat 0px 0px;
+}
+body.kids-trail .watch-videos h1.jobs {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Videos_Jobs.png') no-repeat 0px 0px;
+}
+body.kids-trail .watch-videos h1.reading-and-writing {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Videos_Reading.png') no-repeat 0px 0px;
+}
+body.kids-trail .watch-videos h1.government {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Videos_Government.png') no-repeat 0px 0px;
+}
+body.kids-trail .watch-videos h1.math {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Videos_Math.png') no-repeat 0px 0px;
+}
+body.kids-trail .watch-videos h1.science {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Videos_Science.png') no-repeat 0px 0px;
+}
+body.kids-trail .watch-videos h1.health-and-safety {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Videos_Health.png') no-repeat 0px 0px;
+}
+body.kids-trail .watch-videos h1.money {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Videos_Money.png') no-repeat 0px 0px;
+}
+body.kids-trail .watch-videos h1.social-studies {
+  background: url('../images/kids/hdr-imgs/Header_Icon_Videos_Social.png') no-repeat 0px 0px;
+}
+body.kids-trail .hdr-email {
+  background: url('/sites/all/themes/kids//shared/images/Kids_Rightnav_Header_Email_Signup.png') no-repeat;
+}
+body.kids-trail .scnc-gms {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Science_Games.png') no-repeat;
+}
+body.kids-trail .scnc-vds {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Science_Videos.png') no-repeat;
+}
+body.kids-trail .scnc-lrn {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Learn_Science.png') no-repeat;
+}
+body.kids-trail .art-lrn {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Learn_Art.png') no-repeat;
+}
+body.kids-trail .art-gms {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Art_Games.png') no-repeat;
+}
+body.kids-trail .art-vds {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Art_Videos.png') no-repeat;
+}
+body.kids-trail .jobs-gms {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Job_Games.png') no-repeat;
+}
+body.kids-trail .jobs-vds {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Job_Videos.png') no-repeat;
+}
+body.kids-trail .jobs-lrn {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Learn_About_Jobs.png') no-repeat;
+}
+body.kids-trail .onln-gms {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Online_Games.png') no-repeat;
+}
+body.kids-trail .onln-vds {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Be_Safe_Online.png') no-repeat;
+}
+body.kids-trail .onln-lrn {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Learn_Be_Safe_Online.png') no-repeat;
+}
+body.kids-trail .exrcs-gms {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Exercise_Games.png') no-repeat;
+}
+body.kids-trail .exrcs-vds {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Exercise_Videos.png') no-repeat;
+}
+body.kids-trail .exrcs-lrn {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Learn_Exercise.png') no-repeat;
+}
+body.kids-trail .gvmt-gms {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Government_Games.png') no-repeat;
+}
+body.kids-trail .gvmt-vds {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Government_Videos.png') no-repeat;
+}
+body.kids-trail .gvmt-lrn {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Learn_Government.png') no-repeat;
+}
+body.kids-trail .hlth-gms {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Health_Games.png') no-repeat;
+}
+body.kids-trail .hlth-vds {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Health_Videos.png') no-repeat;
+}
+body.kids-trail .hlth-lrn {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Learn_Health.png') no-repeat;
+}
+body.kids-trail .hstry-gms {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_History_Games.png') no-repeat;
+}
+body.kids-trail .hstry-vds {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_History_Videos.png') no-repeat;
+}
+body.kids-trail .hstry-lrn {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Learn_History.png') no-repeat;
+}
+body.kids-trail .math-gms {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Math_Games.png') no-repeat;
+}
+body.kids-trail .math-vds {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Math_Videos.png') no-repeat;
+}
+body.kids-trail .math-lrn {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Learn_Math.png') no-repeat;
+}
+body.kids-trail .mny-gms {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Money_Games.png') no-repeat;
+}
+body.kids-trail .mny-vds {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Money_Videos.png') no-repeat;
+}
+body.kids-trail .mny-lrn {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Learn_About_Money.png') no-repeat;
+}
+body.kids-trail .musc-gms {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Music_Games.png') no-repeat;
+}
+body.kids-trail .musc-vds {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Music_Videos.png') no-repeat;
+}
+body.kids-trail .musc-lrn {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Learn_Music.png') no-repeat;
+}
+body.kids-trail .read-gms {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Reading_Games.png') no-repeat;
+}
+body.kids-trail .read-vds {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Reading_Videos.png') no-repeat;
+}
+body.kids-trail .read-lrn {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Learn_Reading.png') no-repeat;
+}
+body.kids-trail .sclstd-gms {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Social_Studies_Games.png') no-repeat;
+}
+body.kids-trail .sclstd-vds {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Social_Studies_Videos.png') no-repeat;
+}
+body.kids-trail .sclstd-lrn {
+  background: url('/sites/all/themes/kids//images/kids/rghtnav-hdrs/Kids_Rightnav_Header_Social_Studies_Learn.png') no-repeat;
+}
+body.kids-trail .rght-img-gms {
+  width: 212px;
+  height: 124px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 0;
+  background: url('/sites/all/themes/kids//images/kids/rightnav-imgs/Rightnav_Featured_Kids_Games.png');
+  border: 1px solid #84bcd4;
+  /*bj added 6/14/12 */
+}
+body.kids-trail .rght-img-vds {
+  width: 212px;
+  height: 124px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 0;
+  background: url('/sites/all/themes/kids//images/kids/rightnav-imgs/Rightnav_Featured_Kids_Videos.png');
+  border: 1px solid #84bcd4;
+  /*bj added 6/14/12 */
+}
+body.kids-trail .rght-img-fun {
+  width: 212px;
+  height: 124px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 0;
+  background: url('/sites/all/themes/kids//images/kids/rightnav-imgs/Rightnav_Featured_Kids_Learn.png');
+  border: 1px solid #84bcd4;
+  /*bj added 6/14/12 */
+}
+body.kids-trail .rght-sd-arrw {
+  background: url('/web_resources/themes/kidsgov/images/Arrow_Kids_Go.png') no-repeat right top;
+  display: inline;
+  padding: 2px 25px 10px 0;
+  /* bj changed from padding: 2px 25px 10px 0; 6/15/12 */
+  margin: 5px 0 0 0;
+  line-height: 18px;
+  /* bj changed from line-height: 18px; 6/15/12 */
+}
+body.teens-trail {
+  /* bj added 5/14/12 */
+}
+body.teens-trail .menu-block-2 {
+  padding: 0px 0px 0px 200px;
+  background: -ms-linear-gradient(top, #a33e28, #a33e28 10%, #ba4a31 90%);
+  background: -moz-linear-gradient(top, #a33e28, #a33e28 10%, #ba4a31 90%);
+  background: -webkit-linear-gradient(top, #a33e28, #a33e28 10%, #ba4a31 90%);
+  background: -o-linear-gradient(top, #a33e28, #a33e28 10%, #ba4a31 90%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#a33e28, endColorstr=#ba4a31);
+  background: linear-gradient(top, #a33e28, #a33e28 10%, #ba4a31 90%);
+}
+body.teens-trail #main {
+  border: 1px solid #a33e28;
+}
+body.teens-trail .menu-block-2 ul li {
+  background: transparent url('../images/2ndnav_Teens_Learn_off.png') no-repeat 0px 0px;
+}
+body.teens-trail .menu-block-2 ul li.active-trail {
+  background: transparent url('../images/2ndnav_Teens_Learn_on.png') no-repeat 0px 0px;
+}
+body.teens-trail .menu-block-2 ul li + li {
+  background: transparent url('../images/2ndnav_Teens_Play_off.png') no-repeat 0px 0px;
+}
+body.teens-trail .menu-block-2 ul li + li.active-trail {
+  background: transparent url('../images/2ndnav_Teens_Play_on.png') no-repeat 0px 0px;
+}
+body.teens-trail .menu-block-2 ul li + li + li {
+  background: transparent url('../images/2ndnav_Teens_Watch_off.png') no-repeat 0px 0px;
+}
+body.teens-trail .menu-block-2 ul li + li + li.active-trail {
+  background: transparent url('../images/2ndnav_Teens_Watch_on.png') no-repeat 0px 0px;
+}
+body.teens-trail .region-content > .block {
+  border: 1px solid #f6cf7b;
+}
+body.teens-trail .menu-block-3 {
+  border: 1px solid #f6cf7b;
+}
+body.teens-trail .menu-block-3 ul li.art-and-music a,
+body.teens-trail .menu-block-3 ul li.art a,
+body.teens-trail .menu-block-3 ul li.art-and-music-videos a,
+body.teens-trail .menu-block-3 ul li.art-and-music-games a,
+body.teens-trail .menu-block-3 ul li.art-and-music-activities-and-worksheets a,
+body.teens-trail .menu-block-3 ul li.art-and-music-lesson-plans a {
+  background: url('../images/Icon_Art.png') 5px no-repeat;
+}
+body.teens-trail .menu-block-3 ul li.history a {
+  background: url('../images/Icon_History.png') 5px no-repeat;
+}
+body.teens-trail .menu-block-3 ul li.online-safety-games a,
+body.teens-trail .menu-block-3 ul li.online-safety a {
+  background: url('../images/Icon_Online.png') 5px no-repeat;
+}
+body.teens-trail .menu-block-3 ul li.exercise-fitness-nutrition a,
+body.teens-trail .menu-block-3 ul li.exercise-fitness-and-nutrition a {
+  background: url('../images/Icon_Exercise.png') 5px no-repeat;
+}
+body.teens-trail .menu-block-3 ul li.games-about-jobs-careers a,
+body.teens-trail .menu-block-3 ul li.jobs-careers a {
+  background: url('../images/Icon_Jobs_Teens.png') 5px no-repeat;
+}
+body.teens-trail .menu-block-3 ul li.reading-and-writing a {
+  background: url('../images/Icon_Reading_Teens.png') 5px no-repeat;
+}
+body.teens-trail .menu-block-3 ul li.goverment a {
+  background: url('../images/Icon_Goverment.png') 5px no-repeat;
+}
+body.teens-trail .menu-block-3 ul li.government a {
+  background: url('../images/Icon_Goverment.png') 5px no-repeat;
+}
+body.teens-trail .menu-block-3 ul li.math a {
+  background: url('../images/Icon_Math_Teens.png') 5px no-repeat;
+}
+body.teens-trail .menu-block-3 ul li.science a {
+  background: url('../images/Icon_Science_Teens.png') 5px no-repeat;
+}
+body.teens-trail .menu-block-3 ul li.health-and-safety a {
+  background: url('../images/Icon_Health.png') 5px no-repeat;
+}
+body.teens-trail .menu-block-3 ul li.money a {
+  background: url('../images/Icon_Money.png') 5px no-repeat;
+}
+body.teens-trail .menu-block-3 ul li.social-studies a {
+  background: url('../images/Icon_Social.png') 5px no-repeat;
+}
+body.teens-trail .menu-block-3 ul li a:hover,
+body.teens-trail .menu-block-3 ul li a:active,
+body.teens-trail .menu-block-3 ul li a:focus {
+  background-color: #f9efe1;
+  border: 1px solid #f6cf7b;
+}
+body.teens-trail .teacher-parent-email-block {
+  border: 1px solid #f6cf7b;
+}
+body.teens-trail .teacher-parent-email-block h2 {
+  color: #a33e28;
+}
+body.teens-trail .teacher-parent-email-block .mlcntnr-email {
+  background: url('../images/Button_Subscribe_Teens.png') right bottom;
+}
+body.teens-trail h1 {
+  color: #a33e28;
+}
+body.teens-trail .sidebar-block {
+  border: 1px solid #f6cf7b;
+  background-color: #f9efe1;
+}
+body.teens-trail .sidebar-block .emails-sidebar .hdr-email {
+  background: url('../images/Teens_Rightnav_Header_Email_Signup (2).png') no-repeat;
+}
+body.teens-trail .sidebar-block .emails-sidebar .rght-email {
+  border: 1px solid #f6cf7b;
+}
+body.teens-trail .sidebar-block .emails-sidebar .rght-email .rght-input {
+  background: #f9efe1;
+}
+body.teens-trail .sidebar-block .emails-sidebar .rght-email .grwnup-email {
+  background: url('../images/Button_Teens_Go.png') no-repeat;
+}
+body.teens-trail .content-block span.jump-title,
+body.teens-trail .content-block h2,
+body.teens-trail .content-block h3 {
+  color: #a33e28;
+}
+body.teens-trail .content-block ul > li {
+  background: url('../images/Arrow_Red.png') no-repeat 7px 0px;
+}
+body.teens-trail .content-block .frth_columnbox_container {
+  border: 1px solid #f6cf7b;
+  background-color: #f9efe1;
+}
+body.teens-trail .content-block .frth_columnbox_container h2 {
+  background: none;
+}
+body.teens-trail .content-block .frth_columnbox_container .frth_columnbox_container_content {
+  border: 1px solid #f6cf7b;
+  background-color: #fff;
+}
+body.teens-trail .content-block table h2 {
+  color: #a33e28;
+}
+body.teens-trail .more .content-block h3 {
+  background: url('../images/Arrow_Red.png') no-repeat;
+}
+body.teens-trail .more .content-block p {
+  /*border-bottom: 2px dashed @colorBackground;*/
+}
+body.teens-trail .feeds {
+  border: 2px dashed #f9efe1;
+  border-left: none;
+  border-right: none;
+}
+body.teens-trail .carousel-block {
+  border: 1px solid #f6cf7b;
+  background-color: #f9efe1;
+}
+body.teens-trail .carousel-block .jcarousel-prev {
+  background: transparent url('../images/Arrow_Teens_Previous.png') no-repeat right top;
+}
+body.teens-trail .carousel-block .jcarousel-next {
+  background: transparent url('../images/Arrow_Teens_Next.png') no-repeat right top;
+}
+body.teens-trail .carousel-block .jcarousel ul li a:hover,
+body.teens-trail .carousel-block .jcarousel ul li a:active,
+body.teens-trail .carousel-block .jcarousel ul li a:focus {
+  -moz-box-shadow: 0 0 5px #a33e28;
+  -webkit-box-shadow: 0 0 5px #a33e28;
+  box-shadow: 0 0 5px #a33e28;
+}
+body.teens-trail .carousel-block .jcarousel ul li a img {
+  border: 1px solid #a33e28;
+}
+body.teens-trail .carousel-block .jcarousel ul li a .carousel-item-des {
+  background: transparent url('../images/Arrow_Teens_Go.png') no-repeat right top;
+}
+body.teens-trail .bottom-block .views-row {
+  border: 1px solid #f6cf7b;
+  background-color: #f9efe1;
+}
+body.teens-trail .bottom-block .views-row a:active,
+body.teens-trail .bottom-block .views-row a:focus,
+body.teens-trail .bottom-block .views-row a:hover {
+  -moz-box-shadow: 0 0 5px #ba4a31;
+  -webkit-box-shadow: 0 0 5px #ba4a31;
+  box-shadow: 0 0 5px #ba4a31;
+}
+body.teens-trail .bottom-block .views-row a .img-brdr {
+  border: 1px solid #f79e2a;
+}
+body.teens-trail .bottom-block .views-row .bx-qstn {
+  border: 1px solid #f79e2a;
+}
+body.teens-trail .bottom-block .views-row .mst-pplr {
+  border: 1px solid #f79e2a;
+}
+body.teens-trail .bottom-block .views-row .mst-pplr ul li a {
+  text-decoration: underline;
+}
+body.teens-trail .bottom-block .views-row .mst-pplr ul li a:hover,
+body.teens-trail .bottom-block .views-row .mst-pplr ul li a:active,
+body.teens-trail .bottom-block .views-row .mst-pplr ul li a:focus {
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+body.teens-trail .scnc-gms {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Science_Games.png') no-repeat;
+}
+body.teens-trail .scnc-vds {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Science_Videos.png') no-repeat;
+}
+body.teens-trail .scnc-lrn {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Learn_Science.png') no-repeat;
+}
+body.teens-trail .art-lrn {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Learn_Art.png') no-repeat;
+}
+body.teens-trail .art-gms {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Art_Games.png') no-repeat;
+}
+body.teens-trail .art-vds {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Art_Videos.png') no-repeat;
+}
+body.teens-trail .jobs-gms {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Job_Games.png') no-repeat;
+}
+body.teens-trail .jobs-vds {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Job_Videos.png') no-repeat;
+}
+body.teens-trail .jobs-lrn {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Learn_About_Jobs.png') no-repeat;
+}
+body.teens-trail .onln-gms {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Online_Games.png') no-repeat;
+}
+body.teens-trail .onln-vds {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Be_Safe_Online.png') no-repeat;
+}
+body.teens-trail .onln-lrn {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Be_Safe_Online.png') no-repeat;
+}
+body.teens-trail .exrcs-gms {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Exercise_Games.png') no-repeat;
+}
+body.teens-trail .exrcs-vds {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Exercise_Videos.png') no-repeat;
+}
+body.teens-trail .exrcs-lrn {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Learn_Exercise.png') no-repeat;
+}
+body.teens-trail .gvmt-gms {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Government_Games.png') no-repeat;
+}
+body.teens-trail .gvmt-vds {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Government_Videos.png') no-repeat;
+}
+body.teens-trail .gvmt-lrn {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Learn_Government.png') no-repeat;
+}
+body.teens-trail .hlth-gms {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Health_Games.png') no-repeat;
+}
+body.teens-trail .hlth-vds {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Health_Videos.png') no-repeat;
+}
+body.teens-trail .hlth-lrn {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Learn_Health.png') no-repeat;
+}
+body.teens-trail .hstry-gms {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_History_Games.png') no-repeat;
+}
+body.teens-trail .hstry-vds {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_History_Videos.png') no-repeat;
+}
+body.teens-trail .hstry-lrn {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Learn_History.png') no-repeat;
+}
+body.teens-trail .math-gms {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Math_Games.png') no-repeat;
+}
+body.teens-trail .math-vds {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Math_Videos.png') no-repeat;
+}
+body.teens-trail .math-lrn {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Learn_Math.png') no-repeat;
+}
+body.teens-trail .mny-gms {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Money_Games.png') no-repeat;
+}
+body.teens-trail .mny-vds {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Money_Videos.png') no-repeat;
+}
+body.teens-trail .mny-lrn {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Learn_About_Money.png') no-repeat;
+}
+body.teens-trail .musc-gms {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Music_Games.png') no-repeat;
+}
+body.teens-trail .musc-vds {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Music_Videos.png') no-repeat;
+}
+body.teens-trail .musc-lrn {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Learn_Music.png') no-repeat;
+}
+body.teens-trail .read-gms {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Reading_Games.png') no-repeat;
+}
+body.teens-trail .read-vds {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Reading_Videos.png') no-repeat;
+}
+body.teens-trail .read-lrn {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Learn_Reading.png') no-repeat;
+}
+body.teens-trail .sclstd-gms {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Social_Studies_Games.png') no-repeat;
+}
+body.teens-trail .sclstd-vds {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Social_Studies_Videos.png') no-repeat;
+}
+body.teens-trail .sclstd-lrn {
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-hdrs/Teens_Rightnav_Header_Social_Studies_Learn.png') no-repeat;
+}
+body.teens-trail .scnc-fun {
+  background: url('/web_resources/themes/kidsgov/images/Teens_Rightnav_Header_Science_Fun.png') no-repeat;
+}
+body.teens-trail .rght-img-gms {
+  width: 212px;
+  height: 124px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 0;
+  border: 1px solid #f79e2a;
+  /*bj added 6/14/12 */
+}
+body.teens-trail .rght-img-vds {
+  width: 212px;
+  height: 124px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 0;
+  border: 1px solid #f79e2a;
+  /*bj added 6/14/12 */
+}
+body.teens-trail .rght-img-fun {
+  width: 212px;
+  height: 124px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 0;
+  border: 1px solid #f79e2a;
+  /*bj added 6/14/12 */
+}
+body.teens-trail .rght-img-gms {
+  width: 212px;
+  height: 124px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 0;
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-imgs/Rightnav_Featured_Teens_Games.png');
+  border: 1px solid #f79e2a;
+}
+body.teens-trail .rght-img-vds {
+  width: 212px;
+  height: 124px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 0;
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-imgs/Rightnav_Featured_Teens_Videos.png');
+  border: 1px solid #f79e2a;
+}
+body.teens-trail .rght-img-fun {
+  width: 212px;
+  height: 124px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 0;
+  background: url('/sites/all/themes/kids/images/teens/rghtnav-imgs/Rightnav_Featured_Teens_Learn.png');
+  border: 1px solid #f79e2a;
+}
+body.teens-trail .sidebar-block > .view .rght-sd-arrw {
+  background: url('/sites/all/themes/kids/images/Arrow_Teens_Go.png') no-repeat right top;
+}
+body.teens-trail div.lst-cntnt > ul > li,
+body.teens-trail .lst-cntnt ul li {
+  margin: 0 25px 0 0;
+  padding: 0 0 15px 0;
+  list-style: url('/sites/all/themes/kids/images/Arrow_Red.png');
+}
+body.teachers-trail .menu-block-2 {
+  padding: 0px 0px 0px 50px;
+  background: -ms-linear-gradient(top, #447306, #447306 10%, #548513 90%);
+  background: -moz-linear-gradient(top, #447306, #447306 10%, #548513 90%);
+  background: -webkit-linear-gradient(top, #447306, #447306 10%, #548513 90%);
+  background: -o-linear-gradient(top, #447306, #447306 10%, #548513 90%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#447306, endColorstr=#548513);
+  background: linear-gradient(top, #447306, #447306 10%, #548513 90%);
+}
+body.teachers-trail #main {
+  border: 1px solid #447306;
+}
+body.teachers-trail .menu-block-2 ul li {
+  background: transparent url('../images/2ndnav_Grownups_Teachers_off.png') no-repeat 0px 0px;
+  width: 195px;
+}
+body.teachers-trail .menu-block-2 ul li.active-trail {
+  background: transparent url('../images/2ndnav_Grownups_Teachers_on.png') no-repeat 0px 0px;
+}
+body.teachers-trail .menu-block-2 ul li + li {
+  background: transparent url('../images/2ndnav_Grownups_Activities_off.png') no-repeat 0px 0px;
+  width: 305px;
+}
+body.teachers-trail .menu-block-2 ul li + li.active-trail {
+  background: transparent url('../images/2ndnav_Grownups_Activities_on.png') no-repeat 0px 0px;
+}
+body.teachers-trail .menu-block-2 ul li + li + li {
+  background: transparent url('../images/2ndnav_Grownups_Lesson_Plans_off.png') no-repeat 0px 0px;
+  width: 185px;
+}
+body.teachers-trail .menu-block-2 ul li + li + li.active-trail {
+  background: transparent url('../images/2ndnav_Grownups_Lesson_Plans_on.png') no-repeat 0px 0px;
+}
+body.teachers-trail .menu-block-2 ul li + li + li + li {
+  background: transparent url('../images/2ndnav_Grownups_Parents_off.png') no-repeat 0px 0px;
+}
+body.teachers-trail .region-content > .block {
+  border: 1px solid #c5dea4;
+}
+body.teachers-trail .menu-block-3 {
+  border: 1px solid #c5dea4;
+}
+body.teachers-trail .menu-block-3 ul li.art-and-music a,
+body.teachers-trail .menu-block-3 ul li.art a,
+body.teachers-trail .menu-block-3 ul li.art-and-music-videos a,
+body.teachers-trail .menu-block-3 ul li.art-and-music-games a,
+body.teachers-trail .menu-block-3 ul li.art-and-music-activities-and-worksheets a,
+body.teachers-trail .menu-block-3 ul li.art-and-music-lesson-plans a {
+  background: url('../images/Icon_Art.png') 5px no-repeat;
+}
+body.teachers-trail .menu-block-3 ul li.history a {
+  background: url('../images/Icon_History.png') 5px no-repeat;
+}
+body.teachers-trail .menu-block-3 ul li.online-safety-games a,
+body.teachers-trail .menu-block-3 ul li.online-safety a {
+  background: url('../images/Icon_Online.png') 5px no-repeat;
+}
+body.teachers-trail .menu-block-3 ul li.exercise-fitness-nutrition a,
+body.teachers-trail .menu-block-3 ul li.exercise-fitness-and-nutrition a {
+  background: url('../images/Icon_Exercise.png') 5px no-repeat;
+}
+body.teachers-trail .menu-block-3 ul li.games-about-jobs-careers a,
+body.teachers-trail .menu-block-3 ul li.jobs-careers a {
+  background: url('../images/Icon_Jobs_Teens.png') 5px no-repeat;
+}
+body.teachers-trail .menu-block-3 ul li.reading-and-writing a {
+  background: url('../images/Icon_Reading_Teens.png') 5px no-repeat;
+}
+body.teachers-trail .menu-block-3 ul li.government a {
+  background: url('../images/Icon_Goverment.png') 5px no-repeat;
+}
+body.teachers-trail .menu-block-3 ul li.math a {
+  background: url('../images/Icon_Math_Teens.png') 5px no-repeat;
+}
+body.teachers-trail .menu-block-3 ul li.science a {
+  background: url('../images/Icon_Science_Teens.png') 5px no-repeat;
+}
+body.teachers-trail .menu-block-3 ul li.health-and-safety a {
+  background: url('../images/Icon_Health.png') 5px no-repeat;
+}
+body.teachers-trail .menu-block-3 ul li.money a {
+  background: url('../images/Icon_Money.png') 5px no-repeat;
+}
+body.teachers-trail .menu-block-3 ul li.social-studies a {
+  background: url('../images/Icon_Social.png') 5px no-repeat;
+}
+body.teachers-trail .menu-block-3 ul li a:hover,
+body.teachers-trail .menu-block-3 ul li a:active,
+body.teachers-trail .menu-block-3 ul li a:focus {
+  background-color: #e6f3d4;
+  border: 1px solid #c5dea4;
+}
+body.teachers-trail .teacher-parent-email-block {
+  border: 1px solid #c5dea4;
+}
+body.teachers-trail .teacher-parent-email-block h2 {
+  color: #447306;
+}
+body.teachers-trail .teacher-parent-email-block .mlcntnr-email {
+  background: url('../images/Button_Subscribe.png') right bottom;
+}
+body.teachers-trail h1 {
+  color: #447306;
+}
+body.teachers-trail .sidebar-block {
+  border: 1px solid #c5dea4;
+  background-color: #e6f3d4;
+}
+body.teachers-trail .sidebar-block .emails-sidebar .hdr-email {
+  background: url('../images/Grownup_Rightnav_Header_Email_Signup.png') no-repeat;
+}
+body.teachers-trail .sidebar-block .emails-sidebar .rght-email {
+  border: 1px solid #c5dea4;
+}
+body.teachers-trail .sidebar-block .emails-sidebar .rght-email .rght-input {
+  background: #f0f9e4;
+}
+body.teachers-trail .sidebar-block .emails-sidebar .rght-email .grwnup-email {
+  background: url('../images/Button_Grownups_Go.png') no-repeat;
+}
+body.teachers-trail .content-block span.jump-title,
+body.teachers-trail .content-block h2,
+body.teachers-trail .content-block h3 {
+  color: #447306;
+}
+body.teachers-trail .content-block ul > li {
+  background: url('../images/Arrow_Green.png') no-repeat 7px 0px;
+}
+body.teachers-trail .content-block .frth_columnbox_container {
+  border: 1px solid #c5dea4;
+  background-color: #e6f3d4;
+}
+body.teachers-trail .content-block .frth_columnbox_container h2 {
+  background: none;
+}
+body.teachers-trail .content-block .frth_columnbox_container .frth_columnbox_container_content {
+  border: 1px solid #c5dea4;
+  background-color: #fff;
+}
+body.teachers-trail .content-block table h2 {
+  color: #447306;
+}
+body.teachers-trail .more .content-block h3 {
+  background: url('../images/Arrow_Green.png') no-repeat;
+}
+body.teachers-trail .more .content-block p {
+  /*border-bottom: 2px dashed @colorBackground;*/
+}
+body.teachers-trail .feeds {
+  border: 2px dashed #e6f3d4;
+  border-left: none;
+  border-right: none;
+}
+body.teachers-trail .carousel-block {
+  border: 1px solid #c5dea4;
+  background-color: #e6f3d4;
+}
+body.teachers-trail .carousel-block .jcarousel-prev {
+  background: transparent url('../images/Arrow_Grownups_Previous.png') no-repeat right top;
+}
+body.teachers-trail .carousel-block .jcarousel-next {
+  background: transparent url('../images/Arrow_Grownups_Next.png') no-repeat right top;
+}
+body.teachers-trail .carousel-block .jcarousel ul li a:hover,
+body.teachers-trail .carousel-block .jcarousel ul li a:active,
+body.teachers-trail .carousel-block .jcarousel ul li a:focus {
+  -moz-box-shadow: 0 0 5px #447306;
+  -webkit-box-shadow: 0 0 5px #447306;
+  box-shadow: 0 0 5px #447306;
+}
+body.teachers-trail .carousel-block .jcarousel ul li a img {
+  border: 1px solid #447306;
+}
+body.teachers-trail .carousel-block .jcarousel ul li a .carousel-item-des {
+  background: transparent url('../images/Arrow_Grownups_Go.png') no-repeat right top;
+}
+body.teachers-trail .bottom-block .views-row {
+  border: 1px solid #c5dea4;
+  background-color: #e6f3d4;
+}
+body.teachers-trail .bottom-block .views-row a:active,
+body.teachers-trail .bottom-block .views-row a:focus,
+body.teachers-trail .bottom-block .views-row a:hover {
+  -moz-box-shadow: 0 0 5px #85AF4D;
+  -webkit-box-shadow: 0 0 5px #85AF4D;
+  box-shadow: 0 0 5px #85AF4D;
+}
+body.teachers-trail .bottom-block .views-row a .img-brdr {
+  border: 1px solid #85af4d;
+}
+body.teachers-trail .bottom-block .views-row .bx-qstn {
+  border: 1px solid #85af4d;
+}
+body.teachers-trail .bottom-block .views-row .mst-pplr {
+  border: 1px solid #85af4d;
+}
+body.teachers-trail .bottom-block .views-row .mst-pplr ul li a {
+  text-decoration: underline;
+}
+body.teachers-trail .bottom-block .views-row .mst-pplr ul li a:hover,
+body.teachers-trail .bottom-block .views-row .mst-pplr ul li a:active,
+body.teachers-trail .bottom-block .views-row .mst-pplr ul li a:focus {
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+body.teachers-trail .rght-img-4tchr {
+  width: 212px;
+  height: 124px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 0;
+  background: url('/sites/all/themes/kids/images/grwn-ups/rghtnav-imgs/Rightnav_Featured_For_Teachers.png');
+  border: 1px solid #85af4d;
+  /*bj added 6/14/12 */
+}
+body.teachers-trail .rght-img-4prnt {
+  width: 212px;
+  height: 124px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 0;
+  background: url('/sites/all/themes/kids/images/grwn-ups/rghtnav-imgs/Rightnav_Featured_For_Parents.png');
+  border: 1px solid #85af4d;
+  /*bj added 6/14/12 */
+}
+body.teachers-trail .rght-img-lsnpln {
+  width: 212px;
+  height: 124px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 0;
+  background: url('/sites/all/themes/kids/images/grwn-ups/rghtnav-imgs/Rightnav_Featured_Lesson_Plans.png');
+  border: 1px solid #85af4d;
+  /*bj added 6/14/12 */
+}
+body.teachers-trail .rght-img-actvty {
+  width: 212px;
+  height: 124px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 0;
+  background: url('/sites/all/themes/kids/images/grwn-ups/rghtnav-imgs/Rightnav_Featured_Activities_Worksheets.png');
+  border: 1px solid #85af4d;
+  /*bj added 6/14/12 */
+}
+body.teachers-trail .rght-sd-arrw {
+  background: url('/web_resources/themes/kidsgov/images/Arrow_Grownups_Go.png') no-repeat right top;
+}
+body.teachers-trail .lsnplns-hdr {
+  background: url('/sites/all/themes/kids/images/grwn-ups/rghtnav-hdrs/Grownup_Rightnav_Header_Lesson_Plans.png') no-repeat;
+}
+body.teachers-trail .actvty-hdr {
+  background: url('/sites/all/themes/kids/images/grwn-ups/rghtnav-hdrs/Grownup_Rightnav_Header_Activities.png') no-repeat;
+}
+body.teachers-trail .tchr-hdr {
+  background: url('/sites/all/themes/kids/images/grwn-ups/rghtnav-hdrs/Grownup_Rightnav_Header_For_Teachers.png') no-repeat;
+}
+body.teachers-trail .prnt-hdr {
+  background: url('/sites/all/themes/kids/images/grwn-ups/rghtnav-hdrs/Grownup_Rightnav_Header_For_Parents.png') no-repeat;
+}
+body.teachers-trail .rght-img-gms {
+  border: 1px solid #85af4d;
+  /*bj added 6/14/12 */
+}
+body.teachers-trail .rght-img-vds {
+  border: 1px solid #85af4d;
+  /*bj added 6/14/12 */
+}
+body.teachers-trail .rght-img-fun {
+  border: 1px solid #85af4d;
+  /*bj added 6/14/12 */
+}
+body.teachers-trail div.lst-cntnt > ul > li {
+  list-style: circle;
+}
+body.teachers-trail div.lst-cntnt > ul > li,
+body.teachers-trail .lst-cntnt ul li {
+  margin: 0 25px 0 0;
+  padding: 0 0 15px 0;
+  list-style: url('/sites/all/themes/kids/images/Arrow_Green.png');
+}
+body.parents-trail .menu-block-2 {
+  padding: 0px 0px 0px 50px;
+  background: -ms-linear-gradient(top, #1c6162, #1c6162 10%, #127c7e 90%);
+  background: -moz-linear-gradient(top, #1c6162, #1c6162 10%, #127c7e 90%);
+  background: -webkit-linear-gradient(top, #1c6162, #1c6162 10%, #127c7e 90%);
+  background: -o-linear-gradient(top, #1c6162, #1c6162 10%, #127c7e 90%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#1c6162, endColorstr=#127c7e);
+  background: linear-gradient(top, #1c6162, #1c6162 10%, #127c7e 90%);
+}
+body.parents-trail #main {
+  border: 1px solid #1c6162;
+}
+body.parents-trail .menu-block-2 ul li {
+  background: transparent url('../images/2ndnav_Grownups_Teachers_off.png') no-repeat 0px 0px;
+  width: 195px;
+}
+body.parents-trail .menu-block-2 ul li + li {
+  background: transparent url('../images/2ndnav_Grownups_Activities_off.png') no-repeat 0px 0px;
+  width: 305px;
+}
+body.parents-trail .menu-block-2 ul li + li + li {
+  background: transparent url('../images/2ndnav_Grownups_Lesson_Plans_off.png') no-repeat 0px 0px;
+  width: 185px;
+}
+body.parents-trail .menu-block-2 ul li + li + li + li.active-trail {
+  background: transparent url('../images/2ndnav_Grownups_Parents_on.png') no-repeat 0px 0px;
+}
+body.parents-trail .region-content > .block {
+  border: 1px solid #b0d8d8;
+}
+body.parents-trail .menu-block-3 {
+  border: 1px solid #b0d8d8;
+}
+body.parents-trail .menu-block-3 ul li.art-and-music a,
+body.parents-trail .menu-block-3 ul li.art a,
+body.parents-trail .menu-block-3 ul li.art-and-music-videos a,
+body.parents-trail .menu-block-3 ul li.art-and-music-games a,
+body.parents-trail .menu-block-3 ul li.art-and-music-activities-and-worksheets a,
+body.parents-trail .menu-block-3 ul li.art-and-music-lesson-plans a {
+  background: url('../images/Icon_Art.png') 5px no-repeat;
+}
+body.parents-trail .menu-block-3 ul li.history a {
+  background: url('../images/Icon_History.png') 5px no-repeat;
+}
+body.parents-trail .menu-block-3 ul li.online-safety-games a,
+body.parents-trail .menu-block-3 ul li.online-safety a {
+  background: url('../images/Icon_Online.png') 5px no-repeat;
+}
+body.parents-trail .menu-block-3 ul li.exercise-fitness-nutrition a,
+body.parents-trail .menu-block-3 ul li.exercise-fitness-and-nutrition a {
+  background: url('../images/Icon_Exercise.png') 5px no-repeat;
+}
+body.parents-trail .menu-block-3 ul li.games-about-jobs-careers a,
+body.parents-trail .menu-block-3 ul li.jobs-careers a {
+  background: url('../images/Icon_Jobs_Teens.png') 5px no-repeat;
+}
+body.parents-trail .menu-block-3 ul li.reading-and-writing a {
+  background: url('../images/Icon_Reading_Teens.png') 5px no-repeat;
+}
+body.parents-trail .menu-block-3 ul li.get-involved a {
+  background: url('../images/Icon_Get_Involved.png') 5px no-repeat;
+}
+body.parents-trail .menu-block-3 ul li.government a {
+  background: url('../images/Icon_Goverment.png') 5px no-repeat;
+}
+body.parents-trail .menu-block-3 ul li.math a {
+  background: url('../images/Icon_Math_Teens.png') 5px no-repeat;
+}
+body.parents-trail .menu-block-3 ul li.science a {
+  background: url('../images/Icon_Science_Teens.png') 5px no-repeat;
+}
+body.parents-trail .menu-block-3 ul li.health-and-safety a {
+  background: url('../images/Icon_Health.png') 5px no-repeat;
+}
+body.parents-trail .menu-block-3 ul li.money a {
+  background: url('../images/Icon_Money.png') 5px no-repeat;
+}
+body.parents-trail .menu-block-3 ul li.social-studies a {
+  background: url('../images/Icon_Social.png') 5px no-repeat;
+}
+body.parents-trail .menu-block-3 ul li a:hover,
+body.parents-trail .menu-block-3 ul li a:active,
+body.parents-trail .menu-block-3 ul li a:focus {
+  background-color: #def1f1;
+  border: 1px solid #b0d8d8;
+}
+body.parents-trail .teacher-parent-email-block {
+  border: 1px solid #b0d8d8;
+}
+body.parents-trail .teacher-parent-email-block h2 {
+  color: #1c6162;
+}
+body.parents-trail .teacher-parent-email-block .mlcntnr-email {
+  background: url('../images/Button_Subscribe_Parents.png') right bottom;
+}
+body.parents-trail h1 {
+  color: #1c6162;
+}
+body.parents-trail .sidebar-block {
+  border: 1px solid #b0d8d8;
+  background-color: #def1f1;
+}
+body.parents-trail .sidebar-block .emails-sidebar .hdr-email {
+  background: url('../images/Parents_Rightnav_Header_Email_Signup.png') no-repeat;
+}
+body.parents-trail .sidebar-block .emails-sidebar .rght-email {
+  border: 1px solid #b0d8d8;
+}
+body.parents-trail .sidebar-block .emails-sidebar .rght-email .rght-input {
+  background: #eff8fd;
+}
+body.parents-trail .sidebar-block .emails-sidebar .rght-email .grwnup-email {
+  background: url('../images/Button_Parents_Go.png') no-repeat;
+}
+body.parents-trail .content-block span.jump-title,
+body.parents-trail .content-block h2,
+body.parents-trail .content-block h3 {
+  color: #1c6162;
+}
+body.parents-trail .content-block ul > li {
+  background: url('../images/Arrow_Blue.png') no-repeat 7px 0px;
+}
+body.parents-trail .content-block .frth_columnbox_container {
+  border: 1px solid #b0d8d8;
+  background-color: #def1f1;
+}
+body.parents-trail .content-block .frth_columnbox_container h2 {
+  background: none;
+}
+body.parents-trail .content-block .frth_columnbox_container .frth_columnbox_container_content {
+  border: 1px solid #b0d8d8;
+  background-color: #fff;
+}
+body.parents-trail .content-block table h2 {
+  color: #1c6162;
+}
+body.parents-trail .more .content-block h3 {
+  background: url('../images/Arrow_Blue.png') no-repeat;
+}
+body.parents-trail .more .content-block p {
+  /*border-bottom: 2px dashed @colorBackground;*/
+}
+body.parents-trail .feeds {
+  border: 2px dashed #def1f1;
+  border-left: none;
+  border-right: none;
+}
+body.parents-trail .carousel-block {
+  border: 1px solid #b0d8d8;
+  background-color: #def1f1;
+}
+body.parents-trail .carousel-block .jcarousel-prev {
+  background: transparent url('../images/Arrow_Parents_Previous.png') no-repeat right top;
+}
+body.parents-trail .carousel-block .jcarousel-next {
+  background: transparent url('../images/Arrow_Parents_Next.png') no-repeat right top;
+}
+body.parents-trail .carousel-block .jcarousel ul li a:hover,
+body.parents-trail .carousel-block .jcarousel ul li a:active,
+body.parents-trail .carousel-block .jcarousel ul li a:focus {
+  -moz-box-shadow: 0 0 5px #1c6162;
+  -webkit-box-shadow: 0 0 5px #1c6162;
+  box-shadow: 0 0 5px #1c6162;
+}
+body.parents-trail .carousel-block .jcarousel ul li a img {
+  border: 1px solid #1c6162;
+}
+body.parents-trail .carousel-block .jcarousel ul li a .carousel-item-des {
+  background: transparent url('../images/Arrow_Parents_Go.png') no-repeat right top;
+}
+body.parents-trail .bottom-block .views-row {
+  border: 1px solid #b0d8d8;
+  background-color: #def1f1;
+}
+body.parents-trail .bottom-block .views-row a:active,
+body.parents-trail .bottom-block .views-row a:focus,
+body.parents-trail .bottom-block .views-row a:hover {
+  -moz-box-shadow: 0 0 5px #1c6162;
+  -webkit-box-shadow: 0 0 5px #1c6162;
+  box-shadow: 0 0 5px #1c6162;
+}
+body.parents-trail .bottom-block .views-row a .img-brdr {
+  border: 1px solid #1c6162;
+}
+body.parents-trail .bottom-block .views-row .bx-qstn {
+  border: 1px solid #1c6162;
+}
+body.parents-trail .bottom-block .views-row .mst-pplr {
+  border: 1px solid #1c6162;
+}
+body.parents-trail .bottom-block .views-row .mst-pplr ul li a {
+  text-decoration: underline;
+}
+body.parents-trail .bottom-block .views-row .mst-pplr ul li a:hover,
+body.parents-trail .bottom-block .views-row .mst-pplr ul li a:active,
+body.parents-trail .bottom-block .views-row .mst-pplr ul li a:focus {
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+body.parents-trail .actvty-hdr {
+  background: url('/sites/all/themes/kids/images/Parents_Rightnav_Header_Activities.png') no-repeat;
+}
+body.parents-trail .rght-img-4tchr {
+  width: 212px;
+  height: 124px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 0;
+  background: url('/sites/all/themes/kids/images/Rightnav_Featured_For_Teachers.png');
+  border: 1px solid #85af4d;
+  /*bj added 6/14/12 */
+}
+body.parents-trail .rght-img-4prnt {
+  width: 212px;
+  height: 124px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 0;
+  background: url('/sites/all/themes/kids/images/Rightnav_Featured_For_Parents.png');
+  border: 1px solid #85af4d;
+  /*bj added 6/14/12 */
+}
+body.parents-trail .rght-img-lsnpln {
+  width: 212px;
+  height: 124px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 0;
+  background: url('/sites/all/themes/kids/images/Rightnav_Featured_Lesson_Plans.png');
+  border: 1px solid #85af4d;
+  /*bj added 6/14/12 */
+}
+body.parents-trail .rght-img-actvty {
+  width: 212px;
+  height: 124px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 0;
+  background: url('/sites/all/themes/kids/images/Rightnav_Featured_Activities_Worksheets.png');
+  border: 1px solid #85af4d;
+  /*bj added 6/14/12 */
+}
+body.parents-trail .rght-sd-arrw {
+  background: url('/sites/all/themes/kids/images/Arrow_Parents_Go.png') no-repeat right top;
+}
+body.parents-trail .lsnplns-hdr {
+  background: url('/sites/all/themes/kids/images/Grownup_Rightnav_Header_Lesson_Plans.png') no-repeat;
+}
+body.parents-trail .actvty-hdr {
+  background: url('/sites/all/themes/kids/images/Parents_Rightnav_Header_Activities.png') no-repeat;
+}
+body.parents-trail .tchr-hdr {
+  background: url('/sites/all/themes/kids/images/Parents_Rightnav_Header_For_Teachers.png') no-repeat;
+}
+body.parents-trail .prnt-hdr {
+  background: url('/sites/all/themes/kids/images/Grownup_Rightnav_Header_For_Parents.png') no-repeat;
+}
+a {
+  color: #214592;
+}
+a:visited {
+  color: #595959;
+}
+body {
+  font-family: verdana, geneva, sans-serif;
+  font-size: 100%;
+  background: #f8d280 url('../images/Background_Kids.png') no-repeat scroll 50% 0;
+  background-position-x: 50%;
+  margin: 0 0 0 0;
+  padding: 0 0 50px 0;
+}
+h1 {
+  margin: 10px 0 10px 0px;
+  padding: 0 0 0 0;
+  font-size: 150%;
+}
+#wrapper {
+  width: 1000px;
+  margin: 10px auto 0px auto;
+}
+#innerWrapper {
+  float: left;
+  width: 962px;
+  padding: 15px 19px 0px 19px;
+  background-color: #fff;
+  font-size: 90%;
+  -moz-border-radius: 5px;
+  -moz-border-topleft: 5px;
+  -moz-border-topright: 5px;
+  -moz-border-bottomleft: 5px;
+  -moz-border-bottomright: 5px;
+  -webkit-border-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -o-border-radius: 5px;
+  -o-border-top-left-radius: 5px;
+  -o-border-top-right-radius: 5px;
+  -o-border-bottom-left-radius: 5px;
+  -o-border-bottom-right-radius: 5px;
+  border-radius: 5px;
+  -moz-box-shadow: 0px 0px 3px 3px #d9b76d;
+  -webkit-box-shadow: 0px 0px 3px 3px #d9b76d;
+  box-shadow: 0px 0px 3px 3px #d9b76d;
+}
+#header {
+  float: left;
+  clear: both;
+  width: 100%;
+}
+#header h1 {
+  display: block;
+  height: 100px;
+  width: 220px;
+  background: transparent url('../images/Logo_Kids.png') no-repeat 0px 0px;
+  margin: 5px 0px 0px 0px;
+  float: left;
+  text-indent: -99999px;
+  /*overflow: hidden;*/
+}
+#header h1 a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+#header form {
+  width: 730px;
+  height: 27px;
+  margin: 0px;
+  padding: 0px;
+  float: right;
+  text-align: right;
+}
+#header form label {
+  font-size: 14px;
+  font-weight: normal;
+  display: inline;
+}
+.messages {
+  clear: both;
+}
+.menu-block-1 {
+  float: left;
+  margin-left: 20px;
+}
+.menu-block-1 ul,
+.menu-block-2 ul {
+  margin: 20px 0px 0px 0px;
+  padding: 0px;
+}
+.menu-block-1 ul li,
+.menu-block-2 ul li {
+  list-style-image: none;
+  list-style-type: none;
+  margin: 0px;
+  padding: 0px;
+  float: left;
+  display: block;
+  height: 65px;
+  width: 190px;
+  text-indent: -99999px;
+  background: transparent url('../images/Topnav_Kids_Button.png') no-repeat 0px 0px;
+}
+.menu-block-1 ul li a,
+.menu-block-2 ul li a {
+  display: block;
+  height: 52px;
+  width: 100%;
+}
+.menu-block-1 ul li.active-trail,
+.menu-block-2 ul li.active-trail,
+.menu-block-1 ul li a:hover,
+.menu-block-2 ul li a:hover {
+  background: transparent url('../images/Topnav_Kids_Button_on.png') no-repeat 0px 0px;
+}
+.menu-block-1 ul li + li,
+.menu-block-2 ul li + li {
+  width: 200px;
+  background: transparent url('../images/Topnav_Teens_Button.png') no-repeat 0px 0px;
+}
+.menu-block-1 ul li + li.active-trail,
+.menu-block-2 ul li + li.active-trail,
+.menu-block-1 ul li + li a:hover,
+.menu-block-2 ul li + li a:hover {
+  background: transparent url('../images/Topnav_Teens_Button_on.png') no-repeat 0px 0px;
+}
+.menu-block-1 ul li + li + li,
+.menu-block-2 ul li + li + li {
+  width: 147px;
+  background: transparent url('../images/Topnav_Teachers_Button.png') no-repeat 0px 0px;
+}
+.menu-block-1 ul li + li + li.active-trail,
+.menu-block-2 ul li + li + li.active-trail,
+.menu-block-1 ul li + li + li a:hover,
+.menu-block-2 ul li + li + li a:hover {
+  background: transparent url('../images/Topnav_Teachers_Button_on.png') no-repeat 0px 0px;
+}
+.menu-block-1 ul li + li + li + li,
+.menu-block-2 ul li + li + li + li {
+  width: 147px;
+  background: transparent url('../images/Topnav_Parents_Button.png') no-repeat 0px 0px;
+}
+.menu-block-1 ul li + li + li + li.active-trail,
+.menu-block-2 ul li + li + li + li.active-trail,
+.menu-block-1 ul li + li + li + li a:hover,
+.menu-block-2 ul li + li + li + li a:hover {
+  background: transparent url('../images/Topnav_Parents_Button_on.png') no-repeat 0px 0px;
+}
+.menu-block-1 ul li + li + li + li + li,
+.menu-block-2 ul li + li + li + li + li {
+  display: none;
+}
+.menu-block-2 ul li a:hover,
+.menu-block-2 ul li + li a:hover,
+.menu-block-2 ul li + li + li a:hover,
+.menu-block-2 ul li + li + li + li a:hover {
+  background: transparent url('../images/arrowover.png') no-repeat center 0px;
+}
+#main {
+  float: left;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+  -moz-border-radius: 5px;
+  -moz-border-topleft: 5px;
+  -moz-border-topright: 5px;
+  -moz-border-bottomleft: 5px;
+  -moz-border-bottomright: 5px;
+  -webkit-border-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -o-border-radius: 5px;
+  -o-border-top-left-radius: 5px;
+  -o-border-top-right-radius: 5px;
+  -o-border-bottom-left-radius: 5px;
+  -o-border-bottom-right-radius: 5px;
+  border-radius: 5px;
+  clear: both;
+}
+#main h1 {
+  padding-left: 12px;
+  width: 588px;
+  float: left;
+}
+.menu-block-2 {
+  clear: both;
+  height: 49px;
+  margin: 0px 0px 25px 0px;
+}
+.menu-block-2 ul {
+  margin: 0px;
+}
+.menu-block-2 ul li,
+.menu-block-2 ul li + li,
+.menu-block-2 ul li + li + li {
+  height: 52px;
+  width: 185px;
+  background-size: 100%;
+}
+body .region-content > .block {
+  clear: both;
+  width: 934px;
+  float: left;
+  margin: 0px 0px 25px 13px;
+  padding: 0px 0px 0px 0px;
+  -moz-border-radius: 5px;
+  -moz-border-topleft: 5px;
+  -moz-border-topright: 5px;
+  -moz-border-bottomleft: 5px;
+  -moz-border-bottomright: 5px;
+  -webkit-border-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -o-border-radius: 5px;
+  -o-border-top-left-radius: 5px;
+  -o-border-top-right-radius: 5px;
+  -o-border-bottom-left-radius: 5px;
+  -o-border-bottom-right-radius: 5px;
+  border-radius: 5px;
+}
+body .region-content > .block.breadcrumb-block,
+body .region-content > .block#block-system-main {
+  border: none;
+}
+body .region-content > .block.breadcrumb-block {
+  margin-bottom: 0px;
+}
+.menu-block-3 {
+  float: left;
+  width: 100%;
+  margin-bottom: 25px;
+  -moz-border-radius: 5px;
+  -moz-border-topleft: 5px;
+  -moz-border-topright: 5px;
+  -moz-border-bottomleft: 5px;
+  -moz-border-bottomright: 5px;
+  -webkit-border-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -o-border-radius: 5px;
+  -o-border-top-left-radius: 5px;
+  -o-border-top-right-radius: 5px;
+  -o-border-bottom-left-radius: 5px;
+  -o-border-bottom-right-radius: 5px;
+  border-radius: 5px;
+}
+.menu-block-3 ul {
+  padding: 0px;
+  float: left;
+  margin: 10px 0px 0px 20px;
+}
+.menu-block-3 ul li {
+  list-style-type: none;
+  list-style-image: none;
+  margin: 0px 0px 15px 0px;
+  padding: 0px;
+  float: left;
+  font-weight: bolder;
+  display: table;
+}
+.menu-block-3 ul li a {
+  display: block;
+  height: 66px;
+  width: 203px;
+  padding-left: 75px;
+  text-decoration: none;
+  display: table-cell;
+  vertical-align: middle;
+  border: 1px solid #fff;
+  -moz-border-radius: 5px;
+  -moz-border-topleft: 5px;
+  -moz-border-topright: 5px;
+  -moz-border-bottomleft: 5px;
+  -moz-border-bottomright: 5px;
+  -webkit-border-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -o-border-radius: 5px;
+  -o-border-top-left-radius: 5px;
+  -o-border-top-right-radius: 5px;
+  -o-border-bottom-left-radius: 5px;
+  -o-border-bottom-right-radius: 5px;
+  border-radius: 5px;
+}
+.menu-block-3 ul li a:hover,
+.menu-block-3 ul li a:active,
+.menu-block-3 ul li a:focus {
+  text-decoration: underline;
+}
+.breadcrumb {
+  padding: 3px 0px 0px 0px;
+}
+.breadcrumb span,
+.breadcrumb a {
+  line-height: 20px;
+  height: 20px;
+}
+.breadcrumb .homelink {
+  padding-left: 25px;
+  background: url('../images/Breadcrumb_Home.png') no-repeat 0px 0px;
+}
+.teacher-parent-email-block {
+  float: left;
+  clear: both;
+  width: 919px;
+  padding: 0px 0px 20px 15px;
+  margin-bottom: 25px;
+  -moz-border-radius: 5px;
+  -moz-border-topleft: 5px;
+  -moz-border-topright: 5px;
+  -moz-border-bottomleft: 5px;
+  -moz-border-bottomright: 5px;
+  -webkit-border-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -o-border-radius: 5px;
+  -o-border-top-left-radius: 5px;
+  -o-border-top-right-radius: 5px;
+  -o-border-bottom-left-radius: 5px;
+  -o-border-bottom-right-radius: 5px;
+  border-radius: 5px;
+}
+.teacher-parent-email-block .mlcntnr-info {
+  margin: 10px 0px 0px 0px;
+}
+.teacher-parent-email-block h2 {
+  font-size: 130%;
+  margin: 0 0 0 0;
+  padding: 18px 0 0 55px;
+  background: url('../images/Icon_Email.png') 3px 8px no-repeat;
+}
+.teacher-parent-email-block .mlcntnr-email {
+  width: 93px;
+  height: 32px;
+  margin: 0 0 0 0;
+  padding: 0 5px 10px 0;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+.teacher-parent-email-block input[type="text"] {
+  margin: 0px 5px;
+}
+.teacher-parent-email-block label {
+  font-weight: normal;
+  display: inline;
+}
+.feeds {
+  height: 35px;
+  padding: 7px 0 0;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  float: left;
+  width: 100%;
+}
+.feeds a {
+  text-decoration: none;
+}
+.feeds a.reader {
+  text-decoration: underline;
+}
+.feeds a + img {
+  margin: 0px 5px 0px 0px;
+}
+.carousel-block {
+  float: left;
+  clear: both;
+  width: 854px;
+  height: auto;
+  margin-bottom: 25px;
+  padding: 0px 40px;
+  position: relative;
+  -moz-border-radius: 5px;
+  -moz-border-topleft: 5px;
+  -moz-border-topright: 5px;
+  -moz-border-bottomleft: 5px;
+  -moz-border-bottomright: 5px;
+  -webkit-border-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -o-border-radius: 5px;
+  -o-border-top-left-radius: 5px;
+  -o-border-top-right-radius: 5px;
+  -o-border-bottom-left-radius: 5px;
+  -o-border-bottom-right-radius: 5px;
+  border-radius: 5px;
+}
+.carousel-block .jcarousel-prev,
+.carousel-block .jcarousel-next {
+  display: block;
+  width: 32px;
+  height: 61px;
+  text-indent: -9999px;
+  position: absolute;
+  top: 95px;
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.carousel-block .jcarousel-prev {
+  left: 8px;
+}
+.carousel-block .jcarousel-next {
+  right: 8px;
+}
+.carousel-block .jcarousel {
+  position: relative;
+  overflow: hidden;
+  height: 247px;
+}
+.carousel-block .jcarousel ul {
+  width: 20000px;
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.carousel-block .jcarousel ul li {
+  /* Required only for block elements like <li>'s */
+  float: left;
+  height: 230px;
+  width: 270px;
+  margin: 10px 7px 0 7px;
+}
+.carousel-block .jcarousel ul li a {
+  font-size: 80%;
+  text-decoration: none;
+  display: block;
+  padding: 5px 10px 5px 10px;
+  -moz-border-radius: 5px;
+  -moz-border-topleft: 5px;
+  -moz-border-topright: 5px;
+  -moz-border-bottomleft: 5px;
+  -moz-border-bottomright: 5px;
+  -webkit-border-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -o-border-radius: 5px;
+  -o-border-top-left-radius: 5px;
+  -o-border-top-right-radius: 5px;
+  -o-border-bottom-left-radius: 5px;
+  -o-border-bottom-right-radius: 5px;
+  border-radius: 5px;
+}
+.carousel-block .jcarousel ul li a:hover,
+.carousel-block .jcarousel ul li a:active,
+.carousel-block .jcarousel ul li a:focus {
+  background: #fff;
+}
+.carousel-block .jcarousel ul li a .carousel-item-title {
+  font-size: 130%;
+  padding: 5px 0 5px 0;
+  margin: 0 0 0 0;
+  color: #0a4761;
+  font-weight: bold;
+  display: block;
+}
+.carousel-block .jcarousel ul li a .carousel-item-des {
+  text-decoration: underline;
+  line-height: 18px;
+  padding: 4px 25px 10px 0;
+  margin: 5px 0 0 0;
+  color: #0a4761;
+  display: inline;
+}
+.sidebar-block {
+  clear: left;
+  width: 300px;
+  margin: 0 0px 25px 12px;
+  padding: 15px 0 0 0;
+  float: right;
+  -moz-border-radius: 5px;
+  -moz-border-topleft: 5px;
+  -moz-border-topright: 5px;
+  -moz-border-bottomleft: 5px;
+  -moz-border-bottomright: 5px;
+  -webkit-border-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -o-border-radius: 5px;
+  -o-border-top-left-radius: 5px;
+  -o-border-top-right-radius: 5px;
+  -o-border-bottom-left-radius: 5px;
+  -o-border-bottom-right-radius: 5px;
+  border-radius: 5px;
+}
+.sidebar-block > .view,
+.sidebar-block .emails-sidebar {
+  width: 214px;
+  margin: 0 0 15px 50px;
+}
+.sidebar-block > .view .rght-hdr,
+.sidebar-block .emails-sidebar .rght-hdr {
+  width: 295px;
+  height: 37px;
+  margin: 10px 0 5px -60px;
+  padding: 0 0 0 0;
+}
+.sidebar-block > .view .rght-sd-arrw,
+.sidebar-block .emails-sidebar .rght-sd-arrw {
+  background: url('/sites/all/themes/kids/images/Arrow_Kids_Go.png') no-repeat right top;
+  display: inline;
+  padding: 2px 25px 10px 0;
+  margin: 5px 0 0 0;
+  line-height: 18px;
+}
+.sidebar-block .emails-sidebar {
+  margin-bottom: 0px;
+}
+.sidebar-block .emails-sidebar label {
+  font-weight: normal;
+}
+.sidebar-block .emails-sidebar .rght-email {
+  margin: 0 0 0 0;
+  padding: 0 5px 5px 0;
+  background-color: #fff;
+}
+.sidebar-block .emails-sidebar .rght-email .rght_dscrptn {
+  margin: 5px 0 15px 0;
+  padding: 0 0 0 10px;
+  font-size: 10pt;
+}
+.sidebar-block .emails-sidebar .rght-email .rght-input {
+  margin: 0 0 0 0;
+  padding: 5px 0 0 10px;
+}
+.sidebar-block .emails-sidebar .rght-email .grwnup-email {
+  font-size: 100%;
+  font-weight: bolder;
+  color: #FFF;
+  width: 60px;
+  height: 35px;
+  margin: 0 0 0 0;
+  padding: 0 5px 5px 0;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+.content-block {
+  clear: left;
+  min-height: 500px;
+  margin: 0 0 25px 0px;
+  padding: 0 0 0 0;
+}
+.content-block h2,
+.content-block h3 {
+  width: 580px;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 20px;
+  font-size: 130%;
+}
+.content-block span.jump-title {
+  margin: 0 0 0 12px;
+  padding: 0 0 0 0;
+  font-family: verdana, geneva, sans-serif;
+  font-size: 130%;
+  font-weight: bold;
+}
+.content-block p {
+  margin: 10px 0 20px 0;
+  padding: 0 10px 10px 12px;
+}
+.content-block ul {
+  list-style-type: none;
+  padding: 0px 0px 0px 0px;
+}
+.content-block ul > li {
+  padding: 0 0 15px 27px;
+}
+.content-block ul.sf-menu {
+  list-style-type: disc;
+  padding: 0px 0px 0px 28px !important;
+}
+.content-block ul.sf-menu li {
+  background: none !important;
+  padding: 0px !important;
+}
+.content-block ul.sf-menu ul {
+  list-style-type: circle;
+  padding: 0px 0px 0px 40px !important;
+}
+.content-block ul.sf-menu ul ul {
+  list-style-type: square;
+  padding: 0px 0px 0px 40px !important;
+}
+.content-block table tr {
+  border: 1px solid #fff;
+}
+.content-block table h2 {
+  display: inline;
+  font-size: 130%;
+}
+.content-block table ul {
+  list-style-type: disc;
+  padding: 0px 0px 0px 40px;
+}
+.content-block table ul li {
+  padding: 0px;
+  background-image: none !important;
+  display: list-item;
+}
+.content-block .state-map {
+  float: left;
+  width: 322px;
+  min-height: 302px;
+  margin: 40px 0 25px 10px;
+  padding: 0 0 0 0;
+}
+.content-block .states {
+  float: left;
+  width: 200px;
+  margin: 0 0 25px 0;
+  padding: 0 0 0 0;
+  clear: right;
+  font-family: verdana;
+  font-weight: bold;
+  font-size: 12pt;
+  color: #0a4761;
+  line-height: 25px;
+}
+.content-block .states ul {
+  list-style-type: disc;
+  padding: 0px 0px 0px 28px !important;
+}
+.content-block .states ul li {
+  background: none !important;
+  padding: 0px !important;
+}
+.content-block .kds-btt {
+  text-align: right;
+}
+.content-block .kds-btt a {
+  margin: 0 0 0 0;
+  padding: 10px 45px 20px 0;
+  background: url('/sites/all/themes/kids/images/Kids_Back_Top.png') no-repeat right top;
+  display: -moz-inline-box;
+  display: inline-block;
+}
+.content-block .lst-dt {
+  text-align: right;
+  margin: 10px 25px 20px 0;
+  padding: 0 0 0 0;
+  font-size: 80%;
+}
+.content-block .frth_columnbox_container {
+  width: 570px;
+  margin: 0px 0px 30px 12px;
+  padding: 0px 0px 0px 0px;
+  -moz-border-radius: 5px;
+  -moz-border-topleft: 5px;
+  -moz-border-topright: 5px;
+  -moz-border-bottomleft: 5px;
+  -moz-border-bottomright: 5px;
+  -webkit-border-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -o-border-radius: 5px;
+  -o-border-top-left-radius: 5px;
+  -o-border-top-right-radius: 5px;
+  -o-border-bottom-left-radius: 5px;
+  -o-border-bottom-right-radius: 5px;
+  border-radius: 5px;
+}
+.content-block .frth_columnbox_container h2 {
+  color: #022945;
+  font-size: 90%;
+  margin: 8px 0px 0px 0px;
+  padding: 0px 0px 0px 15px;
+  background: none;
+}
+.content-block .frth_columnbox_container .frth_columnbox_container_content {
+  width: 558px;
+  margin: 10px 5px 5px 5px;
+  padding: 0px 0px 5px 0px;
+  overflow: auto;
+  -moz-border-radius: 5px;
+  -moz-border-topleft: 5px;
+  -moz-border-topright: 5px;
+  -moz-border-bottomleft: 5px;
+  -moz-border-bottomright: 5px;
+  -webkit-border-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -o-border-radius: 5px;
+  -o-border-top-left-radius: 5px;
+  -o-border-top-right-radius: 5px;
+  -o-border-bottom-left-radius: 5px;
+  -o-border-bottom-right-radius: 5px;
+  border-radius: 5px;
+}
+.content-block .frth_columnbox_container .frth_columnbox_container_content ul {
+  float: left;
+  clear: none;
+  list-style-position: outside;
+  list-style-type: disc;
+  margin: 0 0 0 0;
+  padding: 10px 0 10px 31px;
+}
+.content-block .frth_columnbox_container .frth_columnbox_container_content ul > li {
+  width: 210px;
+  float: left;
+  padding: 0px;
+  background: none;
+}
+.content-block iframe {
+  margin: 0px 0px 30px 12px;
+}
+.more .content-block {
+  width: 600px;
+  float: left;
+}
+.more .content-block ul {
+  clear: both;
+}
+.more .content-block h2,
+.more .content-block h3 {
+  font-size: 105%;
+}
+.bottom-block {
+  float: left;
+  clear: both;
+  width: 100%;
+}
+.bottom-block .views-row {
+  width: 292px;
+  height: 222px;
+  float: left;
+  margin: 0 11px 0 0;
+  padding: 0 5px 0 5px;
+  -moz-border-radius: 5px;
+  -moz-border-topleft: 5px;
+  -moz-border-topright: 5px;
+  -moz-border-bottomleft: 5px;
+  -moz-border-bottomright: 5px;
+  -webkit-border-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -o-border-radius: 5px;
+  -o-border-top-left-radius: 5px;
+  -o-border-top-right-radius: 5px;
+  -o-border-bottom-left-radius: 5px;
+  -o-border-bottom-right-radius: 5px;
+  border-radius: 5px;
+}
+.bottom-block .views-row h2 {
+  font-size: 125%;
+  margin: 0 0 0 25px;
+  padding: 10px 0 10px 0;
+}
+.bottom-block .views-row h2 img {
+  margin: 0 0 0 20px;
+  padding: 0 0 0 0;
+}
+.bottom-block .views-row a {
+  text-decoration: none;
+  display: block;
+  padding: 6px 0px 3px 0px;
+}
+.bottom-block .views-row a:active,
+.bottom-block .views-row a:focus,
+.bottom-block .views-row a:hover {
+  text-decoration: none;
+  display: block;
+  padding: 6px 0px 3px 0px;
+  background: white;
+  -moz-box-shadow: 0 0 5px #1A769A;
+  -webkit-box-shadow: 0 0 5px #1A769A;
+  box-shadow: 0 0 5px #1A769A;
+  -moz-border-radius: 5px;
+  -moz-border-topleft: 5px;
+  -moz-border-topright: 5px;
+  -moz-border-bottomleft: 5px;
+  -moz-border-bottomright: 5px;
+  -webkit-border-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -o-border-radius: 5px;
+  -o-border-top-left-radius: 5px;
+  -o-border-top-right-radius: 5px;
+  -o-border-bottom-left-radius: 5px;
+  -o-border-bottom-right-radius: 5px;
+  border-radius: 5px;
+}
+.bottom-block .views-row a br {
+  display: none;
+}
+.bottom-block .views-row a img {
+  margin: 0 0 0 20px;
+  padding: 0 0 0 0;
+}
+.bottom-block .views-row-1 h2 {
+  color: #595959;
+}
+.bottom-block .views-row-2 h2 {
+  color: #991054;
+}
+.bottom-block .views-row-3 h2 {
+  color: #007a38;
+}
+.bottom-block .views-row-last {
+  margin-right: 0px;
+}
+.bottom-block .bx-qstn {
+  width: 250px;
+  height: 150px;
+  margin: 0 0 0 20px;
+  padding: 0 0 0 0;
+  border: 1px solid #84bcd4;
+  background-image: url('../images/Kids_Feature_Question_Of_The_Day.png');
+}
+.bottom-block .mst-pplr {
+  width: 250px;
+  height: 137px;
+  text-decoration: none;
+  display: block;
+  border: 1px solid #84bcd4;
+  margin: 6px 0 0 20px;
+  padding: 6px 0px 6px 0px;
+  background: white;
+  font-size: 80%;
+}
+.bottom-block .mst-pplr ul {
+  margin: 10px 0 0 25px;
+  padding: 0 4px 0 0;
+}
+.bottom-block .mst-pplr ul li {
+  margin: 0 0 0 0;
+  padding: 0 0 10px 0;
+}
+.bottom-block .mst-pplr ul li a {
+  display: inline;
+  padding: 0px;
+}
+.bottom-block .mst-pplr ul li a:hover,
+.bottom-block .mst-pplr ul li a:active,
+.bottom-block .mst-pplr ul li a:focus {
+  text-decoration: underline;
+  display: inline;
+  padding: 0px;
+  background: white;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  -moz-border-radius: 0px;
+  -moz-border-topleft: 0px;
+  -moz-border-topright: 0px;
+  -moz-border-bottomleft: 0px;
+  -moz-border-bottomright: 0px;
+  -webkit-border-radius: 0px;
+  -webkit-border-top-left-radius: 0px;
+  -webkit-border-top-right-radius: 0px;
+  -webkit-border-bottom-left-radius: 0px;
+  -webkit-border-bottom-right-radius: 0px;
+  -o-border-radius: 0px;
+  -o-border-top-left-radius: 0px;
+  -o-border-top-right-radius: 0px;
+  -o-border-bottom-left-radius: 0px;
+  -o-border-bottom-right-radius: 0px;
+  border-radius: 0px;
+}
+.bottom-block h3 {
+  font-size: 90%;
+  margin: 10px 0 0 15px;
+  padding: 0 0 0 0;
+}
+.bottom-block ol {
+  margin: 10px 0 0 55px;
+  padding: 0 0 0 0;
+  list-style-type: upper-alpha;
+}
+.bottom-block p {
+  margin: 5px 0 0 15px;
+  padding: 4px 25px 4px 0;
+  font-size: 90%;
+  display: inline;
+  text-decoration: underline;
+  font-family: verdana;
+}
+.bottom-block .box3-arrw {
+  background: url('../images/Arrow_Kids_Go.png') no-repeat top right;
+  line-height: 18px;
+}
+#footer {
+  clear: both;
+  font-size: 80%;
+  text-align: center;
+  margin: 0px -19px 0px -19px;
+}
+#footer .section {
+  background: transparent url('../images/Footer_Gradient.png') repeat-x 100% 100%;
+}
+#footer .section ul {
+  text-align: center;
+  margin: 0px 0px 0px 0px;
+  height: 30px;
+}
+#footer .section ul li {
+  display: inline;
+  list-style-type: none;
+  padding: 0 20px 0 20px;
+  line-height: 40px;
+  border-left: 1px solid gray;
+}
+#footer .section ul li:first-child {
+  border-left: none;
+}
+#footer .section ul.logos {
+  padding: 12px 0px;
+  height: 41px;
+}
+#footer .section ul.logos li {
+  border-left: none;
+  padding: 0px;
+}
+#footer .poweredby {
+  width: 420px;
+  margin: 0px auto;
+}
+#footer .poweredby p {
+  height: 55px;
+  padding: 0px;
+  margin: 0px 0px 5px 0px;
+  vertical-align: middle;
+}
+#footer .poweredby p img {
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+  width: 200px;
+  height: 55px;
+  vertical-align: middle;
+}
+#footer .poweredby a {
+  color: #0a4761;
+}
+#footer .poweredby .dsclmr {
+  font-size: 95%;
+}
+/* special cases */
+h1.a-z-list + div + div .rxbodyfield > p {
+  width: 550px;
+}
+h1.contact-us + div .rxbodyfield label {
+  font-weight: normal;
+}
+h1.contact-us + div .rxbodyfield textarea {
+  width: 400px;
+  height: 125px;
+}
+.rxbodyfield table {
+  float: left;
+  width: 100%;
+}
+/***********************
+7. atoz
+***********************/
+.az-list {
+  padding: 0 0 0 0;
+  margin: 10px 0 10px -10px;
+  width: 100%;
+  float: left;
+  clear: both;
+}
+.az-list * {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  /* box-sizing: border-box; */
+}
+.az-list h2 {
+  color: #1a769a;
+}
+.az-list li {
+  display: block;
+  width: 40px;
+  height: 40px;
+  background: #77a0bd;
+  float: left;
+  margin: 10px 10px 10px 10px;
+  color: white;
+  text-align: center;
+  line-height: 40px;
+  font-size: 110%;
+  padding: 0 0 0 0;
+}
+.az-list li a {
+  color: white;
+  background: #1a7ea5;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.az-list li.current,
+.az-list li a:hover {
+  background: white;
+  border: 2px solid #1a7ea5;
+  color: #1a7ea5;
+  font-weight: bold;
+}
+.az-list .one-column-bullet li {
+  margin: 0 0 10px 0;
+}
+.az-list .custom-select {
+  width: 180px;
+  overflow: hidden;
+  border: 1px solid #1a7ea5;
+  background: url("../images/Icon_Arrow_Dropdown.png") 95% 50% no-repeat;
+  background-color: #fff;
+  display: inline-block;
+  vertical-align: text-top;
+  margin: 0 5px 0 0;
+}
+.az-list .custom-select select {
+  width: 200px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+  font-size: 1em;
+  height: 36px;
+  padding: 0 0 0 10px;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+}
+.az-list .custom-select select::-ms-expand {
+  display: none;
+}
+.az-list + .col-md-9.col-sm-12.rightnav {
+  float: left;
+  clear: both;
+  width: 100%;
+}
+.az-list + .col-md-9.col-sm-12.rightnav h2 {
+  color: #1a769a;
+}
+.az-list + .col-md-9.col-sm-12.rightnav a[href="#skiptarget"] {
+  display: none;
+}
+.taxonomy-term.vocabulary-site-strucutre-taxonomy {
+  overflow: hidden;
+}
+.block .hs-form.stacked {
+  padding-left: 5px;
+}
+.hs-form.stacked .field {
+  float: left;
+  width: 25%;
+  padding-right: 0px;
+}
+.block .hs-form .hs-button {
+  margin-top: 5px;
+  width: 93px;
+  height: 20px;
+  margin: 0 0 0 0;
+  padding: 10px 5px 10px 5px;
+  text-decoration: none;
+  background-image: linear-gradient(to bottom, #087eb3, #087eb3);
+  letter-spacing: 1px;
+  font-size: 90%;
+  box-shadow: none;
+  background-color: #0368A6;
+  /* rgba(255,255,255,0.5); */
+  border-top: none;
+  border-bottom: none;
+  border-right: none;
+  border-left: none;
+}
+.hs-form.stacked .field div.input {
+  width: 50%;
+}
+.hs-form.stacked .field {
+  width: auto;
+  margin-bottom: 0;
+  float: none;
+  padding-top: 10px;
+  padding-right: 0px;
+}
+.bottom-block p {
+  margin: 5px 0 0px 5px;
+  padding: 4px 25px 4px 0;
+  text-decoration: none;
+}
+.hs-form.stacked .inputs-list > li {
+  padding-top: 0;
+}
+.hs-form .inputs-list > li {
+  display: block;
+  padding: 0;
+  width: 100%;
+}
+.hs-form .actions {
+  padding: 0px 20px 0px 0px;
+}
+.hs-form.stacked .inputs-list > li label {
+  width: 50%;
+}
+.teacher-parent-email-block h2 {
+  padding: 18px 0 5px 55px;
+}
+div.hs_email.field.hs-form-field {
+  margin-bottom: 0;
+}
+div.hs_parents_and_guardians.field.hs-form-field {
+  margin-bottom: 0;
+}
+div.hs_for_teachers.field.hs-form-field {
+  margin-bottom: 0;
+}
+div.actions {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+.hs-form .actions {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+.teacher-parent-email-block {
+  padding: 0px 0px 0px 15px;
+}
+.teacher-parent-email-block {
+  width: 917px;
+  /* change from 919px*/
+}
+.carousel-block {
+  width: 850px;
+  /* change from 854px*/
+}
+.menu-block-3 {
+  width: 930px;
+  /* change from 100%*/
+}

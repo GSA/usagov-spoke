@@ -1,0 +1,185 @@
+
+#vocModalOverlay {
+  width: 100%;
+  height: 100%;
+  z-index: 9999; /* places the modal overlay between the main page and the modal dialog*/
+  background-color: #000;
+  opacity: 0.5;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: none;
+  margin: 0;
+  padding: 0;
+}
+
+
+#vocModal {
+  width: 50%;
+  margin: auto;
+  padding: 25px;
+  text-align: center;
+  border: thin #000 solid;
+  background-color: #fff;
+  z-index: 10000; /* places the modal dialog on top of everything else */
+  position: fixed;
+  top: 25%;
+  left: 25%;
+  display: none;
+  background-color: #fff;
+  background-image: url('/sites/all/themes/kids/images/Logo_Kids_Survey_New.png');
+  background-repeat: no-repeat;
+  background-position: 0px 15px
+}
+
+#vocModal:before {
+  display: block;
+  content: "";
+  height: 10px;
+  width: 100%;
+  padding: 0 25px;
+  position: relative;
+  left: -25px;
+  top: -25px;
+  background-color: #f8d280;
+  background: -moz-linear-gradient(top, #f8d280 0%, #f8d280 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f8d280), color-stop(100%, #f8d280));
+  background: -webkit-linear-gradient(top, #f8d280 0%, #f8d280 100%);
+  background: -o-linear-gradient(top, #f8d280 0%, #f8d280 100%);
+  background: -ms-linear-gradient(top, #f8d280 0%, #f8d280 100%);
+  background: linear-gradient(top, #f8d280 0%, #f8d280 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f8d280', endColorstr='#f8d280', GradientType=0 );
+}
+
+#vocModal p {
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+}
+
+#vocModal p.firstpara {
+  margin-top: 35px;
+}
+
+#vocModal h1 {
+  text-align: center;
+}
+
+ 
+
+#vocEnter, .vocCancelButton, .start-survey {
+  height: 30px;
+  font-size: 0.9em;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  text-transform: uppercase;
+  font-family: Tahoma, Verdana, Geneva, sans-serif;
+  font-weight: bold;
+}
+
+.vocCancelButton {
+  cursor: pointer;
+  color: #022945;
+  background: #ffffff; /* Old browsers */
+  background: -moz-linear-gradient(top, #ffffff 0%, #ddf5ff 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ffffff), color-stop(100%, #ddf5ff)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #ffffff 0%, #ddf5ff 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #ffffff 0%, #ddf5ff 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #ffffff 0%, #ddf5ff 100%); /* IE10+ */
+  background: linear-gradient(to bottom, #ffffff 0%, #ddf5ff 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ddf5ff', GradientType=0 ); /* IE6-9 */
+  border: 1px #24496B solid;
+}
+
+#vocEnter, .start-survey {
+  cursor: pointer;
+  color: #f8d280;
+  background: #214592; /* Old browsers */
+  background: -moz-linear-gradient(top, #214592 0%, #214592 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #214592), color-stop(100%, #214592)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #214592 0%, #214592 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #214592 0%, #214592 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #214592 0%, #214592 100%); /* IE10+ */
+  background: linear-gradient(to bottom, #214592 0%, #214592 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#214592', endColorstr='#214592', GradientType=0 ); /* IE6-9 */
+  border: 1px #f8d280 solid;
+height: 30px;
+  font-size: 0.9em;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  text-transform: uppercase;
+  font-family: Tahoma, Verdana, Geneva, sans-serif;
+  font-weight: bold;
+}
+
+.banner {
+  padding-bottom: 10px;
+  border-bottom: 1px solid black;
+}
+
+.modalCloseButton {
+  float: right;
+  position: absolute;
+  top: 10px;
+  left: 95%;
+}
+
+.modalCloseButton img {
+  border: 0;
+}
+
+
+.screen-reader-offscreen {
+  position: absolute;
+  left: -999px;
+  width: 1px;
+  height: 1px;
+  top: auto;
+}
+
+#vocModal input.top-right {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  text-decoration: none;
+  background-color: grey;
+  color: black;
+  font-weight: bold;
+  font-size: 80%;
+  overflow: hidden;
+  max-height: 25px;
+  padding-top: 5px;
+}
+
+#survey_target .content {
+  margin: 25px 15px 25px 15px;
+}
+
+.banner {
+  display: block;
+  margin: 0 auto 10px auto;
+}
+
+#survey_target .message {
+  margin: 15px 0 15px 0;
+}
+
+#survey_target .float-right {
+  float: right;
+}
+
+#survey_target .privacy-policy {
+  text-decoration: none;
+  color: blue;
+  font-size: .9em;
+}
+
+#survey_target .start-survey {
+  display: block;
+  margin: 25px auto 25px auto;
+  width: 150px;
+  font-size: 1.2em;
+  cursor: pointer;
+}

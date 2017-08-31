@@ -1,0 +1,5 @@
+name = Blog RSS Feed
+description = Implements a RSS feed at the path of /updates.rss
+package = CTAC
+core = 7.x
+files[] = blog_rssfeed.module

@@ -1,0 +1,101 @@
+<?php
+
+/*
+ * Implements HOOK_menu()
+ */
+function media_link_alter_menu() {
+
+    $items = array();
+
+    // Configuration page
+    $items['admin/config/media-link-alteration'] = array(
+        'title' => 'Media Link Alteration',
+        'description' => 'Change the behavior of the Media-Link-Alteration script.',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('media_link_alter_settings_form'),
+        'access arguments' => array('access administration pages'),
+        'type' => MENU_NORMAL_ITEM
+    );
+
+    return $items;
+}
+
+/**
+ * Implements hook_init().
+ */
+function media_link_alter_init() {
+
+    // Include media_link_alter.js on this page
+    drupal_add_js(drupal_get_path('module', 'media_link_alter') . '/media_link_alter.js', 'file');
+
+    // Load the list of media-types to alter on the page
+    $jsonLnkAltTpls = json_encode( media_link_alter_getLinkAlterationTemplates() );
+
+    // Invoke alterMediaLinks() on page-load
+    $thisFile = __FILE__;
+    drupal_add_js(
+        "
+            /* The following script si injected from {$thisFile} */
+            jQuery(document).ready( function () {
+                var linksAltered = alterMediaLinks({$jsonLnkAltTpls});
+            });
+        ",
+        'inline'
+    );
+}
+
+/**
+ * Form generation function, used in menu-callback above
+ */
+function media_link_alter_settings_form() {
+
+    $form = array();
+
+    $alterLnkTbl = media_link_alter_getLinkAlterationTemplates();
+
+    $tbl = '<table>';
+    $tbl .= "
+        <tr>
+            <td>Extension</td>
+            <td>Inject HTML</td>
+        </tr>
+    ";
+    foreach ($alterLnkTbl as $ext => $tplMarkup) {
+        $tbl .= "
+            <tr>
+                <td>{$ext}</td>
+                <td><textarea disabled=disabled style=\"width: 100%; border: 1px solid lightgray\">{$tplMarkup}</textarea></td>
+            </tr>
+        ";
+    }
+    $tbl .= '</table><br/><b>To alter this table, save to the Drupal variable: mla_lnkAltTbl</b>';
+    $form['alterlnktbl'] = array(
+        '#markup' => $tbl,
+    );
+
+    return $form;
+}
+
+function media_link_alter_getLinkAlterationTemplates() {
+
+    $default_templates = array(
+        'pdf'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">PDF, <a href="https://get.adobe.com/reader/">Download Adobe Reader</a></span>)',
+        'xls'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">XLS, <a href="http://www.microsoft.com/en-us/download/details.aspx?id=10">Download Excel Reader</a></span>)',
+        'doc'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">DOC, <a href="http://www.microsoft.com/en-us/download/details.aspx?id=4">Download Word Reader</a></span>)',
+        'docx' => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">DOCX, <a href="http://www.microsoft.com/en-us/download/details.aspx?id=4">Download Word Reader</a></span>)',
+        'ppt'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">PPT, <a href="http://www.microsoft.com/en-us/download/details.aspx?id=13">Download Power Point Reader</a></span>)',
+    );
+
+    $siteName       = variable_get('site_name', '');
+    if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
+        $default_templates = array(
+            'pdf'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">PDF, <a href="https://get.adobe.com/es/reader/">descargar Adobe Reader</a></span>)',
+            'xls'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">XLS, <a href="http://www.microsoft.com/es-es/download/details.aspx?id=10">descargar Excel Reader</a></span>)',
+            'doc'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">DOC, <a href="http://www.microsoft.com/es-es/download/details.aspx?id=4">descargar Word Reader</a></span>)',
+            'docx' => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">DOCX, <a href="http://www.microsoft.com/es-es/download/details.aspx?id=4">descargar Word Reader</a></span>)',
+            'ppt'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">PPT, <a href="http://www.microsoft.com/es-es/download/details.aspx?id=13">descargar Power Point Reader</a></span>)',
+        );
+    }
+
+    return variable_get('mla_lnkAltTbl', $default_templates );
+}

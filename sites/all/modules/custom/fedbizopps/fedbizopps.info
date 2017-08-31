@@ -1,0 +1,7 @@
+name = FedBizOpps
+description = It reads data from Elastic Search API and renders as drupal page with facets and filters
+package = CTAC
+core = 7.x
+files[] = fedbizopps.module
+files[] = mappings.php
+configure = admin/config/fedbizopp

@@ -1,0 +1,1336 @@
+<?php
+/*
+    # directory/<short STATE name with spaces converted to hyphens in lowercase>
+    # directory/<alpha order name converted to lowercase with spaces converted to hyphens>
+        # entire single STATE including 1 directory record and 1 STATE details record
+    # directory/consumer-<STATE name with spaces converted to hyphens in lowercase>
+        # a list of directory records searched for using a STATE name and some shit
+*/
+
+/*
+ * Implements HOOK_menu()
+ */
+function directory_pages_menu() {
+
+    $items = array();
+
+    // Determin which site we are running
+    $siteName = variable_get('site_name', '');
+    $siteIsUSA = false;
+    $siteIsGobierno = false;
+    if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
+        $siteIsGobierno = true;
+    } else {
+        $siteIsUSA = true;
+    }
+
+    if ( $siteIsUSA ) {
+
+        // English paths for USA.gov
+        /* $items['directory'] = array(
+             'title' => 'Directory Record Router (English)',
+             'description' => 'path claimed by directory_pages.module',
+             'page callback' => 'directory_pages_menuCallbackRouter',
+             'access callback' => true,
+             'type' => MENU_NORMAL_ITEM
+         );*/
+
+        $items['state-business'] = array(
+            'title' => 'Directory Record Router (English)',
+            'description' => 'path claimed by directory_pages.module',
+            'page callback' => 'directory_pages_menuCallbackRouter',
+            'access callback' => true,
+            'type' => MENU_NORMAL_ITEM
+        );
+        $items['federal-agencies'] = array(
+            'title' => 'Directory Record Router (English)',
+            'description' => 'path claimed by directory_pages.module',
+            'page callback' => 'directory_pages_menuCallbackRouter',
+            'access callback' => true,
+            'type' => MENU_NORMAL_ITEM
+        );
+        $items['state-consumer'] = array(
+            'title' => 'Directory Record Router (English)',
+            'description' => 'path claimed by directory_pages.module',
+            'page callback' => 'directory_pages_menuCallbackRouter',
+            'access callback' => true,
+            'type' => MENU_NORMAL_ITEM
+        );
+        $items['state-government'] = array(
+            'title' => 'Directory Record Router (English)',
+            'description' => 'path claimed by directory_pages.module',
+            'page callback' => 'directory_pages_menuCallbackRouter',
+            'access callback' => true,
+            'type' => MENU_NORMAL_ITEM
+        );
+
+        // Spanish paths that shouldn't really be requested in USA.gov - redirect (directory_pages_goToCorrectPath)
+        /* $items['directorios'] = array(
+             'title' => 'Directory Record Router (Spanish)',
+             'description' => 'path claimed by directory_pages.module',
+             'page callback' => 'directory_pages_goToCorrectPath',
+             'access callback' => true,
+             'type' => MENU_NORMAL_ITEM
+         );*/
+        $items['agencias-federales'] = array(
+            'title' => 'Directory Record Router (Spanish)',
+            'description' => 'path claimed by directory_pages.module',
+            'page callback' => 'directory_pages_goToCorrectPath',
+            'access callback' => true,
+            'type' => MENU_NORMAL_ITEM
+        );
+        $items['forms'] = array(
+            'title' => 'Directory Record Forms (English)',
+            'description' => 'path claimed by directory_pages.module',
+            'page callback' => 'directory_pages_forms_goToCorrectPath',
+            'access callback' => true,
+            'type' => MENU_NORMAL_ITEM
+        );
+
+    } elseif ( $siteIsGobierno ) {
+
+        // Spanish paths for Gobierno
+        /* $items['directorios'] = array(
+             'title' => 'Directory Record Router (Spanish)',
+             'description' => 'path claimed by directory_pages.module',
+             'page callback' => 'directory_pages_menuCallbackRouter',
+             'access callback' => true,
+             'type' => MENU_NORMAL_ITEM
+         );*/
+        $items['agencias-federales'] = array(
+            'title' => 'Directory Record Router (Spanish)',
+            'description' => 'path claimed by directory_pages.module',
+            'page callback' => 'directory_pages_menuCallbackRouter',
+            'access callback' => true,
+            'type' => MENU_NORMAL_ITEM
+        );
+        $items['organizaciones-consumidor'] = array(
+            'title' => 'Directory Record Router (Spanish)',
+            'description' => 'path claimed by directory_pages.module',
+            'page callback' => 'directory_pages_menuCallbackRouter',
+            'access callback' => true,
+            'type' => MENU_NORMAL_ITEM
+        );
+        $items['gobiernos-estatales'] = array(
+            'title' => 'Directory Record Router (Spanish)',
+            'description' => 'path claimed by directory_pages.module',
+            'page callback' => 'directory_pages_menuCallbackRouter',
+            'access callback' => true,
+            'type' => MENU_NORMAL_ITEM
+        );
+
+        // Spanish paths that shouldn't really be requested in Gobierno - redirect (directory_pages_goToCorrectPath)
+        /* $items['directory'] = array(
+             'title' => 'Directory Record Router (English)',
+             'description' => 'path claimed by directory_pages.module',
+             'page callback' => 'directory_pages_goToCorrectPath',
+             'access callback' => true,
+             'type' => MENU_NORMAL_ITEM
+         );*/
+        $items['federal-agencies'] = array(
+            'title' => 'Directory Record Router (English)',
+            'description' => 'path claimed by directory_pages.module',
+            'page callback' => 'directory_pages_goToCorrectPath',
+            'access callback' => true,
+            'type' => MENU_NORMAL_ITEM
+        );
+        $items['state-consumer'] = array(
+            'title' => 'Directory Record Router (English)',
+            'description' => 'path claimed by directory_pages.module',
+            'page callback' => 'directory_pages_goToCorrectPath',
+            'access callback' => true,
+            'type' => MENU_NORMAL_ITEM
+        );
+        $items['state-government'] = array(
+            'title' => 'Directory Record Router (English)',
+            'description' => 'path claimed by directory_pages.module',
+            'page callback' => 'directory_pages_goToCorrectPath',
+            'access callback' => true,
+            'type' => MENU_NORMAL_ITEM
+        );
+
+    } else {
+        error_log('Error in '.__FUNCTION__.'(), operating on unknown site.');
+    }
+
+    return $items;
+}
+
+function directory_pages_forms_goToCorrectPath(){
+    $_REQUEST['letter'] = 'A';
+    $block = module_invoke('all_childsite_misc', 'block_view', 'directory_record_contact_form');
+    return $block['content'];
+}
+
+/* following function filters state as per business fields */
+function directory_pages_filter_state_details_state_business($state_nid)
+{
+    $link_count = db_query('
+		SELECT SUM(c) FROM (
+			(SELECT count(entity_id) AS c FROM field_data_field_state_biz_opening_links    WHERE entity_id=:state_nid)
+			UNION
+			(SELECT count(entity_id) AS c FROM field_data_field_state_biz_link_url         WHERE entity_id=:state_nid)
+			UNION
+			(SELECT count(entity_id) AS c FROM field_data_field_state_biz_financing_links  WHERE entity_id=:state_nid)
+			UNION
+			(SELECT count(entity_id) AS c FROM field_data_field_state_biz_opportunity_link WHERE entity_id=:state_nid)
+			UNION
+			(SELECT count(entity_id) AS c FROM field_data_field_state_biz_export_links     WHERE entity_id=:state_nid)
+		) U
+	', array(':state_nid'=>$state_nid) )->fetchColumn();
+    return !empty($link_count);
+}
+
+/* following function filters states as per directory record's state detail field */
+function directory_pages_filter_state_details_state_consumer($state_nid)
+{
+    $count_state=db_query('SELECT count(entity_id) AS state_count FROM field_data_field_state_details WHERE field_state_details_nid=:state_nid', array(':state_nid'=>$state_nid))->fetchColumn();
+    return !empty($count_state);
+}
+function directory_pages_filter_state_details_estados_consumidor($state_nid)
+{
+    return directory_pages_filter_state_details_state_consumer($state_nid);
+}
+
+/* following function filters states as per directory record's state detail field */
+function directory_pages_filter_state_details_state_government($state_nid)
+{
+    $count_state=db_query('SELECT count(entity_id) AS state_count FROM field_data_field_state_details WHERE field_state_details_nid=:state_nid', array(':state_nid'=>$state_nid))->fetchColumn();
+    return !empty($count_state);
+}
+function directory_pages_filter_state_details_agencias_estatales($state_nid)
+{
+    return directory_pages_filter_state_details_state_government($state_nid);
+}
+/**
+ * string directory_pages_getUrlToDirectoryRecord(int $nid)
+ * string directory_pages_getUrlToDirectoryRecord(object $node)
+ *
+ * Given a node-ID, this function returns a relative path (with a beginning slash)
+ * to the Directory-Record node.
+ *
+ * Based on the directory record type, this will return:
+ *   /federal-agencies/<title converted to lower case with spaces converted to hyphens>
+ *   /state-consumer/<state name with spaces converted to hyphens in lowercase>
+ *   /state-government/<short state name with spaces converted to hyphens in lowercase>
+ *   or /directory/<alpha-order-name>
+ */
+function directory_pages_getUrlToDirectoryRecord($n, $englishMode = 'AUTODETECT') {
+
+    // Get the node-ID if it was not directly given to us
+    if ( is_object($n) ) {
+        $nid = $n->nid;
+    } else {
+        $nid = intval($n);
+    }
+
+    // Determine which site we are running on (English or Spanish mode)
+    if ( $englishMode === 'AUTODETECT' ) {
+        $siteName = variable_get('site_name', '');
+        if ( strpos(strtolower($siteName), 'gobierno') === false ) {
+            $englishMode = true;
+        } else {
+            $englishMode = false;
+        }
+    }
+
+    // Get the information we need for this node, we'll use db_query here since its faster
+    $nodeData = db_query("
+        SELECT
+            title,
+            field_directory_type_value AS 'directory_type',
+            field_alpha_order_name_value AS 'alpha_order_name',
+            field_state_value AS 'state'
+        FROM node n
+        LEFT JOIN field_data_field_alpha_order_name aon ON aon.entity_id = n.nid
+        LEFT JOIN field_data_field_directory_type dt ON dt.entity_id = n.nid
+        LEFT JOIN field_data_field_state s ON s.entity_id = n.nid
+        WHERE n.nid = :nid
+        LIMIT 1
+    ",array(':nid'=>$nid))->fetchAssoc();
+    $title = $nodeData['title'];
+    $dirRecordType = $nodeData['directory_type'];
+    $urlAlphaOrderName = $nodeData['alpha_order_name'];
+    $dbState = $nodeData['state'];
+
+    // URL-friendly version of the alpha-name
+    if ( empty($urlAlphaOrderName) ) {
+        $urlAlphaOrderName = '!NotSetInCMP!';
+    } else {
+        $urlAlphaOrderName = strtolower($urlAlphaOrderName);
+        $urlAlphaOrderName = str_replace(' ', '-', $urlAlphaOrderName);
+        $urlAlphaOrderName = str_replace('.', '-', $urlAlphaOrderName);
+        $urlAlphaOrderName = str_replace(',', '-', $urlAlphaOrderName);
+        $urlAlphaOrderName = str_replace(')', '-', $urlAlphaOrderName);
+        $urlAlphaOrderName = str_replace('(', '-', $urlAlphaOrderName);
+        $urlAlphaOrderName = rtrim($urlAlphaOrderName, '-');
+        $urlAlphaOrderName = ltrim($urlAlphaOrderName, '-');
+        while ( strpos($urlAlphaOrderName, '--') !== false ) {
+            $urlAlphaOrderName = str_replace('--', '-', $urlAlphaOrderName);
+        }
+    }
+
+    // URL-friendly version of the title
+    if ( empty($title) ) {
+        $urlTitle = '!NotSetInCMP!';
+    } else {
+        $urlTitle = $title;
+        $urlTitle = strtolower($urlTitle);
+        $urlTitle = str_replace(' ', '-', $urlTitle);
+        $urlTitle = str_replace('.', '-', $urlTitle);
+        $urlTitle = str_replace(',', '-', $urlTitle);
+        $urlTitle = str_replace('(', '-', $urlTitle);
+        $urlTitle = str_replace(')', '-', $urlTitle);
+        $urlTitle = rtrim($urlTitle, '-');
+        $urlTitle = ltrim($urlTitle, '-');
+        while ( strpos($urlTitle, '--') !== false ) {
+            $urlTitle = str_replace('--', '-', $urlTitle);
+        }
+    }
+
+    // URL-friendly version of [full] state name
+    if ( empty($dbState) ) {
+        $urlShortState = '!NotSetInCMP!';
+    } else {
+        $urlShortState = directory_pages_acronymToStateName($dbState);
+    }
+
+    // Based on the Directory-Record type, return an [alias] URL
+    switch ( strtolower($dirRecordType) ) {
+
+        case 'federal agencies';
+
+            return ( $englishMode ? '/federal-agencies/' : '/agencias-federales/') . _sanitzie_path($urlTitle);
+
+        case 'consumer organizations';
+        case 'government consumer protection offices';
+
+            return ( $englishMode ? '/state-consumer/' : '/organizaciones-consumidor/') . _sanitzie_path($urlShortState);
+
+        case 'state government agencies';
+
+            return ( $englishMode ? '/state-government/' : '/gobiernos-estatales/') . _sanitzie_path($urlShortState);
+
+        default:
+
+            return ( $englishMode ? '/directory/' : '/directorios/') . _sanitzie_path($urlAlphaOrderName);
+    }
+
+}
+
+/**
+ * void directory_pages_goToCorrectPath()
+ *
+ * This function is to be called when the request-URL is invalid for this english/spanish site,
+ * or basically when you are requesting /directorios/* on USA.gov or /directory/* on Gobierno
+ *
+ * This function will redirect the user to the appropriate path.
+ * WARNING: This function will kill the php thread, with exit()
+ */
+function directory_pages_goToCorrectPath() {
+
+    // Pull the request-URL-path, we will manipulate $ruri, it will be the goto/redirect URL variable
+    $ruri = request_uri_path();
+    $ruri = strtolower($ruri); // All requests to /direct* URL-paths are lowercase in the business requirements
+
+    // Determine which site we are running
+    $siteName = variable_get('site_name', '');
+    $siteIsUSA = false;
+    $siteIsGobierno = false;
+    if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
+        $siteIsGobierno = true;
+    } else {
+        $siteIsUSA = true;
+    }
+
+    // Based on which site we are running, determine the operation...
+    if ( $siteIsUSA ) {
+
+        $ruri = str_replace('/organizaciones-consumidor/', '/state-consumer/', $ruri);
+        $ruri = str_replace('/gobiernos-estatales/', '/state-government/', $ruri);
+        //   $ruri = str_replace('/directorios', '/directory', $ruri);
+        $ruri = str_replace('consumidor', 'consumer', $ruri);
+        $ruri = str_replace('/agencias-federales', '/federal-agencies', $ruri);
+
+    } elseif ( $siteIsGobierno ) {
+
+        $ruri = str_replace('/state-consumer/', '/organizaciones-consumidor/', $ruri);
+        $ruri = str_replace('/state-government/', '/gobiernos-estatales/', $ruri);
+        //      $ruri = str_replace('/directory', '/directorios', $ruri);
+        $ruri = str_replace('consumer', 'consumidor', $ruri);
+        $ruri = str_replace('/federal-agencies', '/agencias-federales', $ruri);
+
+    } else {
+        error_log('Error in '.__FUNCTION__.'(), operating on unknown site.');
+    }
+
+    // If $ruri has changed, then it is now the correct path, redirect the user
+    if ( $ruri !== request_uri_path() ) {
+        $ruri = ltrim($ruri, '/'); // This must be a local/relative redirect
+        drupal_goto($ruri);
+    } else {
+        error_log('Error - '.__FUNCTION__.'() was called when it seems the URL-path requested has nothing wrong with it.');
+        directory_pages_menuCallbackRouter();
+        return;
+    }
+
+    // This line probably wont get hit since I think drupal_goto() calls exit() or die()
+    exit();
+}
+
+function directory_pages_menuCallbackRouter($doOverrideRuri = 'MenuCallBackSetsThisToString', $overrideRuri = false) {
+
+    // Get the request path
+    $ruri = ( $doOverrideRuri === true ? $overrideRuri : urldecode(request_uri_path()) );
+
+    // Force the incoming request-URL to be lowercase, redirect if it is not
+    if ( $ruri !== strtolower($ruri) ) {
+        drupal_goto( ltrim(strtolower($ruri), '/'), array(),301 );
+    }
+
+    // Determine which site we are running
+    $siteName = variable_get('site_name', '');
+    $siteIsUSA = false;
+    $siteIsGobierno = false;
+    if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
+        $siteIsGobierno = true;
+    } else {
+        $siteIsUSA = true;
+    }
+
+    // If the user is rquesting /federal-agencies/ ONLY, redirect to the A-Z page (of letter A)
+    if ( trim($ruri, '/') === 'federal-agencies' || trim($ruri, '/') === 'agencias-federales' ) {
+        drupal_goto('federal-agencies/a');
+        exit();
+    }
+
+    // Directory Index for the letter "A" shall show for Path: /directory/
+    //if ( trim(request_uri_path(), '/') == 'directory' ||  trim(request_uri_path(), '/') == 'directorios' ) {
+    if ( trim(request_uri_path(), '/') == 'federal-agencies' ||  trim(request_uri_path(), '/') == 'agencias-federales' ) {
+        // Invoke the all_childsite_misc/directory_records_az block
+        $_REQUEST['letter'] = 'A';
+        $block = module_invoke('all_childsite_misc', 'block_view', 'directory_records_az');
+        // Return block contents
+        return $block['content'];
+    }
+
+    // Directory Index shall show for Path: directory/<letter of page in lowecase>
+    if ( ( $siteIsUSA && strlen($ruri) === strlen('/federal-agencies/a') ) || ( $siteIsGobierno && strlen($ruri) === strlen('/agencias-federales/a') ) ) {
+
+        $_REQUEST['letter'] = substr($ruri, -1);
+
+        // Invoke the all_childsite_misc/directory_records_az block
+        $uppcaseLetter = strtoupper($_REQUEST['letter']);
+
+        // set meta description
+        drupal_add_html_head(
+            array(
+                '#tag' => 'meta',
+                '#attributes' => array(
+                    'name' => 'description',
+                    'content' =>  'Directory listing for federal agencies and departments: ' . $uppcaseLetter,
+                )
+            ),
+            'usa_custom_meta_tag_descriptionfromAZ'
+        );
+
+        //set browser title
+        if ( $siteIsUSA ) {
+            drupal_set_title("{$uppcaseLetter} | A-Z Index of U.S. Government Departments and Agencies");
+        } else {
+            drupal_set_title("{$uppcaseLetter} | Agencias y Departamentos del Gobierno Federal");
+        }
+
+        // Invoke and return block contents
+        $block = module_invoke('all_childsite_misc', 'block_view', 'directory_records_az');
+        return $block['content'];
+    }
+
+
+    // Directory-Records by state shall show form Path: directory/<short STATE name with spaces converted to hyphens in lowercase>
+    // New URL English /state-government/<short state name with spaces converted to hyphens in lowercase>
+    // New URL Spanish: /gobiernos-estatales/<short state name with spaces converted to hyphens in lowercase>
+    // We should NOT allow the user to request states by a 2-letter character code
+    if ( directory_pages_pathIsStateName($ruri) !== false && substr($ruri, -3, 1) !== '/'  ) {
+        $allnids = array();
+
+        $state = directory_pages_pathIsStateName($ruri);
+        $sgaRecords = directory_pages_getDirRecordsByState($state, 'State Government Agencies');
+        $sgaRecords = array_merge($sgaRecords, directory_pages_getDirRecordsByState($state, 'State Government Agency'));
+        $sgaRecords = directory_pages_filterNodesByFieldValue($sgaRecords, 'field_for_use_by_text', ( $siteIsUSA ? 'USA.gov' : 'GobiernoUSA.gov' ));
+        $dmvRecords = directory_pages_getDirRecordsByState($state, 'State DMV');
+        $dmvRecords = array_merge($dmvRecords, directory_pages_getDirRecordsByState($state, 'State DMVs'));
+        $dmvRecords = directory_pages_filterNodesByFieldValue($dmvRecords, 'field_for_use_by_text', ( $siteIsUSA ? 'USA.gov' : 'GobiernoUSA.gov' ));
+        $sdRecords = array();
+        foreach ( $sgaRecords as $n ) {
+            if ( !empty($n->field_state_details['und'][0]['nid']) ) {
+                $nid = $n->field_state_details['und'][0]['nid'];
+                $sdRecords[$nid] = node_load($nid);
+            }
+            $allnids[$nid]=$nid;
+        }
+        foreach ( $dmvRecords as $n ) {
+            if ( !empty($n->field_state_details['und'][0]['nid']) ) {
+                $nid = $n->field_state_details['und'][0]['nid'];
+                $sdRecords[$nid] = node_load($nid);
+            }
+            $allnids[$nid]=$nid;
+        }
+
+        $usagovURL="//www.usa.gov/";
+        $gobgovURL="//gobierno.usa.gov/";
+
+        // whether to it is dev or local
+        if (strpos($_SERVER["HTTP_HOST"],'usa.dev') !== false){
+            $gobgovURL="//gobierno.usa.dev/";
+            $usagovURL="//www.usa.dev/";
+        }
+
+        if (strpos($_SERVER["HTTP_HOST"],'test-') !== false){
+            $gobgovURL="//test-gobiernogov.ctacdev.com/";
+            $usagovURL="//test-usagov.ctacdev.com/";
+        }
+
+        if (strpos($_SERVER["HTTP_HOST"],'stage-') !== false){
+            $gobgovURL="//stage-gobiernogov.ctacdev.com/";
+            $usagovURL="//stage-usagov.ctacdev.com/";
+        }
+
+        // Determine the toggle markup
+        if ( $siteIsUSA ) {
+
+            global $toggleHTML;
+            $toggleLink = ( empty($_SERVER['HTTPS']) ? 'http://' : 'https://' );
+            $toggleLink .= $gobgovURL.'gobiernos-estatales/';
+            $toggleLink .= str_replace(' ', '-', strtolower(_sanitzie_path( directory_pages_getSpanishStateName($state, $state) ))); // _sanitzie_path() strips accents/etc
+            $toggleHTML = "
+                <li class=\"engtoggle\">
+                    <a href=\"{$toggleLink}\" lang=\"es\" xml:lang=\"es\">
+                        Espa&ntilde;ol
+                    </a>
+                </li>
+            ";
+        } else {
+
+            global $toggleHTML;
+            $toggleLink = ( empty($_SERVER['HTTPS']) ? 'http://' : 'https://' );
+            $toggleLink .= $usagovURL.'state-government/';
+            $toggleLink .= str_replace(' ', '-', strtolower(directory_pages_acronymToStateName($state, $state))); // Note: directory_pages_acronymToStateName() returns ENGLISH strings
+            $toggleHTML = "
+                <li class=\"engtoggle\">
+                    <a href=\"{$toggleLink}\" lang=\"en\" xml:lang=\"en\">
+                        English
+                    </a>
+                </li>
+            ";
+        }
+
+        return theme(
+            'directory_records_by_state',
+            array(
+                'stateName' => directory_pages_acronymToStateName($state, $state),
+                'stateAcronym' => directory_pages_stateNameToAcronym($state, $state),
+                'timestamp'=>  get_node_lastReviewedDate($allnids), //get_node_lastReviewedDate
+                'dirRecords' => array(
+                    'SGA' => array_values($sgaRecords),
+                    'DMV' => array_values($dmvRecords),
+                    'StateDetails' => array_values($sdRecords)
+                )
+            )
+        );
+    }
+
+    $biz_record=directory_pages_pathIsBusiness($ruri);
+    if ( $biz_record !== false && substr($ruri, -3, 1) !== '/' ) {
+        // Need to work on toggle-link concept
+
+        drupal_add_html_head(
+            array(
+                '#tag' => 'meta',
+                '#attributes' => array(
+                    'name' => 'description',
+                    'content' =>  'Doing business in '.ucwords($biz_record['state_name']).'? Discover how to start a business, state opportunities, government programs and information about funding options',
+                )
+            ),
+            'usa_custom_meta_tag_descriptionfromBiz'
+        );
+
+        //set browser title
+        if ( $siteIsUSA ) {
+            drupal_set_title("Doing business in ".ucwords($biz_record['state_name']));
+        } else {
+            drupal_set_title("Doing business in ".ucwords($biz_record['state_name']));
+        }
+        global $toggleHTML;
+        $toggleHTML = '';
+
+        return theme(
+            'directory_records_business_page',
+            array(
+                'stateRecords' => $biz_record,
+                //'timestamp'=>time()
+            )
+        );
+
+    }
+
+
+
+    // A seperate situation should show for Path: directory/consumer-<STATE name with spaces converted to hyphens in lowercase>
+    // New URL English:  /state-consumer/<state name with spaces converted to hyphens in lowercase>
+    // New URL Spanish: /organizaciones-consumidor/<state name in Spanish with spaces converted to hyphens in lowercase>
+    // We should NOT allow the user to request states by a 2-letter character code
+    if ( directory_pages_pathIsConsumerPlusStatePath($ruri) !== false && substr($ruri, -3, 1) !== '/' ) {
+
+        $state = directory_pages_pathIsConsumerPlusStatePath($ruri);
+        $gcpo = directory_pages_getDirRecordsByState($state, 'Government Consumer Protection Offices');
+        $gcpo = array_values(directory_pages_filterNodesByFieldValue($gcpo, 'field_for_use_by_text', ( $siteIsUSA ? 'USA.gov' : 'GobiernoUSA.gov' )));
+        $sba = array_values(directory_pages_getDirRecordsByState($state, 'State Banking Authorities'));
+        $sba = array_values(directory_pages_filterNodesByFieldValue($sba, 'field_for_use_by_text', ( $siteIsUSA ? 'USA.gov' : 'GobiernoUSA.gov' )));
+        $sir = array_values(directory_pages_getDirRecordsByState($state, 'State Insurance Regulators'));
+        $sir = array_values(directory_pages_filterNodesByFieldValue($sir, 'field_for_use_by_text', ( $siteIsUSA ? 'USA.gov' : 'GobiernoUSA.gov' )));
+        $ssa = array_values(directory_pages_getDirRecordsByState($state, 'State Securities Administrators'));
+        $ssa = array_values(directory_pages_filterNodesByFieldValue($ssa, 'field_for_use_by_text', ( $siteIsUSA ? 'USA.gov' : 'GobiernoUSA.gov' )));
+        $suc = array_values(directory_pages_getDirRecordsByState($state, 'State Utility Commissions'));
+        $suc = array_values(directory_pages_filterNodesByFieldValue($suc, 'field_for_use_by_text', ( $siteIsUSA ? 'USA.gov' : 'GobiernoUSA.gov' )));
+
+        $cpo = array_values(directory_pages_getDirRecordsByState($state, 'Government Consumer Protection Offices'));
+        $cpo = array_values(directory_pages_filterNodesByFieldValue($cpo, 'field_for_use_by_text', ( $siteIsUSA ? 'USA.gov' : 'GobiernoUSA.gov' )));
+        $records = array(
+            'GCPO' => array(
+                'Bureaus' => array_values(directory_pages_filterNodesByFieldValue($gcpo, 'field_group_by', 'Bureaus')),
+                'City' => array_values(directory_pages_filterNodesByFieldValue($gcpo, 'field_group_by', 'City')),
+                'County' => array_values(directory_pages_filterNodesByFieldValue($gcpo, 'field_group_by', 'County')),
+                'None' => array_values(directory_pages_filterNodesByFieldValue($gcpo, 'field_group_by', 'None')),
+                'Regional' => array_values(directory_pages_filterNodesByFieldValue($gcpo, 'field_group_by', 'Regional')),
+                'State' => array_values(directory_pages_filterNodesByFieldValue($gcpo, 'field_group_by', 'State')),
+            ),
+            'SBA' => $sba,
+            'SIR' => $sir,
+            'SSA' => $ssa,
+            'SUC' => $suc,
+            'CPO' => $cpo,
+        );
+        $consnids = array();
+        foreach($sba as $r){
+            $consnids[$r->nid]=$r->nid;
+        }
+        foreach($sir as $r){
+            $consnids[$r->nid]=$r->nid;
+        }
+        foreach($ssa as $r){
+            $consnids[$r->nid]=$r->nid;
+        }
+        foreach($suc as $r){
+            $consnids[$r->nid]=$r->nid;
+        }
+        foreach($cpo as $r){
+            $consnids[$r->nid]=$r->nid;
+        }
+        foreach($records['GCPO']['Bureaus'] as $r){
+            $consnids[$r->nid]=$r->nid;
+        }
+        foreach($records['GCPO']['City'] as $r){
+            $consnids[$r->nid]=$r->nid;
+        }
+        foreach($records['GCPO']['County'] as $r){
+            $consnids[$r->nid]=$r->nid;
+        }
+        foreach($records['GCPO']['None'] as $r){
+            $consnids[$r->nid]=$r->nid;
+        }
+        foreach($records['GCPO']['Regional'] as $r){
+            $consnids[$r->nid]=$r->nid;
+        }
+        foreach($records['GCPO']['State'] as $r){
+            $consnids[$r->nid]=$r->nid;
+        }
+
+        // Determine the toggle markup
+        if ( $siteIsUSA ) {
+
+            global $toggleHTML;
+            $toggleLink = ( empty($_SERVER['HTTPS']) ? 'http://' : 'https://' );
+            $toggleLink .= 'gobierno.usa.gov/organizaciones-consumidor/';
+            $toggleLink .= str_replace(' ', '-', strtolower(_sanitzie_path( directory_pages_getSpanishStateName($state) ))); // _sanitzie_path() strips accents/etc
+            $toggleHTML = "
+                <li class=\"engtoggle\">
+                    <a href=\"{$toggleLink}\" lang=\"es\" xml:lang=\"es\">
+                        Espa&ntilde;ol
+                    </a>
+                </li>
+            ";
+        } else {
+
+            global $toggleHTML;
+            $toggleLink = ( empty($_SERVER['HTTPS']) ? 'http://' : 'https://' );
+            $toggleLink .= 'www.usa.gov/state-consumer/';
+            $toggleLink .= str_replace(' ', '-', strtolower(directory_pages_acronymToStateName($state))); // Note: directory_pages_acronymToStateName() returns ENGLISH strings
+            $toggleHTML = "
+                <li class=\"engtoggle\">
+                    <a href=\"{$toggleLink}\" lang=\"en\" xml:lang=\"en\">
+                        English
+                    </a>
+                </li>
+            ";
+        }
+
+        return theme(
+            'directory_records_consumer_state',
+            array(
+                'stateName' => directory_pages_acronymToStateName($state),
+                'stateAcronym' => directory_pages_stateNameToAcronym($state),
+                'dirRecords' => $records,
+                'timestamp'=> get_node_lastReviewedDate($consnids),
+            )
+        );
+    }
+
+
+
+    // Directory-Records by title
+    $records = array();
+    $records = array_merge($records, directory_pages_pathIsFedAgencyTitle($ruri));
+    // Directory-Records by alpha-name (precedence to highest-level federal agencies)
+    // if ( empty($records) ) { $records = array_merge($records, directory_pages_pathIsAlphaName($ruri)); }
+    if ( count($records) > 0 ) {
+
+        drupal_set_title($records[0]->title);
+
+        // Determine the toggle markup
+        if ( $siteIsUSA ) {
+
+            $spanToggleURL = '';
+            if ( !empty($records[0]->field_spanish_toggle['und'][0]['endpoints']['und']) ) {
+                foreach ( $records[0]->field_spanish_toggle['und'][0]['endpoints']['und'] as $toggRelation ) {
+                    if ( $records[0]->nid != $toggRelation['entity_id'] ) {
+                        $engToggleNodeId = $toggRelation['entity_id'];
+                        $spanToggleURL = '/node/'.$engToggleNodeId;
+                        $toggleNode = node_load($engToggleNodeId);
+                        if ( $toggleNode !== false ) {
+                            $spanToggleURL = directory_pages_getUrlToDirectoryRecord($toggleNode, false);
+                        }
+                    }
+                }
+                $spanToggleURL = '//gobierno.usa.gov/'.ltrim($spanToggleURL, '/');
+            }
+
+            if ( !empty($spanToggleURL) ) {
+                global $toggleHTML;
+                $toggleHTML = "
+                    <li class=\"engtoggle\">
+                        <a href=\"{$spanToggleURL}\" lang=\"es\" xml:lang=\"es\">
+                            Espa&ntilde;ol
+                        </a>
+                    </li>
+                ";
+            }
+        } else {
+
+            $engToggleURL = '';
+            if ( !empty($records[0]->field_english_toggle['und'][0]['endpoints']['und']) ) {
+                foreach ( $records[0]->field_english_toggle['und'][0]['endpoints']['und'] as $toggRelation ) {
+                    if ( $records[0]->nid != $toggRelation['entity_id'] ) {
+                        $engToggleNodeId = $toggRelation['entity_id'];
+                        $engToggleURL = '/node/'.$engToggleNodeId;
+                        $toggleNode = node_load($engToggleNodeId);
+                        if ( $toggleNode !== false ) {
+                            $engToggleURL = directory_pages_getUrlToDirectoryRecord($toggleNode, true);
+                        }
+                    }
+                }
+                $engToggleURL = '//usa.gov/'.ltrim($engToggleURL, '/');
+            }
+
+            if ( !empty($engToggleURL) ) {
+                global $toggleHTML;
+                $toggleHTML = "
+                    <li class=\"engtoggle\">
+                        <a href=\"{$engToggleURL}\" lang=\"en\" xml:lang=\"en\">
+                            English
+                        </a>
+                    </li>
+                ";
+            }
+        }
+
+        // If the requesting URL-path has double dashes in it, redirect the user so there are no repeating dashes
+        if ( strpos($ruri, '--') !== false ) {
+            $ruri = ltrim(str_replace('--', '-', $ruri), '/');
+            drupal_goto($ruri);
+            exit();
+        }
+
+        // If the requesting URL-path has brackets in it, redirect the user so there are no repeating dashes
+        if ( strpos($ruri, ')') !== false || strpos($ruri, '(') !== false) {
+            $ruri = ltrim(str_replace('(', '', $ruri), '/');
+            $ruri = ltrim(str_replace(')', '', $ruri), '/');
+            drupal_goto($ruri);
+        }
+        // Determine child record node
+        $relatedChildNode = array();
+        if ( !empty($records[0]->field_child_records['und'][0]['endpoints']['und']) ) {
+            foreach ( $records[0]->field_child_records['und'] as $relValues ) {
+                foreach ( $relValues['endpoints']['und'] as $relation ) {
+                    if ( intval($relation['entity_id']) != intval($records[0]->nid) ) {
+                        $relatedChildNode[] = node_load($relation['entity_id']);
+                    }
+                }
+            }
+
+        }
+
+        // Determine parent record node
+        $relatedParentNode = false;
+        if ( !empty($records[0]->field_parent_record['und'][0]['endpoints']['und']) ) {
+            foreach ( $records[0]->field_parent_record['und'][0]['endpoints']['und'] as $relation ) {
+                if ( intval($relation['entity_id']) != intval($records[0]->nid) ) {
+                    $relatedParentNode = node_load($relation['entity_id']);
+                }
+            }
+        }
+
+        // Determine parent record node
+        $relatedEngToggleNode = false;
+        if ( !empty($records[0]->field_english_toggle['und'][0]['endpoints']['und']) ) {
+            foreach ( $records[0]->field_english_toggle['und'][0]['endpoints']['und'] as $relation ) {
+                if ( intval($relation['entity_id']) != intval($records[0]->nid) ) {
+                    $relatedEngToggleNode = node_load($relation['entity_id']);
+                }
+            }
+        }
+
+        // Determine parent record node
+        $relatedSpanToggleNode = false;
+        if ( !empty($records[0]->field_spanish_toggle['und'][0]['endpoints']['und']) ) {
+            foreach ( $records[0]->field_spanish_toggle['und'][0]['endpoints']['und'] as $relation ) {
+                if ( intval($relation['entity_id']) != intval($records[0]->nid) ) {
+                    $relatedSpanToggleNode = node_load($relation['entity_id']);
+                }
+            }
+        }
+
+        $lastreviewtime = get_node_lastReviewedDate(array($records[0]->nid));
+
+        return theme(
+            'directory_records_by_alphaname',
+            array(
+                'dirRecords' => $records,
+                'relatedChildNode' => $relatedChildNode,
+                'relatedParentNode' => $relatedParentNode,
+                'relatedEngToggleNode' => $relatedEngToggleNode,
+                'relatedSpanToggleNode' => $relatedSpanToggleNode,
+                'timestamp'=>$lastreviewtime,
+            )
+        );
+
+    }
+
+    drupal_not_found();
+    exit();
+}
+
+/**
+ * Implements hook_theme().
+ *
+ */
+function directory_pages_theme() {
+
+    $themes = array();
+
+    // This impements directory_records_by_state.tpl.php
+    $themes['directory_records_by_state'] = array(
+        'variables' => array(),
+        'template' => 'directory_records_by_state'
+    );
+
+    // This impements directory_records_by_alphaname.tpl.php
+    $themes['directory_records_by_alphaname'] = array(
+        'variables' => array(),
+        'template' => 'directory_records_by_alphaname'
+    );
+
+    // This impements directory_records_consumer_state.tpl.php
+    $themes['directory_records_consumer_state'] = array(
+        'variables' => array(),
+        'template' => 'directory_records_consumer_state'
+    );
+
+    // This impements directory_records_business_page.tpl.php
+    $themes['directory_records_business_page'] = array(
+        'variables' => array(),
+        'template' => 'directory_records_business_page'
+    );
+
+    return $themes;
+}
+
+/**
+ * array directory_pages_pathIsAlphaName(string $path)
+ *
+ * Returns weather or not the given path is a
+ * directory/<alpha order name converted to lowercase with spaces converted to hyphens>
+ *
+ * If it is not, an empty array is returned, if it is, then the associated nodes are returned.
+ */
+function directory_pages_pathIsAlphaName($path) {
+
+    $testAlphaName = $path;
+    //$testAlphaName = str_replace('directory/', '', $testAlphaName);
+    //$testAlphaName = str_replace('directorios/', '', $testAlphaName);
+    $testAlphaName = str_replace('federal-agencies/', '', $testAlphaName);
+    $testAlphaName = str_replace('agencias-federales/', '', $testAlphaName);
+    $testAlphaName = trim($testAlphaName, '/');
+    $foundDirRecords = directory_pages_getDirRecordsByAlphaName($testAlphaName);
+
+    return $foundDirRecords;
+}
+
+/**
+ * bool/string directory_pages_pathIsFedAgencyTitle(string $path)
+ *
+ * Returns weather or not the given path is a
+ * /federal-agencies/<DirectoryRecord-Title>
+ * /agencias-federales/<DirectoryRecord-Title>
+ *
+ * If it is not, an empty array is returned, if it is, then the
+ * directory-record(s) are returned in an array.
+ */
+function directory_pages_pathIsFedAgencyTitle($path) {
+
+    if ( strpos($path, 'federal-agencies') === false && strpos($path, 'agencias-federales') === false ) {
+        return array();
+    }
+
+    $testDirRecordTitle = $path;
+    $testDirRecordTitle = strtolower($testDirRecordTitle);
+    $testDirRecordTitle = str_replace('/federal-agencies/', '', $testDirRecordTitle);
+    $testDirRecordTitle = str_replace('/federal-agency/', '', $testDirRecordTitle);
+    $testDirRecordTitle = str_replace('/agencias-federales/', '', $testDirRecordTitle);
+    $testDirRecordTitle = str_replace('-', '', $testDirRecordTitle);
+    $testDirRecordTitle = str_replace(' ', '', $testDirRecordTitle);
+    $testDirRecordTitle = str_replace("'", '', $testDirRecordTitle);
+    $testDirRecordTitle = str_replace(")", '', $testDirRecordTitle);
+    $testDirRecordTitle = str_replace("(", '', $testDirRecordTitle);
+    $testDirRecordTitle = trim($testDirRecordTitle, '/');
+
+    // Default to returning false, when nothing is found
+    $nids = array();
+
+    $records = db_query("
+        SELECT n.nid AS 'nid', title
+        FROM node n
+        WHERE LCASE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(title, ' ', ''), '-', ''), '.', ''), ',', ''),'\'',''),'(',''),')','')) = :testDirRecordTitle
+    ",array(':testDirRecordTitle'=>$testDirRecordTitle));
+
+    /*$records = db_query("
+        SELECT n.nid AS 'nid', n.title
+        FROM node n
+        WHERE n.type = 'directory_record_content_type'
+    ");*/
+
+    foreach ( $records as $record ) {
+
+        if ( count($nids) !== 0 ) {
+            drupal_set_message('Hmm, it seems that more than one directory-record (node) has this title...', 'warning', FALSE);
+        }
+
+        // sanitize title
+        //if (_sanitzie_path($record->title) == $testDirRecordTitle){
+        $nids[] = intval($record->nid);
+        //}
+    }
+
+    if ( count($nids) === 0 ) {
+        return array();
+    } else {
+        return array_values( node_load_multiple($nids) );
+    }
+}
+
+function _sanitzie_path($str) {
+
+    $table = array(
+        ' '=>'-', 'Š'=>'S', 'š'=>'s', 'Ð'=>'Dj', 'Ž'=>'Z', 'ž'=>'z', 'C'=>'C', 'c'=>'c', 'C'=>'C', 'c'=>'c',
+        'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
+        'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O',
+        'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U', 'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss',
+        'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'a', 'ç'=>'c', 'è'=>'e', 'é'=>'e',
+        'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o',
+        'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'ý'=>'y', 'þ'=>'b',
+        'ÿ'=>'y', 'R'=>'R', 'r'=>'r', "'"=>'-', '"'=>'-', '.'=>'-', ','=>'-'
+    );
+
+    $sanitized = strtr($str, $table);
+    $sanitized = preg_replace('/-{2,}/','-',$sanitized);
+    return $sanitized;
+}
+
+/**
+ * bool/string directory_pages_isStateName(string $path)
+ *
+ * Returns weather or not the given path is a
+ * /directory/<short STATE name with spaces converted to hyphens in lowercase>
+ * /state-government/<short STATE name with spaces converted to hyphens in lowercase>
+ * /gobiernos-estatales/<short STATE name with spaces converted to hyphens in lowercase>
+ *
+ * If it is not, then FALSE is returned, if it is, then a 2-letter state-abbreviation is returned.
+ */
+function directory_pages_pathIsStateName($path) {
+
+
+    $path = ltrim($path, '/');
+
+    // The path must contain either /directory or /state-consumer or /organizaciones-consumidor
+    if (
+        strpos($path, 'state-government/') === false
+        && strpos($path, 'gobiernos-estatales/') === false
+    ) {
+        return false;
+    }
+
+    $potentialStateName = $path;
+    $potentialStateName = str_replace('federal-agencies/', '', $potentialStateName);
+    $potentialStateName = str_replace('agencias-federales/', '', $potentialStateName);
+    $potentialStateName = str_replace('state-government/', '', $potentialStateName);
+    $potentialStateName = str_replace('gobiernos-estatales/', '', $potentialStateName);
+    $potentialStateName = str_replace('/', ' ', $potentialStateName);
+    $potentialStateName = str_replace('-', ' ', $potentialStateName);
+    $potentialStateName = trim($potentialStateName);
+
+    $acronym = directory_pages_stateNameToAcronym($potentialStateName, false);
+    $literallyExsistsAsIs = db_query("
+        SELECT COUNT(field_state_value)
+        FROM field_data_field_state
+        WHERE
+            bundle = 'directory_record_content_type'
+            AND field_state_value = :potentialStateName
+    ",array(':potentialStateName'=>$potentialStateName))->fetchColumn();
+    $literallyExsistsAsIs = intval($literallyExsistsAsIs);
+
+    return ( $literallyExsistsAsIs > 0 ? $potentialStateName : $acronym );
+}
+
+/* return bool value (false) if url is not /state-business
+ * else return state acronym and entity id if we found state name
+ * entity id will be state detial's node id
+ */
+function directory_pages_pathIsBusiness($path)
+{
+    $path=ltrim($path,'/');
+
+    if (strpos($path, 'state-business/') === false)
+    {
+        return false;
+    }
+
+    $StateName = str_replace('state-business/', '', $path);
+    $StateName = str_replace('/', ' ', $StateName);
+    $StateName = str_replace('-', ' ', $StateName);
+    $StateName = trim($StateName);
+
+
+    $state_records=db_query('select
+                                sc.field_state_canonical_name_value as state_name,
+                                field_state_acronym_value as state_acronym, sa.entity_id as node_id,
+                                field_state_biz_opening_links_value as opening_biz_links,
+                                field_state_biz_financing_links_value as financing_biz_links,
+                                field_state_biz_link_url_value as biz_link_url,
+                                field_state_biz_opportunity_link_value as opportunity_biz_links,
+                                field_state_biz_export_links_value as export_biz_links
+                                from field_data_field_state_acronym sa
+                            inner join field_data_field_state_canonical_name sc
+                                on sa.entity_id=sc.entity_id
+                            left join field_data_field_state_biz_opening_links ol
+                                on sa.entity_id=ol.entity_id
+                            left join field_data_field_state_biz_financing_links  fl
+                                on sa.entity_id=fl.entity_id
+                            left join field_data_field_state_biz_link_url lu
+                                on sa.entity_id=lu.entity_id
+                            left join field_data_field_state_biz_opportunity_link opl
+                                on sa.entity_id=opl.entity_id
+                            left join field_data_field_state_biz_export_links el
+                                on sa.entity_id=el.entity_id
+                            where sc.field_state_canonical_name_value=:state_name', array(':state_name'=>$StateName))->fetchAssoc();
+
+    return $state_records;
+
+}
+
+/**
+ * bool/string directory_pages_isConsumerPlusStatePath(string $path)
+ *
+ * Returns weather or not the given path is a
+ * /directory/consumer-<STATE name with spaces converted to hyphens in lowercase>
+ * /state-consumer/<state name with spaces converted to hyphens in lowercase>
+ * /organizaciones-consumidor/<state name in Spanish with spaces converted to hyphens in lowercase>
+ *
+ * If it is not, then FALSE is returned, if it is, then a 2-letter state-abbreviation is returned.
+ */
+function directory_pages_pathIsConsumerPlusStatePath($path) {
+
+    $path = ltrim($path, '/');
+
+    if (
+        strpos($path, 'state-consumer/') === false
+        && strpos($path, 'organizaciones-consumidor/') === false
+        && strpos($path, 'federal-agencies/consumer-') === false
+        && strpos($path, 'federal-agencies/consumidor-') === false
+        && strpos($path, 'federal-agencies/consumer/') === false
+        && strpos($path, 'federal-agencies/consumidor/') === false
+        && strpos($path, 'agencias-federales/consumer-') === false
+        && strpos($path, 'agencias-federales/consumidor-') === false
+        && strpos($path, 'agencias-federales/consumer/') === false
+        && strpos($path, 'agencias-federales/consumidor/') === false
+    ) {
+        return false;
+    }
+
+    $potentialStateName = $path;
+    $potentialStateName = str_replace('state-consumer/', '', $potentialStateName);
+    $potentialStateName = str_replace('organizaciones-consumidor/', '', $potentialStateName);
+    $potentialStateName = str_replace('federal-agencies/consumer', '', $potentialStateName);
+    $potentialStateName = str_replace('federal-agencies/consumidor', '', $potentialStateName);
+    $potentialStateName = str_replace('agencias-federales/consumer', '', $potentialStateName);
+    $potentialStateName = str_replace('agencias-federales/consumidor', '', $potentialStateName);
+    $potentialStateName = str_replace('/', ' ', $potentialStateName);
+    $potentialStateName = str_replace('-', ' ', $potentialStateName);
+    $potentialStateName = trim($potentialStateName);
+
+    return directory_pages_stateNameToAcronym($potentialStateName, false);
+}
+
+/**
+ * mixed directory_pages_stateNameToAcronym(string $stateName, [mixed $whatToRetOnFail = false])
+ *
+ * Returns a 2-letter state-abbreviation based on input, or $whatToRetOnFail when not found.
+ */
+function directory_pages_stateNameToAcronym($stateName, $whatToRetOnFail = false, $spanishInputMode = false) {
+
+    $stateName = trim($stateName);
+    $stateName = strtolower($stateName);
+
+    //$state_list = array('um'=>'minor outlying islands','mh'=>'republic of the marshall islands','pw'=>'republic of palau','fm'=>'federated states of micronesia','gu'=>'guam','as'=>'american samoa','al'=>"alabama",'ak'=>"alaska",'az'=>"arizona",'ar'=>"arkansas",'ca'=>"california",'co'=>"colorado",'ct'=>"connecticut",'de'=>"delaware",'dc'=>"district of columbia",'fl'=>"florida",'ga'=>"georgia",'hi'=>"hawaii",'id'=>"idaho",'il'=>"illinois",'in'=>"indiana",'ia'=>"iowa",'ks'=>"kansas",'ky'=>"kentucky",'la'=>"louisiana",'me'=>"maine",'md'=>"maryland",'ma'=>"massachusetts",'mi'=>"michigan",'mn'=>"minnesota",'ms'=>"mississippi",'mo'=>"missouri",'mt'=>"montana",'ne'=>"nebraska",'nv'=>"nevada",'nh'=>"new hampshire",'nj'=>"new jersey",'nm'=>"new mexico",'ny'=>"new york",'nc'=>"north carolina",'nd'=>"north dakota",'oh'=>"ohio",'ok'=>"oklahoma",'or'=>"oregon",'pa'=>"pennsylvania",'ri'=>"rhode island",'sc'=>"south carolina",'sd'=>"south dakota",'tn'=>"tennessee",'tx'=>"texas",'ut'=>"utah",'vt'=>"vermont",'va'=>"virginia",'wa'=>"washington",'wv'=>"west virginia",'wi'=>"wisconsin",'wy'=>"wyoming", 'as' => 'american samoa', 'vi' => 'u.s. virgin islands', 'mp' => 'northern mariana islands', 'pr' => 'puerto rico', 'gu' => 'guam');
+    $state_list = _state_list();
+
+    if ( $spanishInputMode ) {
+        foreach ( $state_list as &$state_list_item ) {
+            $state_list_item = ucwords(trim($state_list_item));
+            $state_list_item = str_replace('U.s.', 'U.S.', $state_list_item);
+            $state_list_item = t($state_list_item);
+            $state_list_item = _sanitzie_path( trim(strtolower($state_list_item)) );
+        }
+        $stateName = _sanitzie_path($stateName);
+    }
+    $state_list = array_flip($state_list);
+
+    if ( empty($state_list[$stateName]) ) {
+        if ( in_array($stateName, $state_list) ) {
+            return $stateName;
+        } else {
+            if ( !$spanishInputMode ) {
+                return directory_pages_stateNameToAcronym($stateName, $whatToRetOnFail, true);
+            } else {
+                return $whatToRetOnFail;
+            }
+        }
+    } else {
+        return strtoupper($state_list[$stateName]);
+    }
+}
+
+/**
+ * mixed directory_pages_acronymToStateName(string $stateAcronym, [mixed $whatToRetOnFail = false])
+ *
+ * Returns a 2-letter state-name based on input, or $whatToRetOnFail when not found.
+ */
+function directory_pages_acronymToStateName($acronym, $whatToRetOnFail = false) {
+
+    $acronym = strtolower($acronym);
+
+    $state_list = _state_list();
+
+    if ( empty($state_list[$acronym]) ) {
+        if ( in_array($acronym, $state_list) ) {
+            return $acronym;
+        } else {
+            return $whatToRetOnFail;
+        }
+    } else {
+        return $state_list[$acronym];
+    }
+}
+
+function _state_list(){
+    $state_list = array('um'=>'minor outlying islands','mh'=>'republic of the marshall islands','pw'=>'republic of palau','fm'=>'federated states of micronesia','gu'=>'guam','as'=>'american samoa','al'=>"alabama",'ak'=>"alaska",'az'=>"arizona",'ar'=>"arkansas",'ca'=>"california",'co'=>"colorado",'ct'=>"connecticut",'de'=>"delaware",'dc'=>"district of columbia",'fl'=>"florida",'ga'=>"georgia",'hi'=>"hawaii",'id'=>"idaho",'il'=>"illinois",'in'=>"indiana",'ia'=>"iowa",'ks'=>"kansas",'ky'=>"kentucky",'la'=>"louisiana",'me'=>"maine",'md'=>"maryland",'ma'=>"massachusetts",'mi'=>"michigan",'mn'=>"minnesota",'ms'=>"mississippi",'mo'=>"missouri",'mt'=>"montana",'ne'=>"nebraska",'nv'=>"nevada",'nh'=>"new hampshire",'nj'=>"new jersey",'nm'=>"new mexico",'ny'=>"new york",'nc'=>"north carolina",'nd'=>"north dakota",'oh'=>"ohio",'ok'=>"oklahoma",'or'=>"oregon",'pa'=>"pennsylvania",'ri'=>"rhode island",'sc'=>"south carolina",'sd'=>"south dakota",'tn'=>"tennessee",'tx'=>"texas",'ut'=>"utah",'vt'=>"vermont",'va'=>"virginia",'wa'=>"washington",'wv'=>"west virginia",'wi'=>"wisconsin",'wy'=>"wyoming", 'as' => 'american samoa', 'vi' => 'u.s. virgin islands', 'mp' => 'northern mariana islands', 'pr' => 'puerto rico', 'gu' => 'guam');
+    $stateQuery = "SELECT distinct ca.field_state_acronym_value as abbr,
+                          cn.field_state_canonical_name_value as canonical
+                        FROM node n
+                        INNER JOIN field_data_field_state_canonical_name cn ON n.nid = cn.entity_id
+                        INNER JOIN field_data_field_state_acronym ca ON n.nid = ca.entity_id
+    					WHERE n.status = 1";
+    $stateAggs = db_query($stateQuery);
+
+    foreach($stateAggs as $item){
+        $state_list[$item->abbr]=$item->canonical;
+    }
+
+    return $state_list;
+}
+
+/**
+ * array directory_pages_getDirRecordsByState(string $state, [string $typeFilter = false])
+ *
+ * Searches the database for Directory-Records associated with the given state,
+ * returns all found nodes in an array.
+ * This function will search both by state-name and state acronym.
+ */
+function directory_pages_getDirRecordsByState($state, $typeFilter = false) {
+
+    $params = array();
+    $stateName = strtolower( directory_pages_acronymToStateName($state, $state) );
+    $stateAcronym = strtolower( directory_pages_stateNameToAcronym($state, $state) );
+
+    $params[':stateAcronym'] = $stateAcronym;
+    $params[':stateName']    = $stateName;
+    $where = "
+        LCASE(s.field_state_value)    = :stateAcronym
+        OR LCASE(s.field_state_value) = :stateName
+    ";
+
+    if ( $typeFilter !== false ) {
+        $params[':typeFilter'] = $typeFilter;
+        $where = "({$where}) AND t.field_directory_type_value = :typeFilter ";
+    }
+
+    $arrNids = db_query("
+        SELECT s.entity_id
+        FROM field_data_field_state s
+        LEFT JOIN field_data_field_directory_type t ON ( s.entity_id = t.entity_id )
+        LEFT JOIN node n ON ( n.nid = s.entity_id )
+        WHERE {$where}
+        ORDER BY n.title ASC
+    ",$params)->fetchCol();
+
+    if ( count($arrNids) === 0 ) {
+        return array();
+    }
+
+    return node_load_multiple($arrNids);
+}
+
+/**
+ * array directory_pages_getDirRecordsByAlphaName(string $state)
+ *
+ * Searches the database for Directory-Records that have the given
+ * alpha-name, and returns all found nodes in an array.
+ */
+function directory_pages_getDirRecordsByAlphaName($alphaName) {
+
+    $searchStr = $alphaName;
+    $searchStr = strtolower($searchStr);
+    $searchStr = str_replace('/', '', $searchStr);
+    $searchStr = str_replace('.', '', $searchStr);
+    $searchStr = str_replace(',', '', $searchStr);
+    $searchStr = str_replace('-', '', $searchStr);
+    $searchStr = str_replace(' ', '', $searchStr);
+    $searchStr = str_replace('(', '', $searchStr);
+    $searchStr = str_replace(')', '', $searchStr);
+    $searchStr = trim($searchStr);
+
+    $arrNids = db_query("
+        SELECT entity_id
+        FROM field_data_field_alpha_order_name
+        WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LCASE(field_alpha_order_name_value),' ',''), '-', ''), '.', ''), ',', ''),')',''),'(','') = :searchStr
+    ",array(':searchStr'=>$searchStr))->fetchCol();
+
+    if ( count($arrNids) === 0 ) {
+        return array();
+    }
+
+    return array_values(node_load_multiple($arrNids));
+}
+
+/**
+ * array directory_pages_filterNodesByFieldValue(array $nodes, string $langValue)
+ *
+ * Given an array of nodes, this function will filter the array based
+ * on the given field and expected field-value.
+ */
+function directory_pages_filterNodesByFieldValue($nodes, $fieldMacName, $fieldValue) {
+
+    foreach ($nodes as $key => $node) {
+
+        $removeItem = true;
+        if ( !empty($node->{$fieldMacName}['und']) ) {
+            foreach ( $node->{$fieldMacName}['und'] as $fieldValueContainer ) {
+                if ( strtolower($fieldValueContainer['value']) == strtolower($fieldValue) ) {
+                    $removeItem = false;
+                    break;
+                }
+            }
+        }
+
+        if ( $removeItem ) {
+            unset($nodes[$key]);
+        }
+
+    }
+
+    return array_values($nodes);
+}
+
+/**
+ * string directory_pages_getSpanishStateName(string $englishStateName)
+ * string directory_pages_getSpanishStateName(string $twoLetterStateAcronym)
+ *
+ * Since the USA.gov sites does not have the translation database [and since it cant use the t()
+ * this function is used to translate a state name to Spanish.
+ *
+ * This function expects there to be a translation .po-formatted file located at:
+ * sites/all/modules/custom/childsite_translate/translations/es.po
+ */
+function directory_pages_getSpanishStateName($englishStateName) {
+
+    $transFilePath = 'sites/all/modules/custom/childsite_translate/translations/es.po';
+
+    // Open the .po file for reading
+    $handle = fopen($transFilePath, 'r');
+    if ($handle) {
+
+        // We may be given a 2-letter acronym, this shall be acceptable input
+        $stateFullNameEnglish = directory_pages_acronymToStateName($englishStateName);
+        $searchLine = strtolower( "msgid \"{$stateFullNameEnglish}\"" );
+
+        // Search line by line in the .po file
+        while (($line = fgets($handle)) !== false) {
+
+            // Using strtolower() to make this a case-insensitive search
+            if ( strtolower(trim($line)) == $searchLine ) {
+
+                // Grab the NEXT line, while THIS line should be something like: msgid "New Hampshire"
+                $nextLine = fgets($handle);
+
+                // An example of what the next line should be like is: msgstr "Nuevo Hampshire"
+                $nextLine = str_replace('msgstr', '', $nextLine);
+                $nextLine = trim($nextLine); // Trim space
+                $nextLine = trim($nextLine, '"');
+                if ( !empty($nextLine) )
+                {
+                    fclose($handle);
+                    return $nextLine;
+                }
+            }
+        }
+
+        // We should have returned by now...
+        fclose($handle);
+        error_log('Error in '.__FUNCTION__.'(), could not find translation for "'.$englishStateName.'" in '.$transFilePath);
+        return $englishStateName;
+
+    } else {
+
+        error_log('Error in '.__FUNCTION__.'(), could not access '.$transFilePath);
+        return $englishStateName;
+    }
+}

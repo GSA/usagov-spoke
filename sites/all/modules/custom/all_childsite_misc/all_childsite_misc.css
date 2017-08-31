@@ -1,0 +1,19 @@
+.a-z_list ul {
+    padding-right:0px;
+}
+.a-z_list li {
+    display: inline;
+    list-style-type: none;
+    padding-right: 10px;
+}
+
+.page-list li{
+    padding: 5px;
+
+}
+.page_list_wrapper {
+    padding-left:15px !important;
+}
+.page_list_wrapper h2 {
+    padding-left:25px !important;
+}

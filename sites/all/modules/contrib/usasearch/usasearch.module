@@ -1,0 +1,217 @@
+<?php
+
+/**
+ * @file
+ * Replaces Drupal search, redirects all search queries to USASearch service.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function usasearch_menu()
+{
+  $items = array();
+
+  $items['admin/config/search/usasearch'] = array(
+      'title' => 'DigitalGov Search settings',
+      'description' => 'Contains settings for customizing site search to use USASearch',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('usasearch_admin'),
+      'access arguments' => array('administer search'),
+      'weight' => -9,
+      'file' => 'usasearch.admin.inc',
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function usasearch_form_node_form_alter(&$form, &$form_state, $form_id) {
+  // Include/exclude node from usasearch index
+  $node = $form['#node'];
+  $usasearch_content_type_settings = variable_get("usasearch_node_include_{$node->type}", TRUE);
+    if (isset($node->nid) && $usasearch_content_type_settings == TRUE) {
+      $usasearch_node_settings = db_query("SELECT search_include FROM {digitalgovsearch} WHERE nid = :nid", array(':nid' => $node->nid))->fetchField();
+      if (is_null($usasearch_node_settings) || $usasearch_node_settings == '') {
+        // there was no entry in the database, or the search_include column was null
+        $usasearch_node_settings = variable_get('usasearch_include_if_not_excluded', TRUE);
+      }
+  } else {
+    $usasearch_node_settings = $usasearch_content_type_settings;
+  }
+  // Include settings if allowed for content type
+  if($usasearch_content_type_settings == TRUE) {
+    $form['digitalgovsearch_settings'] = array(
+        '#type' => 'fieldset',
+        '#access' => user_access('administer nodes'),
+        '#title' => t('DigitalGov Search settings'),
+        '#group' => 'additional_settings',
+        'usasearch_node_include' => array(
+            '#type' => 'checkbox',
+            '#title' => t('Include in DigitalGov Search index'),
+            '#default_value' => $usasearch_node_settings,
+            '#description' => t('Check this box to inlcude this node in DigitalGov Search index.'),
+        ),
+    );
+  }
+}
+
+function usasearch_node_submit($node, $form, &$form_state) {
+  if (isset($form_state['values']['usasearch_node_include']) && isset($node->nid)) {
+    usasearch_save_per_node_settings($node, $form_state['values']['usasearch_node_include']);
+  }
+}
+
+function usasearch_node_insert($node)
+{
+  if (isset($node->usasearch_node_include)) {
+    usasearch_save_per_node_settings($node, $node->usasearch_node_include);
+  }
+}
+
+/**
+ * Saves custom per node settings in the own content_access table.
+ */
+function usasearch_save_per_node_settings($node, $setting){
+  $result = db_select('digitalgovsearch', 'd')
+      ->fields('d')
+      ->condition('nid', $node->nid)
+      ->execute();
+  if ($result && $result->rowCount() > 0) {
+      db_update('digitalgovsearch')
+          ->condition('nid', $node->nid)
+          ->fields(array('search_include' => $setting))
+          ->execute();
+  } else {
+    db_insert('digitalgovsearch')
+        ->fields(array('nid' => $node->nid, 'search_include' => $setting))
+        ->execute();
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function usasearch_form_node_type_form_alter(&$form, &$form_state, $form_id) {
+  $node_type = $form['#node_type']->type;
+  $variable_name = "usasearch_node_include_{$node_type}";
+  $form['usasearch_settings'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('DigitalGov Search settings'),
+      '#group' => 'additional_settings',
+  );
+
+  $form['usasearch_settings']['usasearch_node_include'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Include by default nodes of this type in DigitalGov Search index'),
+      '#description' => t("Check this box to inlcude new nodes of type {$node_type} in DigitalGov Search index."),
+      '#default_value' => variable_get($variable_name, TRUE),
+  );
+}
+
+/**
+ * Implements hook_form_alter().
+ *
+ * Changes elements in the search block, search theme form, search page form.
+ */
+function usasearch_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'search_block_form' || $form_id == 'search_theme_form' || $form_id == 'search_form') {
+    $affiliate_name = check_plain(variable_get('usasearch_affiliate_name', ''));
+    if ($affiliate_name) {
+
+      // Create attributes array for textfield.
+      $attributes = array(
+        'class' => array('usagov-search-autocomplete',
+          'ui-autocomplete-input',
+          'ui-corner-all',
+        ),
+        'autocomplete' => 'off',
+        'type' => 'text',
+        // Adding the id attribute can cause issues that rely on default Drupal
+        // ids for form elements. It does not appear to be necessary for
+        // typeahead to function. So, we leave it out.
+        // 'id' => 'query',
+      );
+
+      // Apply attriubutes to the correct form element.
+      switch ($form_id) {
+        case 'search_form':
+          $form['basic']['keys']['#attributes'] = $attributes;
+          break;
+
+        default:
+          $form[$form_id]['#attributes'] = $attributes;
+          break;
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * Outputs required javascript and css references.
+ */
+function usasearch_preprocess_page(&$variables) {
+  $inline_js = '';
+
+  // Check for usasearch_affiliate_name variable, if set output javascript and
+  // css references. Detailed info about this USASearch feature here:
+  // @see http://usasearch.howto.gov/post/18861028503/how-to-add-our-code-to-your-website.
+  $affiliate_name = check_plain(variable_get('usasearch_affiliate_name', ''));
+  if ($affiliate_name) {
+    $action_domain = check_plain(variable_get('usasearch_action_domain', 'https://search.usa.gov'));
+
+    $inline_js .= "var usasearch_config = { siteHandle:'$affiliate_name' };\n";
+
+    if (variable_get('usasearch_autocomplete', TRUE)) {
+      $inline_js .= "var script = document.createElement('script');\n";
+      $inline_js .= "script.type = 'text/javascript';\n";
+      $inline_js .= "script.src = '$action_domain/javascripts/remote.loader.js';\n";
+      $inline_js .= "document.getElementsByTagName('head')[0].appendChild(script);\n";
+    }
+  }
+
+  // Output contents of $inline_js into one combined inline javascript tag using
+  // drupal_add_js function.
+  drupal_add_js($inline_js, array('type' => 'inline', 'scope' => 'footer'));
+}
+
+/**
+ * Returns an array of subsites.
+ *
+ * @return array
+ *   The available subsites.
+ */
+function usasearch_affiliates_list() {
+  $subsites_string = variable_get('usasearch_allowed_affiliates', '');
+
+  module_load_include('module', 'list');
+  $subsites = list_extract_allowed_values($subsites_string, 'list text', FALSE);
+
+  $default_affiliate = variable_get('usasearch_affiliate_name');
+  if ($default_affiliate && empty($subsites[$default_affiliate])) {
+    $subsites = array($default_affiliate => t('Default')) + $subsites;
+  }
+
+  return $subsites;
+}
+
+/**
+ * Verifies that a given subsite is in list of configured subsites.
+ *
+ * @param string $affiliate_id
+ *   The affiliate id to verify.
+ *
+ * @return bool
+ *   TRUE if the given subsite is in the list of configured subsites.
+ */
+function usasearch_is_affiliate($affiliate_id) {
+  $subsites = usasearch_affiliates_list();
+
+  return array_key_exists($affiliate_id, $subsites);
+}
+
+
+

@@ -1,0 +1,15 @@
+name = Kids.gov
+description = Kids.gov's default theme.
+package = Core
+version = VERSION
+core = 7.x
+
+stylesheets[all][] = css/style.css
+stylesheets[all][] = css/survey_modal.css
+stylesheets[all][] = css/overrides.css
+
+scripts[] = js/jquery.jcarousel.min.js
+scripts[] = js/global.js
+
+regions[navigation_area] = Navigation
+regions[content] = Content

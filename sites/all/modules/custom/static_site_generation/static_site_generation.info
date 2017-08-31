@@ -1,0 +1,6 @@
+name = Static Site Generation
+description = Based on what content is in this system, generates a series of HTML files - saving your site, statically, to disk.
+package = CTAC
+core = 7.x
+files[] = static_site_generation.module
+configure = admin/config/static-site-generation

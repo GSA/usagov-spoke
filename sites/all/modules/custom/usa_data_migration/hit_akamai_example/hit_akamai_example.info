@@ -1,0 +1,5 @@
+name = UDM Hook Usage Example
+description = An example for Dan
+package = CTAC
+core = 7.x
+files[] = childsite_misc_kids.module

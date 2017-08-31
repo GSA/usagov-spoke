@@ -1,0 +1,1096 @@
+/***********************
+Table of Contents
+
+1. General & Misc
+2. Skip Link
+3. Header
+4. Search
+5. Top Navigation					
+6. Espanol and Kids Toggle
+7. HP Info Box and Content on This Page Box
+8. Inforamtion and Services
+9. Government Agencies
+10. Home Page Feature
+11. Footer
+12. Tagline
+13. Return to top buttons
+14. Survey
+
+
+Media Queries
+
+max-width: 992px
+max-width: 991px
+max-width: 768px
+max-width: 480px
+
+***********************/
+
+
+/***********************
+1. General & Misc
+***********************/
+body {
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+  font-family:  Tahoma, Verdana, Arial, Sans-serif;
+  font-size: 90%;
+  background-color: #fff;
+  color: #000;
+  -webkit-text-size-adjust: 100%;
+}
+
+::-moz-selection { /* Code for Firefox */
+    color: #fff;
+    background: #26558b;
+}
+
+::selection {
+    color: #fff;
+    background: #26558b;
+}
+.group:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+a{
+  color:#154285;
+  text-decoration: underline;
+}
+a:visited{
+  color:#595959;
+}
+a:hover, a:focus, a:active{
+  color:#1e4570;
+}
+a:focus, input:focus, button:focus, textarea:focus, select:focus, a:active, input:active, button:active, textarea:active, select:active{
+  outline:#ff8c00 solid 3px;
+}
+h1{
+  margin: 0 0 0 0;
+}
+
+h2 {
+  font-size: 140%;
+  font-weight: normal;
+  padding: 0 0 0 0;
+}
+input {
+    -webkit-appearance: none;
+    border-radius: 0;
+}
+
+/*Buttons*/
+.morebutton{
+  display:block;
+  float:left;
+  text-align:left;
+  line-height:18px;
+  padding:10px 15px 10px 15px;
+  margin:15px 0 10px 80px;
+  position:relative;
+  background: #ebe6de;
+  cursor:pointer; 
+}
+
+.moreicon{
+  background: url(../images/Icon_More.png) right;
+  background-repeat: no-repeat;
+  margin: 0 0 0 0;
+  padding: 5px 33px 5px 2px;
+}
+
+/*a{
+	color:#1e4570;
+	text-decoration: underline;	
+}*/
+
+.mocklink{
+	text-decoration: underline;
+}
+
+/***********************
+2. Skip Link
+***********************/
+#skiplinkholder {
+  position: absolute;
+  width: 100%;
+}
+#skiplinkholder p {
+  padding: 0 0 0 0;
+}
+#skiplinkholder a, #skiplinkholder a:link, #skiplinkholder a:visited {
+  display: block;
+  left: -10000px;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 2;
+  background-position: initial initial;
+  background-repeat: initial initial;
+  border-bottom-color: #CCC;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  padding: 25px 25px 25px 25px;
+  text-align: center;
+  text-decoration: underline;
+  font-size: 210%;
+  color: #FFF;
+  background-color: #A50000;
+}
+#skiplinkholder a:focus, #skiplinkholder a:active {
+  left: 0;
+  top: 0;
+  z-index: 100;
+}
+
+/***********************
+3. Header
+***********************/
+#header {
+  background: #1b50a0;
+  position: relative;
+}
+#header>.container {
+    height: 60px;
+    position: relative;
+}
+
+#header .headercontact a span:before {
+  color: #fff;
+}
+
+.cntrlogo {
+  width: 380px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 5px 0 0 0;
+}
+
+.cntrlogo a, .cntrlogo a:visited{
+  font-size: 60px;
+  color: #fff;
+  display: block;
+  /*line-height: 80px;*/
+}
+
+#logo{
+  /*float: left;
+  padding: 15px 0 15px 0;*/
+  border: 0;
+  /*margin-left: auto;
+  margin-right: auto;*/
+}
+
+#header h1 a, .logolink {
+  /*float: left;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;*/
+}
+
+#utilities {
+  float: right;
+  margin: -150px 0 85px 0;
+  padding: 0 0 0 0;
+}
+
+#utilities li {
+  margin: 12px 0 12px 17px;
+  display: inline-block;
+  color: #fff;
+}
+
+#utilities a {
+  color: #fff;
+  display: block;
+  text-decoration: none;
+}
+
+#utilities a:hover, #utilities a:active, #utilities a:focus  {
+  text-decoration: underline;
+}
+
+#utilities span {
+  margin: 12px 0px 12px 0px;
+  display: block;
+}
+
+#toggles {
+  display: none;
+}
+.headercontact{
+  display: none;
+}
+
+/***********************
+4. Search
+***********************/
+#search form {
+    float: right;
+}
+
+#search input[type="text"] {
+  display: block;
+  float: left;
+  width: 790px;
+  border: 0;
+  margin: 0 0 0 0;
+  padding: 10px 10px 10px 10px;
+  font-size: 100%;
+  line-height: 20px;
+  height: 40px;
+}
+
+::-webkit-input-placeholder {
+  color: #000;
+}
+
+:-moz-placeholder {
+  /* Firefox 18- */
+  color: #000;
+}
+
+::-moz-placeholder {
+  /* Firefox 19+ */
+  color: #000;
+}
+
+:-ms-input-placeholder {
+  color: #000;
+}
+#search button {
+  display: block;
+  border: 0;
+  margin: 0 0 0 0;
+  padding: 7px 0 10px 0;
+  font-size: 130%;
+  font-weight: normal;
+  line-height: 20px;
+  background: #1b50a0;
+  color: #fff;
+  width: 130px;
+  float: left;
+  height: 40px;
+}
+
+/*#search input[type="text"] {
+  margin: auto 10px auto auto;
+  width: 1020px;
+  border: 1px solid #182c42;
+}*/
+
+div.searchbkgnd{
+    height: 80px;
+    background: #373737;
+    padding: 20px 20px 20px 20px;
+    border-top: 1px solid #fff;
+}
+
+div.searchttl{
+	margin: 0 0 0 0;
+	float:left;
+}
+
+div.searchttl p{
+  font-size: 130%;
+  font-weight: normal;
+  margin: 5px 0 10px 0;
+  padding: 0 0 0 0;
+  color: #fff;
+}
+
+/***********************
+5. Top Navigation
+***********************/
+#mnnav {
+  clear: both;
+}
+
+#mnnav ul {
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+}
+
+.navItems li {
+  display: block;
+  float: left;
+  text-align: center;
+  width: 14.33%;
+  font-size: 110%;
+  /*background: url('../images/Line_Topnav.png');*/
+  background-position: left;
+  background-repeat: no-repeat;
+  border: 1px solid transparent;
+}
+.navItems li:hover {
+  border: 1px solid #ffffff;
+}
+
+#mnnav li:first-child {
+  background-image: none;
+  width: 6%;
+}
+#mnnav li#moreservices {
+  width: 8%;
+}
+ul.navItems a {
+  display: block;
+  width: 100%;
+  height: 115px;
+  border-top: 10px solid transparent;
+  text-decoration: none;
+  color:#fff;
+}
+ul.navItems a:hover span, ul.navItems a:active span, ul.navItems a:focus span{
+  text-decoration: underline;
+}
+ul.navItems a.current:hover span, ul.navItems a.current:active span, ul.navItems a.current:focus span{
+  text-decoration: none;
+}
+
+#mnnav a.current {
+  background: #fff;
+  border-top: 6px solid #c61f0c;
+  color: #1b50a0;
+  font-weight: normal;
+  padding: 4px 0 0 0;
+}
+
+
+#search-toggle .closer {
+    display: none;
+}
+
+#search-toggle.current .closer {
+	display: inline;
+}
+#search-toggle.current .searcher {
+    display: none;
+}
+#nav-toggle .closer {
+    display: none;
+}
+#nav-toggle.current .closer {
+	display: inline;
+}
+#nav-toggle.current .menuer {
+    display: none;
+}
+
+.hidden{
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+}
+
+ /***********************
+6. Espanol and Kids Toggle
+***********************/
+.hptoggles{
+  width: 100%;
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+  background: #fff;
+}
+
+.hptoggles ul{
+  float: right;
+  margin: 0 0 0 0;
+  padding: 19px 0 15px 0;
+}
+
+.hptoggles ul li{
+  display: inline;
+  margin: 0 0 0 0;
+  padding: 0 0 5px 0;
+}
+
+.engtoggle{
+  position: relative;
+  margin: 0 0 0 0;
+  padding: 5px 0 5px 20px;
+}
+
+.hptoggles ul li.noTggle {
+    display: none;
+}
+
+/*li.engtoggle::after {
+   content:"";
+   width:1px;
+   height:20px;
+   position:absolute;
+   background: #c7c7c7;
+   right: 7px;
+}*/
+
+
+.hptoggles .engtoggle a{
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  margin: 0 2px 0 0;
+  padding: 5px 20px 5px 20px;
+  background: #022945;
+}
+
+.hptoggles .engtoggle a:hover{
+    text-decoration: underline;
+}
+
+.kidstoggle{
+  margin: 0 0 0 0;
+}
+
+.hptoggles .kidstoggle a{
+  color: #022945;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 5px 20px 5px 20px;
+  background: #f8d280;
+}
+
+.hptoggles .kidstoggle a:hover{
+    text-decoration: underline;
+}
+ 
+ /***********************
+7. HP Info Box and Content on This Page Box
+***********************/
+ 
+ /***********************
+8. Information and Services
+***********************/
+ 
+ 
+/***********************
+9. Government Agencies
+***********************/
+
+/***********************
+10. Home Page Feature 
+***********************/
+
+
+
+/***********************
+11. Footer
+***********************/
+ #footer{
+  background: #4b4b4d;
+  color: #fff;
+}
+ 
+ #footer ul{
+  margin: 0 0 0 0;
+  padding: 0 0 40px 0;
+ }
+ 
+ #footer ul li, .headercontact ul li{
+  list-style-type: none;
+ }
+ 
+ #footer a{
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+ }
+ #footer span.icon-phone, #header span.icon-phone {
+  white-space: normal;
+  line-height: normal;
+  height: 27px;
+ }
+ 
+ /*span.icon-phone.spcng {
+  line-height: 20px;
+ }*/
+ 
+ #footer a:visited, .headercontact a {
+ 	color:#e8e8e8;
+ } 
+ 
+ #footer a:hover, #footer a:focus, #footer a:active,
+ #footer a:hover span, #footer a:focus span, #footer a:active span,
+ .headercontact a:hover span, .headercontact a:focus span, .headercontact a:active span{
+  color: #fff;
+  text-decoration: underline;
+ }
+ 
+  div.footernav, div.footerconnected, div.footercontact{
+    height: 290px;
+  }
+  
+  div.footernav ul li{
+    float: none;
+    width: 100%;
+    padding: 0 0 10px 0;
+	line-height: 17px;
+  }
+  
+  div.footercontact ul li{
+    margin: 0 0 10px 0;
+  }
+  
+  div.footerconnected ul li{
+    float: left;
+    width: 49%;
+    margin: 0 0 8px 0;
+  }
+  
+  div.footerconnected a{
+    display: block;
+  }
+  
+  .cnnctfcbk {
+  background: url('../images/Icon_Connect_Facebook.png');
+  background-repeat: no-repeat;
+  padding: 6px 0 6px 50px;
+  }
+  
+  .cnncttwtr {
+  background: url('../images/Icon_Connect_Tweeter.png');
+  background-repeat: no-repeat;
+  padding: 6px 0 6px 50px;
+  }
+  
+  .cnncttmblr {
+  background: url('../images/Icon_Connect_Tumblr.png');
+  background-repeat: no-repeat;
+  padding: 6px 0 6px 50px;
+  }
+  
+  .cnnctrss {
+  background: url('../images/Icon_Connect_RSS.png');
+  background-repeat: no-repeat;
+  padding: 6px 0 6px 50px;
+  }
+  
+  .cnnctytb {
+  background: url('../images/Icon_Connect_Youtube.png');
+  background-repeat: no-repeat;
+  padding: 6px 0 6px 50px;
+  }
+  
+  .cnncteml {
+  background: url('../images/Icon_Connect_Email.png');
+  background-repeat: no-repeat;
+  padding: 6px 0 6px 50px;
+  white-space: nowrap;
+  }
+  
+  .cnnctglg {
+  background: url('../images/Icon_Connect_Google.png');
+  background-repeat: no-repeat;
+  padding: 6px 0 6px 50px;
+  }
+  
+ .footertagline{
+    background: #000;
+    clear:both;
+  }
+  
+  /***********************
+12. Tagline
+***********************/
+.tagline{
+  margin: 0 auto 0 auto;
+  padding: 3px 0 3px 5px;
+}
+
+.tagline p{
+  float: left;
+  color: #fff;
+}
+
+#footer .tagline a{
+	text-decoration: none;
+}
+
+#footer .tagline a:hover, .tagline a:focus, tagline a:active{
+	text-decoration: underline;
+}
+ 
+.tagline .volver{
+  float:right;
+  padding:  0 14px 0 0;
+}
+
+/***********************
+13. Return to top buttons
+***********************/
+.statebacktotop{
+ padding: 160px 0 5px 0;
+ text-align:right;
+ }
+
+.volver{
+  padding:10px 0 5px 0;
+  text-align:right;
+}
+.volver a{
+  display:inline-block;
+  padding:0 30px 4px 0;
+  text-decoration:none;
+}
+.volver a:hover, a:focus, a:active{
+  text-decoration:underline;
+}
+.footer .volver{
+  padding:15px 0 15px 0;
+  text-align:center;
+}
+
+/***********************
+14. Survey
+***********************/
+
+  #vocModalOverlay {
+      width:100%;
+      height:100%;
+      z-index:9999; /* places the modal overlay between the main page and the modal dialog*/
+      background-color:#000;
+      opacity:0.5;
+      position:fixed;
+      top:0;
+      left:0;
+      display:none;
+      margin:0 0 0 0;
+      padding:0 0 0 0;
+  }
+
+  #vocModal {
+      width:50%;
+      margin:auto auto auto auto;
+      padding: 25px 25px 25px 25px;
+      text-align: center;
+      border: thin #000 solid;
+      background-color:#fff;
+      z-index:10000; /* places the modal dialog on top of everything else */
+      position:fixed;
+      top:25%;
+      left:25%;
+      display:none;
+      background-color: #FFF;
+      background-image: url('/resources/images/gobierno_logo-mobile.gif');
+      background-repeat: no-repeat;
+      background-position:0px 15px
+  }
+  #vocModal:before {
+    display:block;
+    content:"";
+    height:10px;
+    width:100%;
+    padding:0 25px 0 25px;
+    position:relative;
+    left:-25px;
+    top:-25px;
+    background-color:red;
+    background: -moz-linear-gradient(top, #bc0c15 0%, #72050a 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#bc0c15), color-stop(100%,#72050a));
+    background: -webkit-linear-gradient(top, #bc0c15 0%,#72050a 100%);
+    background: -o-linear-gradient(top, #bc0c15 0%,#72050a 100%);
+    background: -ms-linear-gradient(top, #bc0c15 0%,#72050a 100%);
+    background: linear-gradient(top, #bc0c15 0%,#72050a 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bc0c15', endColorstr='#72050a',GradientType=0 );
+  }
+  #vocModal p {
+    width:100%;
+    max-width:400px;
+    margin:auto auto auto auto;
+  }
+  #vocModal p.firstpara {
+    margin:35px auto auto auto;
+  }
+  #vocModal h1 {
+    text-align:center;
+  }
+
+  #vocEnter, .vocCancelButton, .start-survey  {
+    height:30px;
+    font-size:0.9em; /* suggested to usa percentage of 90% - todo*/
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    font-family: Tahoma, Verdana, Arial, sans-serif;
+    font-weight: bold;
+  }
+  .vocCancelButton {
+    cursor: pointer;
+    color:#022945;
+    background: #fff; /* Old browsers */
+    background: -moz-linear-gradient(top, #fff 0%, #ddf5ff 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fff), color-stop(100%,#ddf5ff)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #fff 0%,#ddf5ff 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #fff 0%,#ddf5ff 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #fff 0%,#ddf5ff 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #fff 0%,#ddf5ff 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fff', endColorstr='#ddf5ff',GradientType=0 ); /* IE6-9 */
+    border: 1px #24496B solid;
+  }
+
+  #vocEnter, .start-survey {
+    cursor: pointer;
+    color:#fff;
+    background-color: #6d060a;
+    background: -moz-linear-gradient(top, #c00c15 0%, #6d060a 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#c00c15), color-stop(100%,#6d060a));
+    background: -webkit-linear-gradient(top, #c00c15 0%,#6d060a 100%);
+    background: -o-linear-gradient(top, #c00c15 0%,#6d060a 100%);
+    background: -ms-linear-gradient(top, #c00c15 0%,#6d060a 100%);
+    background: linear-gradient(top, #c00c15 0%,#6d060a 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c00c15', endColorstr='#6d060a',GradientType=0 ); 
+    border: 1px solid #9c0e1c;
+  }
+
+  .banner {
+    padding-bottom: 10px; /*need to call out all and tes - todo */
+   /*border-bottom: 1px solid black;*/
+  }
+
+  .modalCloseButton {
+      float:right;
+      position:absolute;
+      top:10px;
+      left:95%;
+  }
+  .modalCloseButton img {
+      border:0;
+  }
+
+  .screen-reader-offscreen {
+      position:absolute;
+      left:-999px; /* suggestion to change to 10000 to left - todo */
+      width:1px;
+      height:1px;
+      top:auto;
+  }
+
+  #vocModal input.top-right {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    text-decoration: none;
+    background-color: #808080;
+    color: #000;
+    font-weight: bold;
+    font-size: 80%;
+  }
+
+.content {
+  margin: 25px 15px 25px 15px;
+}
+.banner {
+  display: block;
+  margin: 0 auto 10px auto;
+}
+.message {
+  margin: 15px 0 15px 0;
+}
+.float-right {
+  float: right;
+}
+.privacy-policy {
+  text-decoration: none;
+  color: #0000d9;
+  font-size: .9em; /* suggestion to change to 90% - todo */
+}
+.start-survey {
+  display: block;
+  margin: 25px auto 25px auto;
+  width: 150px;
+  font-size: 1.2em; /* suggestion to change to 120% - todo */
+  cursor: pointer;
+    
+}
+#survey-target {
+  display:none;
+}
+
+
+
+@media (max-width: 1200px) {
+  #search input[type="text"] {
+    width: 570px;
+  }
+}
+ 
+@media (max-width: 992px) {
+
+  body{
+    font-size:100%;
+  }
+   .cntrlogo {
+    width: auto;
+    float: left;
+  }
+
+  h2{
+    font-size: 117%;
+  }
+  .navItems{
+    font-size:90%;
+  }
+  #toggles {
+  	font-size: 80%;
+  }
+ 
+  #mnnav li{
+    padding: 0 0 0 0;
+  }
+  #header>.container {
+      height: auto
+  }
+  #logo {
+    height: 80px;
+  }
+
+  #utilities {
+    display: none;
+  }
+
+  #toggles {
+    display: block;
+    position: absolute;
+    bottom: 4px;
+    right: 15px;
+  }
+  #nav-toggle, #search-toggle {
+    display: inline-block;
+    background: none;
+    border: none;
+    color: #fff;
+    margin: 0 0 0 0;
+    font-size: 120%;
+  }
+  #search-toggle {
+    padding: 17px 12px 26px 12px;
+  }
+  #nav-toggle{
+    margin: 18px 0px 21px 9px;
+    padding: 5px 0 5px 0;
+  }
+  .show-nav #nav-toggle{
+    padding: 18px 0px 26px 9px;
+    margin: 0 0 0 0;
+  }
+  #mnnav li{
+    border: none;
+  }
+  ul.navItems a {
+    border-top: 0px solid transparent;
+  }
+  .headercontact{
+    display: block;
+    color: #fff;
+  }
+  .headercontact ul {
+    padding: 0 0 0 0;
+  }
+  .headercontact li{
+    margin: 10px 10px 10px 10px;
+  }
+
+  .show-search #search, .show-nav #mnmenu {
+    clear: both;
+  }
+  .show-search #search li, .show-nav #mnnav li, .show-nav #mnnav li#moreservices {
+    width: 100%;
+    height: auto;
+    text-align: left;
+  }
+  .show-search #search a, .show-nav ul.navItems a {
+    height: auto;
+    background: #fff;
+    color: #27558a;
+    padding: 6px 12px 6px 12px;
+    border-bottom: 1px solid #27558a;
+    box-sizing: border-box;
+  }
+  #mnnav #moreservices a {
+    background: #ebe6de;
+  }
+  .show-search #search a.current, .show-nav #mnnav a.current {
+    border-top: none;
+    border-left: 6px solid #c61f0c;
+  }
+  
+  #search, #mnmenu {
+    display: none;
+  }
+
+  .show-search #search, .show-nav #mnmenu {
+    display: block;
+  }
+
+  .show-search #search-toggle, .show-nav #nav-toggle {
+    background: #373737;
+  }
+  #search input[type="text"] {
+    width: 82%;
+  }
+  #search button {
+    width: 18%;
+    font-size: 90%;
+    background: #1b50a0;
+  }
+  
+  div.searchbkgnd{
+    display: none;
+  }
+  .show-search div.searchbkgnd{
+    display: block;
+    height: auto;
+  }
+  div.searchttl p{
+    font-size: 1em;
+  }
+  .show-nav #mnmenu{
+    background: #373737;
+    padding: 20px 20px 20px 20px;
+    border-top: 1px solid #fff;
+  }
+  div.searchbkgnd{
+      padding: 13px 20px 20px 20px;
+  }
+}
+
+ @media (min-width: 992px){
+  
+ }
+
+@media (max-width: 991px) {
+  #skiplinkholder a, #skiplinkholder a:link, #skiplinkholder a:visited {
+  display: none;
+  }
+  #header h1 a {
+	height: auto;
+	width: auto;
+	}
+  #utilities{
+    display: none;
+  }
+  .cntrlogo {
+    width: auto;
+  }
+  #logo{
+    height:100px;
+  }
+  #search, #nav{
+    display:none;
+  }
+  .show-search #search, .show-nav #nav{
+    display: block;
+  }
+  #search form{
+    float: none;
+  }
+  .hptoggles{
+  	font-size: 95%;
+  }
+  
+  div.footernav, div.footerconnected, div.footercontact{
+    height: auto;
+  }
+  div.footernav, div.footerconnected, div.footercontact{
+    height: auto;
+  }
+   div.footernav {
+    padding: 0 0 0 20px;
+  }
+  div.footernav ul li{
+      float: none;
+      width: 100%;
+	  line-height: 25px;
+    }
+
+  div.footerconnected ul li{
+      float: none;
+      width: 100%;
+      margin: 0 0 15px 0;
+  }
+	.volver{
+		text-align:center;
+	}
+	.volver a{
+  	  padding:0 0 0 0;
+  	}
+	.tagline .volver, .tagline p{
+  		float: none;
+  		text-align:center;
+  	}
+  	
+  	.statebacktotop{
+  	text-align: center;
+  	padding: 60px 0 0 0;
+   }
+}
+
+@media (max-width: 768px) {
+  #logo {
+    height: 80px;
+  }
+  #toggles{
+    display:block;
+  }
+  #search-toggle, .show-search #search, .show-search #mnmenu{
+    display: none;
+  }
+  .show-nav #search, .show-nav #mnmenu {
+    display: block;
+    clear: both;
+  }
+ .show-nav #mnmenu {
+    padding: 120px 0 20px 0;
+  }
+  .hptoggles ul {
+    float: none;
+  	text-align: center;
+  }
+ 
+  #search input[type="text"] {
+    width: 80%;
+    }
+  #search button {
+    width: 20%;
+    }  
+  div.footernav, div.footerconnected, div.footercontact{  
+    height: auto;
+  }
+  div.searchbkgnd {
+    padding: 13px 0 0 0;
+    position: absolute;
+    top: 80px;
+    width: 100%;
+    background: none;
+    border:none;
+  }
+  .show-nav div.searchbkgnd {
+    display: block;
+  }
+  .show-search div.searchbkgnd {
+    display: none;
+  }
+}
+@media (max-width: 480px) {
+  
+  .hptoggles ul li{
+  	margin: 0 5px 0 5px;
+  }
+  .hptoggles .engtoggle a{
+  	margin: 0 0 0 0;
+  }
+  li.engtoggle::after{
+  	right: -8px;
+  }
+   
+  #search button {
+    font-size: 90%;
+  }  
+
+}

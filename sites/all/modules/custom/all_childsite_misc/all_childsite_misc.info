@@ -1,0 +1,6 @@
+name = All Childsite - Misc
+description = A module for miscellaneous modifications needed on the all Childsite
+package = CTAC
+core = 7.x
+configure = admin/config/all_childsite_misc
+files[] = all_childsite_misc.module

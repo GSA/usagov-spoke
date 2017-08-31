@@ -1,0 +1,18 @@
+/**
+ * @file
+ * Block Styling
+ */
+/* line 9, ../sass/blocks.scss */
+.block {
+  /* Block wrapper */
+}
+/* line 10, ../sass/blocks.scss */
+.block h2.block-title {
+  /* Block title */
+  color: #1a51a1;
+  outline: 0px !important;
+  border: 0px !important;
+  font-size: 115%;
+  font-weight: bold;
+  letter-spacing: -1px;
+}

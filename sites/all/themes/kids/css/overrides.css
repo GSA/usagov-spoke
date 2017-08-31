@@ -1,0 +1,47 @@
+/* style.css */
+#header h1 {
+    background: transparent url('../images/Logo_Kids.png') no-repeat 0px 0px;
+}
+
+#innerWrapper {
+	padding: 15px 19px 0 19px;
+	margin: 0 0 20px 0;
+	}
+
+#footer .poweredby {
+    width: auto;
+    margin: 0px;
+    text-align: right;
+    background: #d9d9d9;
+    padding: 10px 30px;
+		border-radius: 0 0 5px 5px;
+}
+
+#footer .poweredby p {
+  height: auto;
+  padding: 0px;
+  margin: 0px 0px 5px 0px;
+  vertical-align: middle;
+}
+
+#footer .poweredby a{
+	color: black;
+	text-decoration: none;
+}
+
+#footer .poweredby a:hover {
+	color: #154285;
+	text-decoration: underline;
+}
+
+#footer .poweredby p img {
+   margin: 0 0 0 0;
+   padding: 0 0 0 0;
+   width: auto;
+   height: auto;
+  vertical-align: middle;
+}
+
+#footer .section {
+    background: none;
+}

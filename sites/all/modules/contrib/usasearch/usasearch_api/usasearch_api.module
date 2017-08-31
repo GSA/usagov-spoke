@@ -1,0 +1,384 @@
+<?php
+use GuzzleHttp\Client;
+
+if (file_exists('vendor/autoload.php')) {
+  require 'vendor/autoload.php';
+}
+
+/**
+ * @file
+ * USA Search API module.
+ */
+
+/**
+ * Implements hook_node_insert().
+ */
+function usasearch_api_node_insert($node)
+{
+  if (!variable_get('usasearch_use_rules')) {
+    usasearch_api_index_document($node, 'insert');
+  }
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function usasearch_api_node_update($node) {
+  if (!variable_get('usasearch_use_rules')) {
+    usasearch_api_index_document($node, 'update');
+  }
+}
+
+/**
+ * Implements hook_node_delete().
+ */
+function usasearch_api_node_delete($node) {
+  if (!variable_get('usasearch_use_rules')) {
+    usasearch_api_index_document($node, 'delete');
+  }
+}
+
+function usasearch_api_index_document($node, $action)
+{
+  $document = usasearch_api_convert_node_to_document($node);
+  if ($document) {
+    switch ($action) {
+      case 'insert':
+        if ($node->status == 0 || !usasearch_api_indexing_allowed($node)) {
+          break;
+        }
+        usasearch_api_request('POST', 'api/v1/documents', array('json' => $document->json()));
+        setIndexStatus($node, 1);
+        break;
+      case 'update':
+        // Delete from index if node has been unpublished
+        $indexing_allowed = usasearch_api_indexing_allowed($node);
+        $values = usasearch_getIndexStatus($node);
+        $index_status = $values['index_status'];
+        if (($node->status == 0 || $indexing_allowed == 0) && $index_status == 1) {
+          usasearch_api_node_delete($node);
+          return FALSE;
+        } else {
+          // if the node is changing from unpublished to published or index settings have changed insert it
+          if ((isset($node->original) && $node->original->status == 0) || ($index_status == 0 && $indexing_allowed)) {
+            usasearch_api_node_insert($node);
+          } elseif ($index_status > 0) {
+            // update index
+            usasearch_api_request('PUT', 'api/v1/documents/' . $document->getDocumentId(), array('json' => $document->json()));
+            setIndexStatus($node, 1);
+          }
+        }
+        break;
+      case 'delete':
+        usasearch_api_request('DELETE', 'api/v1/documents/' . $document->getDocumentId());
+        db_update('digitalgovsearch')->condition('nid', $node->nid)->fields(array('index_status' => 0))->execute();
+        break;
+    }
+  }
+}
+
+function usasearch_getIndexStatus($node) {
+  $results = db_query("SELECT search_include, index_status FROM {digitalgovsearch} WHERE nid = :nid", array(':nid' => $node->nid));
+  if ($results->rowCount() > 0) {
+    return $results->fetchAssoc();
+  }
+}
+
+function setIndexStatus($node, $status) {
+  $results = db_query("SELECT search_include, index_status FROM {digitalgovsearch} WHERE nid = :nid", array(':nid' => $node->nid));
+  if ($results->rowCount() > 0) {
+    db_update('digitalgovsearch')->condition('nid', $node->nid)->fields(array('index_status' => $status))->execute();
+  }
+}
+
+function usasearch_api_indexing_allowed ($node){
+  $index_allowed = variable_get("usasearch_node_include_{$node->type}", TRUE);
+  if ($index_allowed) {
+    $index_allowed = db_query("SELECT search_include FROM {digitalgovsearch} WHERE nid = :nid", array(':nid' => $node->nid))->fetchField();
+    if (is_null($index_allowed) || $index_allowed == '') {
+      // there was no entry in the database, or the search_include column was null
+      $index_allowed = variable_get('usasearch_include_if_not_excluded', TRUE);
+    }
+  }
+  return $index_allowed;
+}
+
+/**
+ /**
+ *
+ * @param string $method
+ *   The HTTP method to be used via Guzzle.
+ *
+ * @param $url
+ *   The URL of the endpoint resource to which the HTTP request will be made.
+ *
+ * @param array $request_options
+ *   An array of options passed directly to the Guzzle request.
+ *
+ * @see http://gsa.github.io/slate
+ * @see http://docs.guzzlephp.org/en/latest/
+ */
+function usasearch_api_request($method, $url, $request_options = array()) {
+  $client = new Client([
+    'base_uri' => 'https://i14y.usa.gov',
+    'timeout' => 2.0,
+    'connect_timeout' => 2.0,
+    'auth' => array(variable_get('usasearch_drawer_handle', ''), variable_get('usasearch_api_password', '')),
+    ]
+  );
+
+  try {
+    $response = $client->request($method, $url, $request_options);
+    watchdog('usasearch_api', '@response_code: Sucessfully updated USASearch index via @method request to @url with options: !options.', array(
+        '@method' => $method,
+        '@url' => $url,
+        '!options' => '<pre>' . check_plain(print_r($request_options, TRUE)) . '</pre>',
+        '@response_code' => $response->getStatusCode(),
+      ), WATCHDOG_INFO);
+  }
+  catch(Exception$e) {
+    watchdog('usasearch_api', 'The JSON sent to ' . $url . 'was &nbsp;<br />' . '<pre>' . check_plain(print_r($request_options, TRUE)) . '</pre>', array('!options' => '<pre>' . check_plain(print_r($request_options, TRUE)) . '</pre>'), WATCHDOG_ERROR);
+    if ($e->hasResponse()) {
+      watchdog('usasearch_api', 'Error updating USASearch index via @method request to @url with options: !options. Got a @response_code response with body "@response_body".', array(
+          '@method' => $method,
+          '@url' => $url,
+          '!options' => '<pre>' . check_plain(print_r($request_options, TRUE)) . '</pre>',
+          '@response_code' => $e->getResponse()->getStatusCode(),
+          '@response_body' => $e->getResponse()->getBody()->getContents(),
+        ), WATCHDOG_INFO);
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function usasearch_api_preprocess_node(&$vars) {
+  $vars['title'] = '';
+  if ($vars['content']['links']) {
+    unset($vars['content']['links']);
+  }
+}
+
+/**
+ * Converts a node object into a UsaSearchDocument object.
+ *
+ * @param object $node
+ *   A node object to convert.
+ *
+ * @return UsaSearchDocument
+ *   A UsaSearchDocument based on the provided $node object.
+ */
+function usasearch_api_convert_node_to_document($node, $force = FALSE) {
+  global $user;
+  $anon_user = drupal_anonymous_user();
+  $original_uid = $user->uid;
+
+  if (node_access('view', $node, $anon_user) || $force) {
+    $document = new UsaSearchDocument();
+    $document->setDocumentId($node->nid);
+    $document->setTitle($node->title);
+
+    $view = node_view($node);
+
+    $view_mode = variable_get('usasearch_view_modes');
+    $available_view_modes = field_view_mode_settings('node', $node->type);
+    if (!array_key_exists($view_mode, $available_view_modes) || !$available_view_modes[$view_mode]['custom_settings']) {
+      $view_mode = 'teaser';
+    }
+    $view_teaser = node_view($node, $view_mode);
+    $user->uid = 0;
+    $content = drupal_render($view);
+    $description = drupal_render($view_teaser);
+    $document->setContent($content);
+
+    // Set Description to using teaser.
+    $document->setDescription($description);
+    $user->uid = $original_uid;
+    $document->setPath(url(drupal_get_path_alias("node/{$node->nid}"), array('absolute' => TRUE)));
+    $document->setCreated(date('c', $node->created));
+    $document->setPromote((bool)$node->promote);
+
+    // Gather up all taxonomy fields and send in document tags field
+    $terms = usasearch_api_get_entity_terms('node', 'page', $node);
+    $document->setTags($node->type);
+    if (!empty($terms)) {
+      foreach ($terms as $vocabulary => $term) {
+        foreach ($term as $key => $value) {
+          $document->setTags($value);
+        }
+      }
+    }
+    drupal_alter('usasearch_api_document_request', $document);
+
+    return $document;
+  }
+}
+
+/**
+ * Implements hook_action_info().
+ */
+function usasearch_api_action_info() {
+  return array(
+    'usasearch_api_create_doc_action' => array(
+      'label' => t('Create record of node in the USASearch index.'),
+      'type' => 'node',
+      'configurable' => FALSE,
+      'triggers' => array('any'),
+    ),
+    'usasearch_api_update_doc_action' => array(
+      'label' => t('Update record of node in the USASearch index.'),
+      'type' => 'node',
+      'configurable' => FALSE,
+      'triggers' => array('any'),
+    ),
+    'usasearch_api_delete_doc_action' => array(
+      'label' => t('Delete record of node in the USASearch index.'),
+      'type' => 'node',
+      'configurable' => FALSE,
+      'triggers' => array('any'),
+    ),
+  );
+}
+
+/**
+ * Action function for usasearch_api_create_doc_action.
+ */
+function usasearch_api_create_doc_action($node, $context) {
+  usasearch_api_node_insert($node);
+}
+
+/**
+ * Action function for usasearch_api_update_doc_action.
+ */
+function usasearch_api_update_doc_action($node, $context) {
+  usasearch_api_node_update($node);
+}
+
+/**
+ * Action function for usasearch_api_delete_doc_action.
+ */
+function usasearch_api_delete_doc_action($node, $context) {
+  usasearch_api_node_delete($node);
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function usasearch_api_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'cron') {
+    unset($implementations['search']);
+  }
+}
+
+/**
+ * implimentation of hook_form_alter()
+ */
+function usasearch_api_form_search_admin_settings_alter(&$form, &$form_state, $form_id) {
+  $items = drupal_map_assoc(array(10, 20, 50, 100, 200, 500, 1000, 10000));
+  $form['indexing_throttle']['search_cron_limit'] = array(
+    '#type' => 'select',
+    '#title' => t('Number of items to index per cron run'),
+    '#default_value' => variable_get('search_cron_limit', 100),
+    '#options' => $items,
+    '#description' => t('The maximum number of items indexed in each pass of a <a href="@cron_link">cron maintenance task</a>.
+  If necessary, reduce the number of items to prevent timeouts and memory errors while indexing.', array('@cron_link' => url('admin/reports/status/run-cron'))),
+  );
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * @see search_cron()
+ */
+function usasearch_api_cron() {
+  if (!variable_get('usasearch_use_rules')) { //If using rules then rules should handle all indexing
+    // We register a shutdown function to ensure that search_total is always up
+    // to date.
+    drupal_register_shutdown_function('search_update_totals');
+    foreach (variable_get('search_active_modules', array('node', 'user')) as $module) {
+      // Update word index
+      $module == 'node' ? module_invoke('usasearch_api', 'update_index') : module_invoke($module, 'update_index');
+    }
+  }
+}
+
+/**
+ * Implements hook_update_index().
+ *
+ * @see node_update_index()
+ */
+function usasearch_api_update_index() {
+
+  $limit = (int)variable_get('search_cron_limit', 100);
+  $result = db_query_range("SELECT n.nid FROM {node} n LEFT JOIN {search_dataset} d ON d.type = 'node' AND d.sid = n.nid WHERE d.sid IS NULL OR d.reindex <> 0 ORDER BY d.reindex ASC, n.nid ASC", 0, $limit);
+
+  foreach ($result as $node) {
+
+    $node = node_load($node->nid);
+
+    // Save the changed time of the most recent indexed node, for the search
+    // results half-life calculation.
+    variable_set('node_cron_last', $node->changed);
+
+    // Render the node.
+    node_build_content($node, 'search_index');
+    $node->rendered = drupal_render($node->content);
+
+    $text = '<h1>' . check_plain($node->title) . '</h1>' . $node->rendered;
+    // Post document to DigitalGov Search i14y drawer
+    usasearch_api_index_document($node, 'delete');
+    usasearch_api_index_document($node, 'insert');
+    // Fetch extra data normally not visible
+    $extra = module_invoke_all('node_update_index', $node);
+    foreach ($extra as $t) {
+      $text .= $t;
+    }
+    // Update index
+    search_index($node->nid, 'node', $text);
+  }
+}
+
+/**
+ *
+ * @param $entity_type
+ * @param $bundle
+ * @param $entity
+ * @param bool|TRUE $keyed_by_vocabulary
+ *
+ * @return array
+ */
+function usasearch_api_get_entity_terms($entity_type, $bundle, $entity, $keyed_by_vocabulary = TRUE) {
+  $terms = array();
+  // Use very lightweight field info list to find relevant fields.
+  foreach (field_info_field_map() as $field_name => $field_info) {
+    if ($field_info['type'] <> "taxonomy_term_reference") {
+      continue;
+    }
+    if (array_key_exists($entity_type, $field_info['bundles'])) {
+      if (in_array($bundle, $field_info['bundles'][$entity_type])) {
+        if (isset($entity->{$field_name})) {
+          // Collect terms from fields for return.
+          $values = field_get_items($entity_type, $entity, $field_name);
+          foreach ((array)$values as $tid) {
+            if ($tid) {
+              if ($keyed_by_vocabulary) {
+                $term = taxonomy_term_load($tid['tid']);
+                $terms[$term->vocabulary_machine_name][$term->tid] = $term->name;
+              }
+              else {
+                $terms[] = $tid['tid'];
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  if ($keyed_by_vocabulary) {
+    return $terms;
+  }
+  else {
+    return array_unique($terms);
+  }
+}

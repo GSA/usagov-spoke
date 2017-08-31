@@ -1,0 +1,989 @@
+<?php
+
+/*
+ * Implements HOOK_init()
+ */
+function usa_tax_man_init()
+{
+
+    // If fail-safe is enabled...
+    // if ( intval(variable_get('utm_check_menu_on_init', 0)) !== 0 ) {
+    //
+    //     // If we havent checked in the last 15 seconds (this stops more than 1 thread running the same process)
+    //     $lastFailSafeCheck = variable_get('utm_last_failsafe_check', 0);
+    //     if ( $lastFailSafeCheck == 0 || time() - $lastFailSafeCheck > 14 ) {
+    //
+    //         // If there is a missing menu-item
+    //         if ( usa_tax_man_someThingIsMissing() ) {
+    //
+    //             variable_set('utm_last_failsafe_check', time());
+    //             usa_tax_man_deleteAllGeneratedMenuItems();
+    //             variable_set('utm_last_failsafe_check', time());
+    //             usa_tax_man_createMenusFromTaxonomy();
+    //             variable_set('utm_last_failsafe_check', time());
+    //             error_log('UTM fail-safe has triggered, and has completed.');
+    //         }
+    //     }
+    // }
+}
+
+function usa_tax_man_someThingIsMissing()
+{
+
+    if ( variable_get('utm_check_menu_titles', '') === '' ) {
+        return false;
+    }
+
+    $expectTitles = explode("\n", trim(variable_get('utm_check_menu_titles')));
+    $menuMacName = variable_get('utm_tax_menudest', 'navigation');
+    $topLvlMenuItems = menu_tree_all_data($menuMacName, null, 1);
+
+    $somethingIsMissing = false;
+    foreach ( $expectTitles as $expectTitle ) {
+
+        $expectTitle = trim($expectTitle);
+        $titleFound = false;
+
+        foreach ($topLvlMenuItems as $title => $data) {
+            if ( strpos($title, $expectTitle) !== false ) {
+                $titleFound = true;
+                break;
+            }
+        }
+
+        if ( !$titleFound ) {
+            $somethingIsMissing = true;
+            break;
+        }
+    }
+
+    return $somethingIsMissing;
+}
+
+/*
+ * Implements HOOK_menu()
+ */
+function usa_tax_man_menu()
+{
+
+    $items = array();
+
+    // Configuration page
+    $items['admin/content/usa-taxonomy-management'] = array(
+        'title' => 'USA Taxonomy Menues & Management',
+        'description' => 'Configure the USA-Taxonomy-Management module',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('usa_tax_man_config_form'),
+        'access arguments' => array('access administration pages'),
+        'type' => MENU_NORMAL_ITEM
+    );
+
+    return $items;
+}
+
+function usa_tax_man_config_form()
+{
+
+	// We'll handel form submission here
+	if ( !empty($_REQUEST['op']) ) {
+        switch (strtolower($_REQUEST['op'])) {
+            case 'save':
+        		if ( empty($_REQUEST['utm_create_menus']) ) { $_REQUEST['utm_create_menus'] = 0; }
+                if ( empty($_REQUEST['utm_menu_targ_replace']) ) { $_REQUEST['utm_menu_targ_replace'] = 0; }
+                if ( empty($_REQUEST['utm_root_tax_menu']) ) { $_REQUEST['utm_root_tax_menu'] = 0; }
+                if ( empty($_REQUEST['utm_check_menu_on_init']) ) { $_REQUEST['utm_check_menu_on_init'] = 0; }
+                if ( empty($_REQUEST['utm_field_dependant']) ) { $_REQUEST['utm_field_dependant'] = 0; }
+                if ( empty($_REQUEST['utm_full_link_dep']) ) { $_REQUEST['utm_full_link_dep'] = 0; }
+
+        		variable_set('utm_create_menus', $_REQUEST['utm_create_menus']);
+        		variable_set('utm_tax_menusource', $_REQUEST['utm_tax_menusource']);
+        		variable_set('utm_tax_menudest', $_REQUEST['utm_tax_menudest']);
+                variable_set('utm_tax_menulimit', $_REQUEST['utm_tax_menulimit']);
+                variable_set('utm_field_dependant', $_REQUEST['utm_field_dependant']);
+                variable_set('utm_full_link_dep', $_REQUEST['utm_full_link_dep']);
+
+                if ( isset($_REQUEST['utm_menu_targets']) ) {
+                    variable_set('utm_menu_targets', $_REQUEST['utm_menu_targets']);
+                }
+                if ( isset($_REQUEST['utm_root_tax_menu']) ) {
+                    variable_set('utm_root_tax_menu', $_REQUEST['utm_root_tax_menu']);
+                }
+                if ( isset($_REQUEST['utm_check_menu_on_init']) ) {
+                    variable_set('utm_check_menu_on_init', $_REQUEST['utm_check_menu_on_init']);
+                }
+                if ( isset($_REQUEST['utm_check_menu_titles']) ) {
+                    variable_set('utm_check_menu_titles', $_REQUEST['utm_check_menu_titles']);
+                }
+                if ( isset($_REQUEST['utm_menu_targ_rep_replace']) ) {
+                    variable_set('utm_menu_targ_rep_replace', $_REQUEST['utm_menu_targ_rep_replace']);
+                }
+                if ( isset($_REQUEST['utm_menu_targ_rep_find']) ) {
+                    variable_set('utm_menu_targ_rep_find', $_REQUEST['utm_menu_targ_rep_find']);
+                }
+                if ( isset($_REQUEST['utm_menu_targ_replace']) ) {
+                    variable_set('utm_menu_targ_replace', $_REQUEST['utm_menu_targ_replace']);
+                }
+                if ( isset($_REQUEST['utm_field_dependant_value']) ) {
+                    variable_set('utm_field_dependant_value', $_REQUEST['utm_field_dependant_value']);
+                }
+                if ( isset($_REQUEST['utm_field_dependant_field']) ) {
+                    variable_set('utm_field_dependant_field', $_REQUEST['utm_field_dependant_field']);
+                }
+                if ( isset($_REQUEST['utm_full_link_dep_field']) ) {
+                    variable_set('utm_full_link_dep_field', $_REQUEST['utm_full_link_dep_field']);
+                }
+                if ( isset($_REQUEST['utm_full_link_dep_value']) ) {
+                    variable_set('utm_full_link_dep_value', $_REQUEST['utm_full_link_dep_value']);
+                }
+
+        		drupal_set_message('UTM Settings have been saved.', 'status');
+                break;
+            case 'rebuild all menus from taxnomy':
+                usa_tax_man_createMenusFromTaxonomy();
+                break;
+            case 'delete generated menu-items':
+                usa_tax_man_deleteAllGeneratedMenuItems();
+                break;
+            default:
+                drupal_set_message('Error - Unknown operation', 'error');
+        }
+	}
+
+    $form = array();
+
+    $form['utmmode'] = array(
+        '#type' => 'fieldset',
+        '#title' => 'Mode',
+        '#collapsible' => false,
+        '#collapsed' => false,
+    );
+
+    $form['utmmode']['utm_create_menus'] = array(
+        '#type' => 'checkbox',
+        '#title' => 'Create menu items based on taxonomy terms, and update menu-items as the taxonomy-terms get updated',
+        '#default_value' => variable_get('utm_create_menus', 0)
+    );
+
+    if ( intval(variable_get('utm_create_menus', 0)) === 1 ) {
+        $form['utmactions'] = array(
+            '#type' => 'fieldset',
+            '#title' => 'Actions',
+            '#collapsible' => true,
+            '#collapsed' => true,
+        );
+        $form['utmactions']['rebuildmenus'] = array(
+            '#type' => 'submit',
+            '#value' => 'Rebuild All Menus from Taxnomy',
+            '#states' => array(
+                'invisible' => array(
+                    ':input[name="utm_create_menus"]' => array('checked' => false),
+                ),
+            ),
+        );
+        $form['utmactions']['delmenus'] = array(
+            '#type' => 'submit',
+            '#value' => 'Delete Generated Menu-Items',
+            '#states' => array(
+                'invisible' => array(
+                    ':input[name="utm_create_menus"]' => array('checked' => false),
+                ),
+            ),
+        );
+    }
+
+    $form['utmmenu'] = array(
+        '#type' => 'fieldset',
+        '#title' => 'Menu Creation Settings',
+        '#collapsible' => true,
+        '#collapsed' => false,
+        '#states' => array(
+            'invisible' => array(
+                ':input[name="utm_create_menus"]' => array('checked' => false),
+            ),
+        ),
+    );
+
+    // Determine options for the "Taxonomy root" field
+    $taxOpts = array(
+        0 => '< None / Disabled >'
+    );
+    foreach ( taxonomy_get_vocabularies() as $vocab ) {
+    	foreach ( taxonomy_get_tree($vocab->vid, 0, 1) as $term ) {
+    		$taxOpts[$term->tid] = $vocab->name . ' - ' .$term->name;
+    	}
+    }
+
+    // If the current saved setting for "Taxonomy root" is invalid, then reset it
+    $curSetting = variable_get('utm_tax_menusource', 0);
+    if ( $curSetting !== 0 && !isset($taxOpts[$curSetting]) ) {
+        variable_set('utm_tax_menusource', 0);
+    }
+
+    $form['utmmenu']['utm_tax_menusource'] = array(
+        '#type' => 'select',
+        '#title' => 'Taxonomy root:',
+        '#options' => $taxOpts,
+        '#default_value' => variable_get('utm_tax_menusource', 0),
+        '#description' => 'Select a parent taxonomy-term, menus will be created for all children of '
+        	.'this term, recursively.',
+    );
+
+    $form['utmmenu']['utm_tax_menudest'] = array(
+        '#type' => 'select',
+        '#title' => 'Menu storage location:',
+        '#options' => menu_get_menus(),
+        '#default_value' => variable_get('utm_tax_menudest', 'navigation'),
+        '#description' => 'Select the menu in where generated menu-links shall be stored',
+    );
+
+    $form['utmmenu']['utm_check_menu_on_init'] = array(
+        '#type' => 'checkbox',
+        '#title' => 'Check for missing menu-items during Drupal-bootstrap, build when necessary',
+        '#default_value' => variable_get('utm_check_menu_on_init', 0),
+        '#description' => 'This is a fail-safe for when menu-items seem to not automatically build.<br/>'
+            .'Please keep in mind that this check will run on every page load (during HOOK_init)'
+    );
+
+    $form['utmmenu']['utm_check_menu_titles'] = array(
+        '#title' => 'Expect these top level menu items to exist. When they dont, rebuild the entire menu:',
+        '#type' => 'textarea',
+        '#default_value' => variable_get('utm_check_menu_titles', ''),
+        '#description' => 'Separate each menu-item title with a new line.',
+        '#states' => array(
+            'invisible' => array(
+                ':input[name="utm_check_menu_on_init"]' => array('checked' => false),
+            ),
+        ),
+    );
+
+    $form['utmmenu']['utm_root_tax_menu'] = array(
+        '#type' => 'checkbox',
+        '#title' => 'Generate a menu-link for the selected taxonomy term '
+            .'[<small>in the "taxonomy root" field above</small>]',
+        '#default_value' => variable_get('utm_root_tax_menu', 0),
+        '#description' => 'If this checkbox is left un-ticked, then only descendants of the selected taxonomy term '
+            .'(descendants under the "Taxonomy Root" field above) generate menu-links. The actual term selected '
+            .'will NOT generate a "Home" link.',
+    );
+
+    $form['utmmenu']['utm_tax_menulimit'] = array(
+        '#type' => 'select',
+        '#title' => 'Menu descendant limit:',
+        '#options' => array(
+            99 => 'Unlimited',
+            1 => '1',
+            2 => '2',
+            3 => '3',
+            4 => '4',
+            5 => '5',
+        ),
+        '#default_value' => variable_get('utm_tax_menulimit', 99),
+        '#description' => 'If set to 3 for example, then this system will not generate menu-items for '
+            .'taxonomy terms any more then 3 levels deep, from the selected taxonomy-term.<br/>Note '
+            .'that if you change this value while a menu is alreay generated, you may need to delete '
+            .'the menu, and then regenerate it, for this setting to take effect.',
+    );
+
+    if ( variable_get('utm_tax_menusource', 0) !== 0 ) {
+
+        $hostTaxTerm = taxonomy_term_load(variable_get('utm_tax_menusource'));
+        $targetVocab = taxonomy_vocabulary_load($hostTaxTerm->vid);
+        $targetVocabMacName = $targetVocab->vocabulary_machine_name;
+        $vocabFields = field_info_instances('taxonomy_term', $targetVocabMacName);
+
+        $form['utmmenu']['utm_field_dependant'] = array(
+            '#type' => 'checkbox',
+            '#title' => 'Only generate menu-items for taxonomy-terms that have a field set to a particular value',
+            '#default_value' => variable_get('utm_field_dependant', 0)
+        );
+
+        $form['utmmenu']['utm_field_dependant_setts'] = array(
+            '#type' => 'fieldset',
+            '#title' => 'Only generate menu-items where...',
+            '#collapsible' => true,
+            '#collapsed' => false,
+            '#states' => array(
+                'invisible' => array(
+                    ':input[name="utm_field_dependant"]' => array('checked' => false),
+                ),
+            ),
+        );
+
+        $fieldDependOpts = array();
+        foreach ($vocabFields as $fieldMachineName => $fieldData) {
+            $fieldDependOpts[$fieldMachineName] = $fieldData['label'] . ' (' . $fieldMachineName . ')';
+        }
+        $form['utmmenu']['utm_field_dependant_setts']['utm_field_dependant_field'] = array(
+            '#type' => 'select',
+            '#title' => '',
+            '#options' => $fieldDependOpts,
+            '#default_value' => variable_get('utm_field_dependant_field', ''),
+            '#field_prefix' => 'Only generate menu-items where the ',
+            '#field_suffix' => 'field...',
+        );
+        $form['utmmenu']['utm_field_dependant_setts']['utm_field_dependant_value'] = array(
+            '#type' => 'textfield',
+            '#title' => '',
+            '#default_value' => variable_get('utm_field_dependant_value', ''),
+            '#field_prefix' => 'is set to the value; ',
+        );
+
+        $menuTargetsOpts = array('alias-path' => 'The taxonomy term\'s URL/alias-path');
+        foreach ($vocabFields as $fieldMachineName => $fieldData) {
+            $menuTargetsOpts[$fieldMachineName] = "The value in taxonomy-term's \"{$fieldData['label']}\" field";
+        }
+        $form['utmmenu']['utm_menu_targets'] = array(
+            '#type' => 'select',
+            '#title' => 'Generated menu-items should link to:',
+            '#options' => $menuTargetsOpts,
+            '#default_value' => variable_get('utm_menu_targets', 'alias-path'),
+            '#description' => 'Note: If the taxonomy term does not have a value in the selected field, '
+                .'the generated menu-item target the front-page.'
+        );
+
+        $form['utmmenu']['utm_full_link_dep'] = array(
+            '#type' => 'checkbox',
+            '#title' => 'Menu-items should link to [full] absolute paths when a field is set to a particular value',
+            '#default_value' => variable_get('utm_full_link_dep', 0)
+        );
+
+        $form['utmmenu']['utm_full_link_dep_opts'] = array(
+            '#type' => 'fieldset',
+            '#title' => 'Link to [full] absolute paths when...',
+            '#collapsible' => true,
+            '#collapsed' => false,
+            '#states' => array(
+                'invisible' => array(
+                    ':input[name="utm_full_link_dep"]' => array('checked' => false),
+                ),
+            ),
+        );
+
+        $fieldFLDependOpts = array();
+        foreach ($vocabFields as $fieldMachineName => $fieldData) {
+            $fieldFLDependOpts[$fieldMachineName] = $fieldData['label'] . ' (' . $fieldMachineName . ')';
+        }
+        $form['utmmenu']['utm_full_link_dep_opts']['utm_full_link_dep_field'] = array(
+            '#type' => 'select',
+            '#title' => '',
+            '#options' => $fieldFLDependOpts,
+            '#default_value' => variable_get('utm_full_link_dep_field', ''),
+            '#field_prefix' => 'Only generate [full] absolute-path links when the term\'s ',
+            '#field_suffix' => 'field...',
+        );
+        $form['utmmenu']['utm_full_link_dep_opts']['utm_full_link_dep_value'] = array(
+            '#type' => 'textfield',
+            '#title' => '',
+            '#default_value' => variable_get('utm_full_link_dep_value', ''),
+            '#field_prefix' => 'is set to the value; ',
+        );
+
+        $form['utmmenu']['utm_menu_targ_replace'] = array(
+            '#type' => 'checkbox',
+            '#title' => 'Apply a find-replace onto menu-link HREFs',
+            '#default_value' => variable_get('utm_menu_targ_replace', 0)
+        );
+
+        $form['utmmenu']['findrepsettings'] = array(
+            '#type' => 'fieldset',
+            '#title' => 'Find-Replace Settings',
+            '#collapsible' => true,
+            '#collapsed' => false,
+            '#states' => array(
+                'invisible' => array(
+                    ':input[name="utm_menu_targ_replace"]' => array('checked' => false),
+                ),
+            ),
+        );
+
+        $form['utmmenu']['findrepsettings']['utm_menu_targ_rep_find'] = array(
+            '#type' => 'textfield',
+            '#title' => 'Find',
+            '#default_value' => variable_get('utm_menu_targ_rep_find', ''),
+            '#size' => '75',
+        );
+
+        $form['utmmenu']['findrepsettings']['utm_menu_targ_rep_replace'] = array(
+            '#type' => 'textfield',
+            '#title' => 'Replace',
+            '#default_value' => variable_get('utm_menu_targ_rep_replace', ''),
+            '#size' => '75',
+        );
+    }
+
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Save'),
+    );
+
+	return $form;
+
+}
+
+function usa_tax_man_createMenusFromTaxonomy($taxonomyParentId = -1, $vocabId = false, $menuParentId = 0, $menuRealm = '', $decLimit = -1, $decTrack = 1)
+{
+    error_log('Fail: CDSC '.__FUNCTION__.' should not be called');
+    return;
+
+    $doFlushMenuCache = false;
+    global $utm_norun;
+    if ( $utm_norun ) {
+        //error_log(__FUNCTION__." bailing.");
+        return;
+    }
+
+    // Watch the descendant limit
+    if ( intval($decLimit) < intval($decTrack) && $decLimit !== -1 ) {
+        error_log(__FUNCTION__.' bailing due to dec-limit');
+        return;
+    }
+
+    variable_set('utm_last_build_time', time());
+
+    // If no taxonomy-term argument was given, assume the taxonomy term chosen from UTM module settings...
+    if ( $taxonomyParentId === -1 ) {
+
+        error_log(__FUNCTION__.' has triggered (first call in recursive chain).');
+        usa_tax_man_deleteAllGeneratedMenuItems();
+        $doFlushMenuCache = true;
+
+        $taxonomyParentId = variable_get('utm_tax_menusource', 'ERROR');
+        if ( $taxonomyParentId === 'ERROR' ) {
+            error_log('Error - The UTM module is not configured properly');
+            return;
+        }
+    }
+
+    $topTerm = taxonomy_term_load($taxonomyParentId);
+    if ( $vocabId === false && !empty($topTerm->vid) ) {
+        $vocabId = $topTerm->vid;
+    }
+
+    // If no menu-[realm] was given, assume the menu chosen from the configuration page
+    if ( $menuRealm === '' ) {
+        $menuRealm = variable_get('utm_tax_menudest', 'navigation');
+    }
+
+    // If no descendant-limit was given, assume the the value chosen from the configuration page
+    if ( $decLimit === -1 ) {
+        $decLimit = variable_get('utm_tax_menulimit', 99);
+    }
+
+    // If this is the first call to this [recursive] function / If this is the top level menu item...
+	if ( $menuParentId === 0 && intval(variable_get('utm_root_tax_menu', 0)) === 1 ) {
+
+        $topLevelMenu = array();
+		$topLevelMenu['link_path'] = '<front>';
+		$topLevelMenu['link_title'] = 'Home';
+		$topLevelMenu['weight'] = $topTerm->weight;
+        $topLevelMenu['expanded'] = true;
+        $topLevelMenu['menu_name'] = $menuRealm;
+
+        // Bug killer
+        if ( is_null($topLevelMenu['weight']) ) {
+            $topLevelMenu['weight'] = 0;
+        }
+        $defaults = array(
+            'menu_name' => $menuRealm,
+            'options' => array(),
+            'depth' => 0,
+            'plid'  => 0,
+            'p1'    => 0,
+            'p2'    => 0,
+            'p3'    => 0,
+            'p4'    => 0,
+            'p5'    => 0,
+            'p6'    => 0,
+            'p7'    => 0,
+            'p8'    => 0,
+            'p9'    => 0,
+        );
+        $topLevelMenu += $defaults;
+
+		menu_link_save($topLevelMenu);
+		$menuParentId = $topLevelMenu['mlid'];
+	}
+
+	$terms = taxonomy_get_children($taxonomyParentId, $vocabId);
+
+	foreach ($terms as $term ) {
+
+        $menuItem = array();
+
+        // Skip creating a menu form this term if necessary per settings
+        if ( intval(variable_get('utm_field_dependant', 0)) === 1 && variable_get('utm_field_dependant_field', '') !== '' ) {
+            $depField = variable_get('utm_field_dependant_field');
+            $depValue = variable_get('utm_field_dependant_value', '');
+            $depValue = strtolower($depValue);
+            if ( !isset($term->{$depField}['und'][0]['value']) ) {
+                error_log("Not creating menu-item for term {$term->tid} as its {$depField} field is not set to '{$depValue}' (no value is set at all)");
+                continue;
+            } else {
+                $thisTermDepFieldValue = $term->{$depField}['und'][0]['value'];
+                $thisTermDepFieldValue = strtolower($thisTermDepFieldValue);
+                if ( $thisTermDepFieldValue != $depValue ) {
+                    error_log("Not creating menu-item for term {$term->tid} as its {$depField} field is not set to '{$depValue}' ");
+                    continue;
+                }
+            }
+        }
+
+        // Determin where this menu-item shall link to
+        $menuLinksToFieldName = variable_get('utm_menu_targets', 'alias-path');
+        $arrTerm = (array) $term;
+        if ( isset($arrTerm[$menuLinksToFieldName]) ) {
+            $menuItem['link_path'] = '';
+            if ( isset($arrTerm[$menuLinksToFieldName]['value']) ) {
+                $menuItem['link_path'] = $arrTerm[$menuLinksToFieldName]['value'];
+            }
+            if ( isset($arrTerm[$menuLinksToFieldName]['und']['value']) ) {
+                $menuItem['link_path'] = $arrTerm[$menuLinksToFieldName]['und']['value'];
+            }
+            if ( isset($arrTerm[$menuLinksToFieldName]['und'][0]['value']) ) {
+                $menuItem['link_path'] = $arrTerm[$menuLinksToFieldName]['und'][0]['value'];
+            }
+            if ( $menuItem['link_path'] === '' ) {
+                $menuItem['link_path'] = '<front>';
+            }
+        } else {
+            $menuItem['link_path'] = 'taxonomy/term/' . $term->tid;
+        }
+        $menuItem['external'] = false;
+
+        // Make this a [full] absolute-path link if the settings say so
+        if ( intval(variable_get('utm_full_link_dep', 0)) === 1 && variable_get('utm_full_link_dep_field', '') !== '' ) {
+
+            $depField = variable_get('utm_full_link_dep_field');
+            $depValue = variable_get('utm_full_link_dep_value', '');
+            $depValue = strtolower($depValue);
+            if ( isset($term->{$depField}['und'][0]['value']) ) {
+                $thisTermDepFieldValue = $term->{$depField}['und'][0]['value'];
+                $thisTermDepFieldValue = strtolower($thisTermDepFieldValue);
+                if ( $thisTermDepFieldValue == $depValue ) {
+                    $menuItem['link_path'] = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $menuItem['link_path'];
+                    $menuItem['external'] = true;
+                }
+            }
+
+        }
+
+        // Before we call menu_link_save(), we need to normalize the link_path, if the link is relative (a requierment of Drupal)
+        if ( !$menuItem['external'] ) {
+            $menuItem['link_path'] = 'taxonomy/term/' . $term->tid;
+        }
+
+        // Apply find-replace onto menu-link items when configured
+        if ( intval(variable_get('utm_menu_targ_replace', 0)) === 1 && variable_get('utm_menu_targ_rep_find', '') !== '' ) {
+
+            $find = variable_get('utm_menu_targ_rep_find', '');
+            $replaceWith = variable_get('utm_menu_targ_rep_replace', '');
+            $menuItem['link_path'] = str_replace($find, $replaceWith, $menuItem['link_path']);
+
+            error_log('it is ' . $menuItem['link_path']);
+
+        }
+
+        // Point the link to <front> if it is blank
+        if ( trim($menuItem['link_path']) === '' ) {
+            $menuItem['link_path'] = '<front>';
+        }
+
+        $menuItem['link_title'] = $term->name;
+        $menuItem['expanded'] = true;
+        $menuItem['weight'] = $term->weight;
+        $menuItem['menu_name'] = $menuRealm;
+
+		if ( $menuParentId !== 0 ) {
+			$menuItem['plid'] = $menuParentId;
+		}
+
+        // Save new/updated menu-link
+        $menuItem['mlid'] = 0;
+        $defaults = array(
+            'menu_name' => $menuRealm,
+            'options' => array(),
+            'depth' => 0,
+            'plid'  => 0,
+            'p1'    => 0,
+            'p2'    => 0,
+            'p3'    => 0,
+            'p4'    => 0,
+            'p5'    => 0,
+            'p6'    => 0,
+            'p7'    => 0,
+            'p8'    => 0,
+            'p9'    => 0,
+        );
+        $menuItem += $defaults;
+
+		menu_link_save($menuItem);
+        error_log("Saved menu-item {$menuItem['mlid']}, this is the {$decTrack}nd descendant, linking to {$menuItem['link_path']}");
+
+        // Note this mlid is associated to this taxonomy term in the mapping
+        $tidToMlidMap[$term->tid] = $menuItem['mlid'];
+
+        // Recursively run through all children of this child
+		usa_tax_man_createMenusFromTaxonomy(
+            $term->tid,
+			$vocabId,
+			$menuItem['mlid'],
+            $menuRealm,
+            $decLimit,
+            $decTrack + 1
+		);
+        //error_log("Saved menu item " . $menuItem['mlid']);
+
+		unset($menuItem); // free memory
+	}
+
+    if ( $doFlushMenuCache ) {
+        $menuRealm = variable_get('utm_tax_menudest', 'main-menu');
+        menu_cache_clear($menuRealm);
+        cache_clear_all(NULL, 'cache_menu');
+        error_log('Cleared menu cache');
+    }
+
+}
+
+function usa_tax_man_deleteAllGeneratedMenuItems()
+{
+
+    error_log(__FUNCTION__."() has fiered.");
+    variable_set('utm_last_del_time', time());
+
+    // A harsh hack to ensure they are deleted...
+    $menuRealm = variable_get('utm_tax_menudest', 'main-menu');
+    db_query("DELETE FROM menu_links WHERE menu_name=:menu_name",array('menu_name'=>$menuRealm));
+    menu_cache_clear($menuRealm);
+    cache_clear_all(NULL, 'cache_menu');
+
+    variable_set('utm_last_del_time', time());
+    error_log(__FUNCTION__."() has completed.");
+}
+
+function usa_tax_man_fastMenuTitleUpdate($tids = array())
+{
+    // Bail on garbage-in
+    if ( !is_array($tids) || count($tids) === 0 ) {
+        return;
+    }
+
+    foreach ($tids as $tid ) {
+
+        $tid = intval($tid);
+        if ( $tid === 0 ) {
+            continue;
+        }
+
+        $term = taxonomy_term_load($tid);
+        if ( empty($term->name) ) {
+            continue;
+        }
+        $termPageTitle = $term->name;
+        $termPageTitle = str_replace('\'', '', $termPageTitle);
+
+        $sql = "UPDATE menu_links SET link_title='{$termPageTitle}' WHERE link_path='taxonomy/term/{$tid}' ";
+        db_query($sql);
+    }
+
+    $menuRealm = variable_get('utm_tax_menudest', 'main-menu');
+    menu_cache_clear($menuRealm);
+    cache_clear_all(NULL, 'cache_menu');
+}
+
+function usa_tax_man_entity_delete($entity, $type)
+{
+    if ( empty(variable_get('utm_create_menus')) )
+    {
+        return;
+    }
+	if($type=='taxonomy_term' && $entity->vocabulary_machine_name='site_strucutre_taxonomy')
+	{
+		$term_id=$entity->tid;
+		delete_menu_item($term_id);
+	}
+
+}
+function delete_menu_item($term_id)
+{
+	if(isset($term_id) && $term_id!="")
+	{
+		$term_path='taxonomy/term/'.$term_id;
+		menu_link_delete(NULL,$term_path);
+	}
+
+}
+
+function usa_tax_man_entity_update($entity, $type)
+{
+    if ( empty(variable_get('utm_create_menus')) )
+    {
+        return;
+    }
+	if( $type=='taxonomy_term'
+		&& $entity->vocabulary_machine_name='site_strucutre_taxonomy'
+		&& isset($entity->field_generate_menu)
+		&& isset($entity->field_generate_menu['und'])
+		&& isset($entity->field_generate_menu['und'][0])
+		&& isset($entity->field_generate_menu['und'][0]['value'])
+		&& $entity->field_generate_menu['und'][0]['value']==='yes' )
+	{
+		update_menu_link($entity);
+	}
+
+}
+
+function update_menu_link($entity)
+{
+	if(isset($entity->tid) && $entity->tid!="")
+	{
+		$term_path='taxonomy/term/'.$entity->tid;
+
+		$menu_obj=menu_get_item($term_path);
+
+		if(!empty($menu_obj)) {
+			$menuItem  = array();
+			$menuInfo  = db_query("SELECT * FROM menu_links WHERE link_path=:menu_link", array(":menu_link"=>$term_path))->fetchAssoc();
+			$menuRealm = variable_get('utm_tax_menudest', 'main-menu');
+
+			$menuItem['link_path']  = $term_path;
+			$menuItem['mlid']       = $menuInfo['mlid'];
+			$menuItem['link_title'] = $entity->name;
+			$menuItem['expanded']   = true;
+			$menuItem['external']   = (url_is_external($menuItem['link_path']) || $menuItem['link_path'] == '<front>') ? 1 : 0;
+			$menuItem['weight']     = (isset($entity->weight)) ? $entity->weight:0; // Term weight
+			$menuItem['menu_name']  = $menuRealm;
+
+            $plid = db_query(
+                "SELECT mlid AS plid
+                 FROM  {menu_links}
+                 WHERE link_path IN (
+                     SELECT CONCAT('taxonomy/term/',parent)
+                     FROM   {taxonomy_term_hierarchy}
+                     WHERE  tid=:tid
+                 )"
+                ,array(':tid'=>$entity->tid)
+            )->fetchColumn();
+            if ( !empty($plid) )
+            {
+                $menuItem['plid'] = $plid;
+            }
+            $defaults = array(
+                'menu_name' => $menuRealm,
+                'options' => array(),
+                'depth' => 0,
+                'plid'  => 0,
+                'p1'    => 0,
+                'p2'    => 0,
+                'p3'    => 0,
+                'p4'    => 0,
+                'p5'    => 0,
+                'p6'    => 0,
+                'p7'    => 0,
+                'p8'    => 0,
+                'p9'    => 0,
+            );
+            $menuItem += $defaults;
+            $menu_obj += $defaults;
+            if ( isset($menu_obj['options']) && !is_string($menu_obj['options']) )
+            {
+                $menu_obj['options'] = serialize($menu_obj['options']);
+            }
+
+			menu_link_save($menuItem,$menu_obj);
+
+            if ( !empty($menuItem['mlid']) )
+            {
+                /// Tell my children that I am their parent
+                db_query(
+                    "UPDATE menu_links l
+                     JOIN (
+                        SELECT mlid
+                        FROM  menu_links
+                        WHERE link_path IN (
+	                        SELECT CONCAT('taxonomy/term/',h.tid)
+	                        FROM   taxonomy_term_hierarchy h
+	                        WHERE  h.parent=:tid
+                        )
+                    ) c ON ( l.mlid = c.mlid )
+                     SET l.plid=:plid"
+                    ,array( ':plid'=>$menuItem['mlid'], ':tid'=>$entity->tid )
+                );
+                _menu_update_parental_status($menuItem);
+                menu_cache_clear($menuRealm);
+            }
+
+			menu_cache_clear_all();
+		}
+	}
+}
+
+function usa_tax_man_entity_insert($entity, $type)
+{
+    if ( empty(variable_get('utm_create_menus')) )
+    {
+        return;
+    }
+	if( $type=='taxonomy_term'
+		&& $entity->vocabulary_machine_name='site_strucutre_taxonomy'
+		&& isset($entity->field_generate_menu)
+		&& isset($entity->field_generate_menu['und'])
+		&& isset($entity->field_generate_menu['und'][0])
+		&& isset($entity->field_generate_menu['und'][0]['value'])
+		&& $entity->field_generate_menu['und'][0]['value']==='yes' )
+	{
+		insert_menu_item($entity);
+	}
+}
+
+function insert_menu_item($entity)
+{
+	if(isset($entity->tid) && $entity->tid!="")
+	{
+		$term_path='taxonomy/term/'.$entity->tid;
+		$menuItem = array();
+
+		$menuRealm = variable_get('utm_tax_menudest', 'main-menu');
+
+		$menuItem['link_path']  = $term_path;
+		$menuItem['link_title'] = $entity->name;
+		$menuItem['expanded']   = true;
+		$menuItem['external']   = (url_is_external($menuItem['link_path']) || $menuItem['link_path'] == '<front>') ? 1 : 0;
+		$menuItem['weight']     = (isset($entity->weight)) ? $entity->weight:0; // Term weight
+		$menuItem['menu_name']  = $menuRealm;
+
+        $plid = db_query(
+            "SELECT mlid AS plid
+             FROM  {menu_links}
+             WHERE link_path IN (
+        	     SELECT CONCAT('taxonomy/term/',parent)
+                 FROM   {taxonomy_term_hierarchy}
+                 WHERE  tid=:tid
+             )"
+            ,array(':tid'=>$entity->tid)
+        )->fetchColumn();
+        if ( !empty($plid) )
+        {
+            $menuItem['plid'] = $plid;
+        }
+        $defaults = array(
+            'menu_name' => $menuRealm,
+            'options' => array(),
+            'depth' => 0,
+            'plid'  => 0,
+            'p1'    => 0,
+            'p2'    => 0,
+            'p3'    => 0,
+            'p4'    => 0,
+            'p5'    => 0,
+            'p6'    => 0,
+            'p7'    => 0,
+            'p8'    => 0,
+            'p9'    => 0,
+        );
+        $menuItem += $defaults;
+
+		menu_link_save($menuItem);
+
+        if ( !empty($menuItem['mlid']) )
+        {
+            db_query(
+                "UPDATE menu_links l
+                 JOIN (
+                    SELECT mlid
+                    FROM   menu_links
+                    WHERE  link_path IN (
+                        SELECT CONCAT('taxonomy/term/',h.tid)
+                        FROM   taxonomy_term_hierarchy h
+                        WHERE  h.parent=:tid
+                    )
+                ) c ON ( l.mlid = c.mlid )
+                 SET l.plid=:plid"
+                ,array( ':plid'=>$menuItem['mlid'], ':tid'=>$entity->tid )
+            );
+        }
+
+        menu_cache_clear_all();
+	}
+}
+
+if ( function_exists('cssFriendlyString') === false ) {
+   function cssFriendlyString($inputString, $charactersToRemove = ' -_/!?@#$%^&*()[]{}<>\'"', $forceLowerCase = true, $trimString = true) {
+       return getEasyCompareString($inputString, $charactersToRemove, $forceLowerCase, $trimString);
+   }
+}
+
+/**
+* string getEasyCompareString(string inputString[, string/array $charactersToRemove, bool forceLowerCase = true])
+*
+* Returns the given string with certain characters removed, and converted to lowercase if desiered.
+* This makes things easier to compare two strings in certain situations.
+*/
+if ( function_exists('getEasyCompareString') === false ) {
+   function getEasyCompareString($inputString, $charactersToRemove = " -_/\\!?@#$%^&*'\"()[]{}<>", $forceLowerCase = true, $trimString = true, $stripUnicodeCharacters = true, $replaceCharsWith = '-', $killRepeatingReplacements = true) {
+
+       $ret = $inputString;
+
+       if ( is_null($charactersToRemove) ) {
+           $charactersToRemove = " -_/\\!?@#$%^&*'\"()[]{}<>";
+       }
+
+       if ( !is_array($charactersToRemove) ) {
+           $charactersToRemove = str_split($charactersToRemove);
+       }
+       $charactersToRemove[] = '%20';
+
+       foreach ( $charactersToRemove as $charToRemove ) {
+           $ret = str_replace($charToRemove, $replaceCharsWith, $ret);
+       }
+
+       if ( $forceLowerCase ) {
+           $ret = strtolower( $ret );
+       }
+
+       if ( $trimString ) {
+           $ret = trim( $ret );
+       }
+
+       if ( $stripUnicodeCharacters ) {
+           $ret = stripUnicode($ret, $replaceCharsWith);
+       }
+
+       if ( $replaceCharsWith !== '' && $killRepeatingReplacements == true ) {
+           while ( strpos($ret, $replaceCharsWith . $replaceCharsWith) !== false ) {
+               $ret = str_replace($replaceCharsWith . $replaceCharsWith, $replaceCharsWith, $ret);
+           }
+       }
+
+       return $ret;
+   }
+}
+
+/**
+* string stripUnicode(string $inputString)
+*
+* Returns $inputString with all Unicode characters stripped
+*/
+if ( function_exists('stripUnicode') === false ) {
+   function stripUnicode($inputString, $replaceUnicodeCharsWith = '') {
+
+       $removeCharacters = array();
+       for ( $x = strlen($inputString) - 1 ; $x > -1 ; $x-- ) {
+           $thisChar = $inputString[$x];
+           $charCode = ord($thisChar);
+           if (
+               ( 96 < $charCode && $charCode < 123 )
+               || ( 64 < $charCode && $charCode < 91 )
+               || ( 47 < $charCode && $charCode < 58 )
+           ) {
+               // Then this is a character, a-z, A-Z, or 0-1
+           } else {
+               $removeCharacters[$thisChar] = $thisChar;
+           }
+       }
+
+       $inputString = str_replace(array_values($removeCharacters), $replaceUnicodeCharsWith, $inputString);
+
+       return $inputString;
+   }
+}

@@ -1,0 +1,28 @@
+name = usa.gov
+description = usa.gov's default theme.
+package = Core
+version = VERSION
+core = 7.x
+
+regions[content] = Content
+
+;stylesheets[all][] = css/grid.css
+;stylesheets[all][] = css/platform_stndrd.css
+;stylesheets[all][] = css/downlvl_stndrd.css
+stylesheets[all][] = css/style.css
+stylesheets[print][] = css/print.css
+stylesheets[all][] = css/pagelevelsurvey.css
+stylesheets[all][] = css/google-fonts.css
+;stylesheets[all][] = css/main_stndrd.css
+;stylesheets[all][] = css/normalize.min.css
+;stylesheets[all][] = uswds-0.12.1/css/uswds.css
+;stylesheets[all][] = css/usaextra.css
+
+
+scripts[] = /js/respond.js
+scripts[] = /js/jquery-2.1.1.min.js
+scripts[] = /js/platform.js
+scripts[] = /js/menu.js
+scripts[] = js/states.js
+scripts[] = /js/standardsModifications.js
+scripts[] = /js/emergency-popup.js

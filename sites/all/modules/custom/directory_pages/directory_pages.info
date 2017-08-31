@@ -1,0 +1,5 @@
+name = Directory Pages
+description = A module to; claim the needed paths for Directory related pages, and hold templates for said pages
+package = CTAC
+core = 7.x
+files[] = directory_pages.module

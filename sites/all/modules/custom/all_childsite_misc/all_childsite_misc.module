@@ -1,0 +1,1355 @@
+<?php
+
+$GLOBALS['include_tracking_html'] = false;
+
+/**
+ * Implements HOOK_init()
+ *
+ * As pre Russell's request, all connections on all childsites should be done over an HTTPS connection,
+ * and the "Strict Transport Security" should be set (usagov-100397 & usagov-100396).
+ */
+function all_childsite_misc_init()
+{
+    /// this is a job for nginx not drupal
+    // if ( !drupal_is_cli() ) { // this if-condition is required in order to allow drush to work
+    //     header('Strict-Transport-Security: max-age=31536000');
+    //     if ( empty($_SERVER['HTTPS']) ) {
+    //         if ( strpos($_SERVER['REQUEST_URI'], '-DEBUG-NO-HTTPS-REDIRECT-') === false ) {
+    //             while ( @ob_get_length() ) { @ob_end_clean(); }
+    //             header('Location: https://'.$_SERVER['HTTP_HOST'].request_uri_path());
+    //             http_response_code(301);
+    //             drupal_add_http_header('Location', 'https://'.$_SERVER['HTTP_HOST'].request_uri_path());
+    //             exit();
+    //         }
+    //     }
+    // }
+
+    //if ( strtolower(getenv('CMP_DRUPAL_ENVIRONMENT_NAME')) !== 'prod' )
+    // if ( !empty(getenv('CMP_DRUPAL_USASEARCH_DISABLED')) )
+    // {
+
+    /// turn off usasearch for all items
+    /// we don't want the module to do update the index on-change anymore
+    global $conf;
+    foreach ( node_type_get_names() as $node_type=>$node_name )
+    {
+        $conf['usasearch_node_include_'.$node_type] = FALSE;
+    }
+
+    // }
+}
+
+function all_childsite_misc_menu() {
+
+    $items['admin/config/all_childsite_misc'] = array(
+        'description'      => 'Configure settings for All Child Site Misc.',
+        'title'            => 'All Child Site Misc',
+        'page callback'    => 'drupal_get_form',
+        'page arguments'   => array('all_childsite_misc_admin_settings'),
+        'file'             => 'all_childsite_misc.admin.inc',
+        'access arguments' => array('access administration pages'),
+        'type'             => MENU_NORMAL_ITEM
+    );
+
+    // Determin which site we are running
+    $siteName = variable_get('site_name', '');
+    $siteIsUSA = false;
+    $siteIsGobierno = false;
+    $siteIsKids = false;
+
+
+    if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
+        $siteIsGobierno = true;
+    }
+    elseif(strpos(strtolower($siteName), 'kids') !== false) {
+        $siteIsKids = true;
+    }
+    else {
+        $siteIsUSA = true;
+    }
+
+    if ( $siteIsUSA ) {
+        $items['site-index'] = array(
+            'title' => 'Site Index of USA.gov Pages (English)',
+            'description' => 'path claimed by all_childsite_misc.module',
+            'page callback' => '_all_childsite_misc_menuCallbackRouter',
+            'access callback' => true,
+            'type' => MENU_NORMAL_ITEM
+        );
+    }
+
+    if ( $siteIsGobierno ) {
+        $items['sitio-indice'] = array(
+            'title' => 'Índice del sitio (Spanish)',
+            'description' => 'path claimed by all_childsite_misc.module',
+            'page callback' => '_all_childsite_misc_menuCallbackRouter',
+            'access callback' => true,
+            'type' => MENU_NORMAL_ITEM
+        );
+    }
+
+    if ( $siteIsKids ) {
+        $items['about-us/site-map/index.shtml'] = array(
+            'title' => 'Site Index of Kids.gov Pages',
+            'description' => 'path claimed by all_childsite_misc.module',
+            'page callback' => '_all_childsite_misc_menuCallbackRouter',
+            'access callback' => true,
+            'type' => MENU_NORMAL_ITEM
+        );
+    }
+
+    $items['ajax/federal-agencies/autocomplete'] = array(
+        'title' => 'DederalAgencies AutoComplete',
+        'page callback' => '_federalAgenciesAutoComplete',
+        'access callback' => true,
+        'type' => MENU_CALLBACK
+    );
+
+    return $items;
+}
+
+function _all_childsite_misc_menuCallbackRouter() {
+    // Get the request path
+    $ruri = urldecode( request_uri_path() );
+
+    // Determin which site we are running
+    $siteName = variable_get('site_name', '');
+    $siteIsUSA = false;
+    $siteIsGobierno = false;
+    $show_block = false;
+    if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
+        $siteIsGobierno = true;
+    }
+    elseif(strpos(strtolower($siteName), 'kids') !== false) {
+        $siteIsKids = true;
+    }
+    else {
+        $siteIsUSA = true;
+    }
+
+    // Site Index for the letter "A" shall show for Path: /site-index/
+    if ( trim(request_uri_path(), '/') == 'site-index' || trim(request_uri_path(), '/') == 'sitio-indice' || trim(request_uri_path(), '/') == 'about-us/site-map/index.shtml') {
+        // Invoke the all_childsite_misc/directory_records_az block
+        $_REQUEST['letter'] = 'A';
+        $block = module_invoke('all_childsite_misc', 'block_view', 'site_index');
+
+        // Return block contents
+        return $block['content'];
+    }
+
+    // Site Index shall show for Path: site-index/<letter of page in lowecase>
+    if ( ( $siteIsUSA && strlen($ruri) === strlen('/site-index/a') )
+        || ( $siteIsGobierno && strlen($ruri) === strlen('/sitio-indice/a') )
+        || ( $siteIsKids && strlen($ruri) === strlen('/about-us/site-map/index.shtml/a') )) {
+        // Invoke the all_childsite_misc/directory_records_az block
+        $_REQUEST['letter'] = substr($ruri, -1);
+        $block = module_invoke('all_childsite_misc', 'block_view', 'site_index');
+
+        // Return block contents
+        return $block['content'];
+    }
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function all_childsite_misc_block_info() {
+    $blocks['site_index']['info'] = t('Childsite Misc: Site Index');
+    $blocks['site_index']['cache'] = DRUPAL_NO_CACHE;
+
+    $blocks['directory_records_az']['info'] = t('Childsite Misc: Directory Records A-Z');
+    $blocks['directory_records_az']['cache'] = DRUPAL_NO_CACHE;
+
+    $blocks['directory_record_contact_form']['info'] = t('Childsite Misc: Directory Records Contact Form');
+    $blocks['directory_record_contact_form']['cache'] = DRUPAL_NO_CACHE;
+
+    return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function all_childsite_misc_block_view($delta) {
+    // Get the request path
+    $ruri = urldecode( request_uri_path() );
+
+    // Determin which site we are running
+    $siteName = variable_get('site_name', '');
+    $siteIsUSA = false;
+    $siteIsGobierno = false;
+    $show_block = false;
+    if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
+        $siteIsGobierno = true;
+    }
+    elseif(strpos(strtolower($siteName), 'kids') !== false) {
+        $siteIsKids = true;
+    }
+    else {
+        $siteIsUSA = true;
+    }
+
+    switch ($delta) {
+        case 'site_index':
+            //drupal_add_js(drupal_get_path("module", "all_childsite_misc").'/all_childsite_misc.js');
+            drupal_add_css(drupal_get_path("module", "all_childsite_misc").'/all_childsite_misc.css');
+            $content = theme('site_index');
+            return array(
+                'subject' => t('Site Index of ' . variable_get('site_name') . ' Pages'),
+                'content' => $content,
+            );
+            break;
+        case 'directory_record_contact_form':
+            $content = theme('directory_record_contact_form');
+            return array(
+                'subject' => t('Directory Record Contact Form ' . variable_get('site_name') . ' Page'),
+                'content' => $content,
+            );
+            break;
+        case 'directory_records_az':
+            drupal_add_css(drupal_get_path("module", "all_childsite_misc").'/all_childsite_misc.css');
+            drupal_add_css(drupal_get_path("module", "all_childsite_misc").'/app.css');
+            drupal_add_js(drupal_get_path("module", "all_childsite_misc").'/js/jquery-ui.js');
+            drupal_add_js(drupal_get_path("module", "all_childsite_misc").'/js/vendor.js');
+            drupal_add_js(drupal_get_path("module", "all_childsite_misc").'/js/app.js');
+
+            $content = theme('directory_records');
+            return array(
+                'subject' => t('Directory records A-Z'),
+                'content' => $content,
+            );
+            break;
+    }
+}
+
+/**
+ * Implements hook_theme().
+ *
+ */
+function all_childsite_misc_theme()
+{
+    $use_by = variable_get('use_by', 'USA.gov');
+
+    return array(
+        'site_index' => array(
+            'variables' => array('A_to_Z'=> _all_childsite_misc_letters('site_index',$use_by),
+                'page_list'=>_all_childsite_misc_get_AtoZ_list(FALSE)),
+            'template' => 'site_index'
+        ),
+        'directory_records' => array(
+            'template' => 'directory_records'
+        ),
+        'directory_record_contact_form' => array(
+            'template' => 'directory_record_contact_form'
+        ),
+    );
+}
+
+function all_childsite_misc_preprocess_directory_records(&$variables) {
+
+    // We do this here instead of in HOOK_theme(), because that would cache the A_to_Z value
+    // Doing this here means we want to run _all_childsite_misc_letters() on every request to this .tpl
+    $use_by = variable_get('use_by', 'USA.gov');
+    $variables['A_to_Z'] = _all_childsite_misc_letters('directory-records',$use_by);
+    $variables['page_list'] = _all_childsite_misc_get_AtoZ_Directory_Records(FALSE, $use_by);
+
+}
+
+function all_childsite_misc_preprocess_directory_record_contact_form(&$variables) {
+
+    // We do this here instead of in HOOK_theme(), because that would cache the A_to_Z value
+    // Doing this here means we want to run _all_childsite_misc_letters() on every request to this .tpl
+    $use_by = variable_get('use_by', 'USA.gov');
+    $variables['A_to_Z'] = _all_childsite_misc_letters('directory-records-forms',$use_by);
+    $variables['page_list'] = _all_childsite_misc_get_AtoZ_Directory_Records_forms(FALSE, $use_by);
+
+}
+
+function _all_childsite_misc_letters($template, $use_by) {
+    $all_letters = array();
+    $active_list = array();
+    if ($template == 'site_index') {
+        $active_list = _all_childsite_misc_get_AtoZ_list();
+    }
+    elseif($template == 'directory-records') {
+        $active_list = _all_childsite_misc_get_AtoZ_Directory_Records(TRUE, $use_by);
+    }
+    elseif($template == 'directory-records-forms') {
+        $active_list = _all_childsite_misc_get_AtoZ_Directory_Records_forms(TRUE, $use_by);
+    }
+
+    foreach (range('A', 'Z') as $char) {
+
+        $all_letters[] = array('letter' => $char, 'page_exist' => in_array($char, $active_list));
+    }
+
+    return $all_letters;
+}
+
+function _all_childsite_misc_get_AtoZ_Directory_Records_forms($a_to_z_list = TRUE, $use_by) {
+    $ret = array();
+
+    if ($a_to_z_list) {
+
+        $sql = "SELECT LEFT(n.title,1) as letter FROM node n "
+            ."INNER JOIN field_data_field_for_use_by_text u ON u.entity_id=n.nid "
+            ."INNER JOIN field_data_field_link_form_links fl ON fl.entity_id=n.nid AND LENGTH(field_link_form_links_url) > 0 "
+            ." WHERE n.status = 1 AND n.type ='directory_record_content_type' AND u.field_for_use_by_text_value LIKE '".$use_by."' ";
+
+        $sql .= " UNION ";
+
+        $sql .= "SELECT LEFT(syn.field_synonym_value,1) as letter FROM node n "
+            ."INNER JOIN field_data_field_for_use_by_text u ON u.entity_id=n.nid "
+            ."INNER JOIN field_data_field_link_form_links fl ON fl.entity_id=n.nid AND LENGTH(field_link_form_links_url) > 0 "
+            ."INNER JOIN field_data_field_synonym syn ON syn.entity_id=n.nid "
+            ." WHERE n.status = 1 AND n.type ='directory_record_content_type' AND u.field_for_use_by_text_value LIKE '".$use_by."' ";
+
+    }
+    else {
+        $sql = "SELECT n.title, n.nid as page_url, LEFT(title,1) as letter, field_acronym_value as acronym, field_link_form_links_url as uurl "
+            ."FROM node n INNER JOIN field_data_field_for_use_by_text u ON u.entity_id=n.nid "
+            ."INNER JOIN field_data_field_link_form_links fl ON fl.entity_id=n.nid AND LENGTH(field_link_form_links_url) > 0 "
+            ."LEFT JOIN field_data_field_acronym ac ON ac.entity_id=n.nid "
+            ."WHERE n.status = 1 AND n.type ='directory_record_content_type' AND u.field_for_use_by_text_value LIKE :use_by ";
+
+        $sql .= " UNION ";
+        // page list
+        $sql .= "SELECT syn.field_synonym_value AS title, n.nid as page_url, LEFT(syn.field_synonym_value,1) as letter, field_acronym_value as acronym, field_link_form_links_url as uurl "
+            ."FROM node n INNER JOIN field_data_field_for_use_by_text u ON u.entity_id=n.nid "
+            ."INNER JOIN field_data_field_link_form_links fl ON fl.entity_id=n.nid AND LENGTH(field_link_form_links_url) > 0 "
+            ."INNER JOIN field_data_field_synonym syn ON syn.entity_id=n.nid "
+            ."LEFT JOIN field_data_field_acronym ac ON ac.entity_id=n.nid "
+            ." WHERE n.status = 1 AND n.type ='directory_record_content_type' AND u.field_for_use_by_text_value LIKE :use_by ";
+
+        $sql = "SELECT DISTINCT r.title, r.page_url, r.letter, r. acronym, r.uurl  FROM (" . $sql . ") r ORDER BY r.title;";
+    }
+
+    $res = db_query($sql, array(':use_by'=>$use_by));
+
+    foreach($res as $row) {
+
+        if (isset($row->title)) {
+            $title = $row->title.((isset($row->acronym) && strlen($row->acronym) >0)? " (".$row->acronym.")" :"").' Forms';
+
+            $ret[$row->letter][] = array("page_title"=>$title, "page_url"=> $row->uurl);
+        }
+        else {
+            $ret[] = $row->letter;
+        }
+    }
+
+    return $ret;
+}
+
+function _all_childsite_misc_get_AtoZ_Directory_Records($a_to_z_list = TRUE, $use_by) {
+    $ret = array();
+
+    if ($a_to_z_list) {
+        // a to z list
+        $sql = "SELECT LEFT(n.title,1) as letter FROM node n "
+            ."INNER JOIN field_data_field_for_use_by_text u ON u.entity_id=n.nid "
+            ."INNER JOIN field_data_field_directory_type d ON d.entity_id = n.nid AND field_directory_type_value LIKE 'Federal Agencies' "
+            #."INNER JOIN field_data_field_alpha_order_name ao ON ao.entity_id=n.nid AND LENGTH(field_alpha_order_name_value) > 0 "
+            ."INNER JOIN field_data_field_show_on_az_index az ON field_show_on_az_index_value='Yes' AND az.entity_id=n.nid "
+            ." WHERE n.status = 1 AND n.type ='directory_record_content_type' AND u.field_for_use_by_text_value LIKE :use_by ";
+        $sql .= " UNION ";
+
+        $sql .= "SELECT LEFT(syn.field_synonym_value,1) as letter FROM node n "
+            ."INNER JOIN field_data_field_for_use_by_text u ON u.entity_id=n.nid "
+            ."INNER JOIN field_data_field_directory_type d ON d.entity_id = n.nid AND field_directory_type_value LIKE 'Federal Agencies' "
+            #."INNER JOIN field_data_field_alpha_order_name ao ON ao.entity_id=n.nid AND LENGTH(field_alpha_order_name_value) > 0 "
+            ."INNER JOIN field_data_field_show_on_az_index az ON field_show_on_az_index_value='Yes' AND az.entity_id=n.nid "
+            ."INNER JOIN field_data_field_synonym syn ON syn.entity_id=n.nid "
+            ." WHERE n.status = 1 AND n.type ='directory_record_content_type' AND u.field_for_use_by_text_value LIKE :use_by ";
+
+    }
+    else {
+        // page list
+        #$sql = "SELECT n.title, n.nid as page_url, LEFT(title,1) as letter, ao.field_alpha_order_name_value as ao_name, field_acronym_value as acronym "
+        $sql = "SELECT n.title, n.nid as page_url, LEFT(title,1) as letter, field_acronym_value as acronym "
+            ."FROM node n INNER JOIN field_data_field_for_use_by_text u ON u.entity_id=n.nid "
+            ."INNER JOIN field_data_field_directory_type d ON d.entity_id = n.nid AND field_directory_type_value LIKE 'Federal Agencies' "
+            ."INNER JOIN field_data_field_show_on_az_index az ON field_show_on_az_index_value='Yes' AND az.entity_id=n.nid "
+            #."INNER JOIN field_data_field_alpha_order_name ao ON ao.entity_id=n.nid AND LENGTH(field_alpha_order_name_value) > 0 "
+            ."LEFT JOIN field_data_field_acronym ac ON ac.entity_id=n.nid "
+            ."WHERE n.status = 1 AND n.type ='directory_record_content_type' AND u.field_for_use_by_text_value LIKE :use_by ";
+        $sql .= " UNION ";
+        // page list
+        #$sql .= "SELECT syn.field_synonym_value AS title, n.nid as page_url, LEFT(syn.field_synonym_value,1) as letter, ao.field_alpha_order_name_value as ao_name, field_acronym_value as acronym "
+        $sql .= "SELECT syn.field_synonym_value AS title, n.nid as page_url, LEFT(syn.field_synonym_value,1) as letter, field_acronym_value as acronym "
+            ."FROM node n INNER JOIN field_data_field_for_use_by_text u ON u.entity_id=n.nid "
+            ."INNER JOIN field_data_field_directory_type d ON d.entity_id = n.nid AND field_directory_type_value LIKE 'Federal Agencies' "
+            ."INNER JOIN field_data_field_show_on_az_index az ON field_show_on_az_index_value='Yes' AND az.entity_id=n.nid "
+            #."INNER JOIN field_data_field_alpha_order_name ao ON ao.entity_id=n.nid AND LENGTH(field_alpha_order_name_value) > 0 "
+            ."INNER JOIN field_data_field_synonym syn ON syn.entity_id=n.nid "
+            ."LEFT JOIN field_data_field_acronym ac ON ac.entity_id=n.nid "
+            ." WHERE n.status = 1 AND n.type ='directory_record_content_type' AND u.field_for_use_by_text_value LIKE :use_by ";
+
+        #$sql = "SELECT DISTINCT r.title, r.page_url, r.letter, r.ao_name, r. acronym  FROM (" . $sql . ") r ORDER BY r.title;";
+        $sql = "SELECT DISTINCT r.title, r.page_url, r.letter, r. acronym  FROM (" . $sql . ") r ORDER BY r.title;";
+    }
+
+    $res = db_query($sql, array(':use_by'=>$use_by));
+    foreach($res as $row) {
+
+        if (isset($row->title)) {
+            $title = $row->title.((isset($row->acronym) && strlen($row->acronym) >0)? " (".$row->acronym.")" :"");
+
+            // Use the directory_pages_getUrlToDirectoryRecord() function to determin path - defined in the directory_pages module
+            if ( function_exists('directory_pages_getUrlToDirectoryRecord') ) {
+                $url = directory_pages_getUrlToDirectoryRecord($row->page_url);
+            } else {
+                $url = "javascript: alert('Error - directory_pages_getUrlToDirectoryRecord() is undefined in PHP');";
+            }
+
+            $ret[$row->letter][] = array("page_title"=>$title, "page_url"=> $url);
+        }
+        else {
+            $ret[] = $row->letter;
+        }
+    }
+
+    // Determin which site we are running
+    $siteName = variable_get('site_name', '');
+    $siteIsUSA = false;
+    $siteIsGobierno = false;
+    if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
+        $siteIsGobierno = true;
+    } else {
+        $siteIsUSA = true;
+    }
+
+    // Add in links to all "/state-government/<StateName>" links
+    if ( function_exists('directory_pages_acronymToStateName') ) {
+        $states = db_query("
+            SELECT DISTINCT field_state_value
+            FROM field_data_field_state
+            WHERE bundle='directory_record_content_type'
+        ")->fetchCol();
+        foreach ( $states as $state ) {
+
+            // At this point $state is an acronym
+            $stateName = ucwords( directory_pages_acronymToStateName($state, $state) );
+            $stateName = str_replace('U.s.', 'U.S.', $stateName); // Bug-killer/cleanup for ucwords() usage
+            $stateName = str_replace(' Of ', ' of ', $stateName); // Bug-killer/cleanup for ucwords() usage
+            if ( $siteIsGobierno ) {
+                $stateName = t($stateName);
+            }
+            $stateLetter = strtoupper( substr($stateName, 0, 1) );
+
+            // Open this letter is it currently has no results
+            if ( empty($ret[$stateLetter]) ) {
+                if ( $a_to_z_list ) {
+                    $ret[] = $stateLetter;
+                    sort($ret);
+                } else {
+                    $ret[$stateLetter] = array();
+                }
+            }
+
+            // Inject a result for this state
+            if ( !$a_to_z_list ) {
+                $ret[$stateLetter][] = array(
+                    'page_title' => $stateName,
+                    'page_url' =>
+                        ($siteIsGobierno?'/gobiernos-estatales/':'/state-government/')
+                        ._sanitzie_path(str_replace(' ', '-', strtolower($stateName)))
+                );
+            }
+        }
+    }
+
+    // Since we have added new elements into the result-set we must now re-sort them
+    if ( !$a_to_z_list && function_exists('directory_pages_acronymToStateName') ) {
+        foreach ($ret as $letter => $letResults) {
+            if ( is_array($letResults) ) {
+                $newLetResults = array();
+                foreach ($letResults as $result) {
+                    $newLetResults[$result['page_title']] = $result; // Assign the page_title as the key, which will be used for sorting
+                }
+                ksort($newLetResults); // Sort by the key, which was set from the page_title
+                $ret[$letter] = array_values($newLetResults); // Use array_values() to reset the keys back into integers
+            }
+        }
+    }
+
+    return $ret;
+}
+
+function _all_childsite_misc_get_AtoZ_list($a_to_z_list = TRUE) {
+
+    $ret = array();
+
+    if ($a_to_z_list) {
+        // a to z list
+        $sql = "SELECT DISTINCT LEFT(field_browser_title_value,1) as letter FROM field_data_field_browser_title p
+                  INNER JOIN field_data_field_generate_page m ON m.entity_id = p.entity_id AND field_generate_page_value LIKE 'yes'
+                  INNER JOIN field_data_field_friendly_url f ON f.entity_id=p.entity_id ORDER BY LEFT(field_browser_title_value,1) ";
+    }
+    else {
+        // page list
+        $sql = "SELECT DISTINCT field_browser_title_value as title, field_friendly_url_value as page_url, LEFT(field_browser_title_value,1) as letter
+                  FROM field_data_field_browser_title p
+                  INNER JOIN field_data_field_generate_page m ON m.entity_id = p.entity_id AND field_generate_page_value LIKE 'yes'
+                  INNER JOIN field_data_field_friendly_url f ON f.entity_id=p.entity_id  ORDER BY field_browser_title_value";
+    }
+
+    $res = db_query($sql);
+    foreach($res as $row) {
+        if (isset($row->title)) {
+            $ret[$row->letter][] = array("page_title"=> $row->title, "page_url"=> $row->page_url);
+        }
+        else {
+            $ret[] = $row->letter;
+        }
+    }
+
+    return $ret;
+}
+
+
+function all_childsite_misc_cdsc_term_pre_import($term)
+{
+    if(!empty($term))
+    {
+        _all_childsite_misc_alter_url_alias($term);
+    }
+    return $term;
+}
+function _all_childsite_misc_alter_url_alias( &$term )
+{
+    if ( !empty($term->tid) )
+    {
+        db_query('DELETE FROM {url_alias} WHERE source=:source',
+            array(':source'=>'taxonomy/term/'.$term->tid) );
+    }
+    if ( empty($term->field_friendly_url) ||
+         empty($term->field_friendly_url['und']) ||
+         empty($term->field_friendly_url['und'][0]) ||
+         empty($term->field_friendly_url['und'][0]['value']) ||
+         empty($term->field_generate_page) ||
+         empty($term->field_generate_page['und']) ||
+         empty($term->field_generate_page['und'][0]) ||
+         empty($term->field_generate_page['und'][0]['value']) ||
+         $term->field_generate_page['und'][0]['value'] != 'yes' )
+    {
+        return;
+    }
+    $alias = $term->field_friendly_url['und'][0]['value'];
+    // Save new alias
+    $alias = str_replace(array(
+        'http://kids.usa.gov/',
+        'https://kids.usa.gov/',
+        '//kids.usa.gov/',
+        'http://usa.gov/',
+        'https://usa.gov/',
+        '//usa.gov/',
+        'http://gobierno.usa.gov/',
+        'https://gobierno.usa.gov/',
+        '//gobierno.usa.gov/',
+        'http://blog.usa.gov/',
+        'https://blog.usa.gov/',
+        '//blog.usa.gov/',
+        'http://',
+        'https://'
+    ), '', $alias);
+    $term->path = array('alias'=>ltrim($alias, '/'));
+    _cdsc_log('DBG: CDSC '.__FUNCTION__.'.'.__LINE__.' uuid: '.$term->uuid.' url_alias:'.$alias );
+}
+
+function all_childsite_misc_cdsc_node_pre_import( $node )
+{
+    if(!empty($node))
+    {
+        _all_childsite_misc_alter_abbr($node);
+        _all_childsite_misc_alter_file($node);
+        _all_childsite_misc_feature_alias($node);
+    }
+    return $node;
+}
+function _all_childsite_misc_alter_file( &$node )
+{
+
+    // Failsafe for "Trying to get property of non-object" error
+    if ( empty($node->type) )
+    {
+        return;
+    }
+
+    $fields = field_info_instances('node',$node->type);
+    foreach ( array_keys($fields) as $field )
+    {
+        $url_field = $field.'_url';
+        if ( !isset($node->{$field})
+            || !isset($node->{$field}['und'])
+            || !isset($fields[$url_field]) )
+        {
+            continue;
+        }
+
+        $field_info = field_info_field($field);
+        if ( !isset($field_info['type'])
+            || !in_array($field_info['type'],['file','image']) )
+        {
+            continue;
+        }
+        foreach ( $node->{$field}['und'] as $ref )
+        {
+            if ( isset($ref['fid']) && isset($ref['uri']) )
+            {
+                $node->{$url_field} = array('und'=>array(0=>array(
+                    'value' => $ref['uri'],
+                    'format' => null,
+                    'safe_value' => $ref['uri']
+                )));
+            }
+        }
+    }
+}
+function _all_childsite_misc_alter_abbr( &$node )
+{
+    // Failsafe for "Trying to get property of non-object" error
+    if ( empty($node->type) ) {
+        return;
+    }
+
+    if ($node->type == "text_content_type" || $node->type == 'directory_record_content_type') {
+
+        $data_abbr = "Apt.|Apartment\nAve.|Avenue\nBldg.|Building\nBlvd.|Boulevard\nCir.|Circle\nCt.|Court\nDr.|Drive\n"
+            . "Expy.|Expressway\nJct.|Junction\nLn.|Lane\nRte.|Route\nSt.|Street\nSte.|Suite\nTpke.|Turnpike";
+        $abbrs = explode("\n", $data_abbr);
+
+        if (isset($data_abbr) && count($abbrs) > 0) {
+            foreach ($abbrs as $abbr) {
+                $tmp_abbr = explode("|", $abbr);
+                if (count($tmp_abbr) == 2) {
+                    $find_str = $tmp_abbr[0];
+                    $replace_str = '<abbr title="' . $tmp_abbr[1].'">' . $tmp_abbr[0] . '</abbr>';
+                    // find and replace
+                    if ($node->type == "text_content_type" ) {
+                        if (isset($node->title)) {
+                            $node->title = str_replace($find_str, $replace_str, $node->title);
+                        }
+                        if (isset($node->field_description['und'][0]['value'])) {
+                            $node->field_description['und'][0]['value'] = str_replace($find_str, $replace_str, $node->field_description['und'][0]['value']);
+                            $node->field_description['und'][0]['safe_value'] = str_replace($find_str, $replace_str, $node->field_description['und'][0]['safe_value']);
+                        }
+                        if (isset($node->body['und'][0]['value'])) {
+                            $node->body['und'][0]['value'] = str_replace($find_str, $replace_str, $node->body['und'][0]['value']);
+                            $node->body['und'][0]['safe_value'] = str_replace($find_str, $replace_str, $node->body['und'][0]['safe_value']);
+                        }
+                        if (isset($node->field_contact_center_info['und'][0]['value'])) {
+                            $node->field_contact_center_info['und'][0]['value'] = str_replace($find_str, $replace_str, $node->field_contact_center_info['und'][0]['value']);
+                            $node->field_contact_center_info['und'][0]['safe_value'] = str_replace($find_str, $replace_str, $node->field_contact_center_info['und'][0]['safe_value']);
+                        }
+
+                    }
+                    elseif($node->type == 'directory_record_content_type'){
+
+                        if (isset($node->title)) {
+                            $node->title = str_replace($find_str, $replace_str, $node->title);
+                        }
+                        // assuming it is directory_record_content_type
+                        if (isset($node->field_description['und'][0]['value'])) {
+                            $node->field_description['und'][0]['value'] = str_replace($find_str, $replace_str, $node->field_description['und'][0]['value']);
+                            $node->field_description['und'][0]['safe_value'] = str_replace($find_str, $replace_str, $node->field_description['und'][0]['safe_value']);
+                        }
+
+                        #if (isset($node->field_alpha_order_name['und'][0]['value'])) {
+                        #    $node->field_alpha_order_name['und'][0]['value'] = str_replace($find_str, $replace_str, $node->field_alpha_order_name['und'][0]['value']);
+                        #    $node->field_alpha_order_name['und'][0]['safe_value'] = str_replace($find_str, $replace_str, $node->field_alpha_order_name['und'][0]['safe_value']);
+                        #}
+
+                        if(isset($node->field_english_translation_name['und'][0]['value'])) {
+                            $node->field_english_translation_name['und'][0]['value'] = str_replace($find_str, $replace_str, $node->field_english_translation_name['und'][0]['value']);
+                            $node->field_english_translation_name['und'][0]['safe_value'] = str_replace($find_str, $replace_str, $node->field_english_translation_name['und'][0]['safe_value']);
+                        }
+
+                        if (isset($node->field_see_also['und'][0]['value'])) {
+                            $node->field_see_also['und'][0]['value'] = str_replace($find_str, $replace_str, $node->field_see_also['und'][0]['value']);
+                            $node->field_see_also['und'][0]['safe_value'] = str_replace($find_str, $replace_str, $node->field_see_also['und'][0]['safe_value']);
+                        }
+
+                        if (isset($node->field_subdivision['und'][0]['value'])) {
+                            $node->field_subdivision['und'][0]['value'] = str_replace($find_str, $replace_str, $node->field_subdivision['und'][0]['value']);
+                            $node->field_subdivision['und'][0]['safe_value'] = str_replace($find_str, $replace_str, $node->field_subdivision['und'][0]['safe_value']);
+                        }
+
+                        if (isset($node->field_street_2['und'][0]['value'])) {
+                            $node->field_street_2['und'][0]['value'] = str_replace($find_str, $replace_str, $node->field_street_2['und'][0]['value']);
+                            $node->field_street_2['und'][0]['safe_value'] = str_replace($find_str, $replace_str, $node->field_street_2['und'][0]['safe_value']);
+                        }
+
+                        if (isset($node->field_street_1['und'][0]['value'])) {
+                            $node->field_street_1['und'][0]['value'] = str_replace($find_str, $replace_str, $node->field_street_1['und'][0]['value']);
+                            $node->field_street_1['und'][0]['safe_value'] = str_replace($find_str, $replace_str, $node->field_street_1['und'][0]['safe_value']);
+                        }
+
+                        if (isset($node->field_city['und'][0]['value'])) {
+                            $node->field_city['und'][0]['value'] = str_replace($find_str, $replace_str, $node->field_city['und'][0]['value']);
+                            $node->field_city['und'][0]['safe_value'] = str_replace($find_str, $replace_str, $node->field_city['und'][0]['safe_value']);
+                        }
+
+                        if (isset($node->field_contact_links['und'][0]['value'])) {
+                            $node->field_contact_links['und'][0]['value'] = str_replace($find_str, $replace_str, $node->field_contact_links['und'][0]['value']);
+                            $node->field_contact_links['und'][0]['safe_value'] = str_replace($find_str, $replace_str, $node->field_contact_links['und'][0]['safe_value']);
+                        }
+
+                        if (isset($node->field_in_person_links['und'][0]['value'])) {
+                            $node->field_in_person_links['und'][0]['value'] = str_replace($find_str, $replace_str, $node->field_in_person_links['und'][0]['value']);
+                            $node->field_in_person_links['und'][0]['safe_value'] = str_replace($find_str, $replace_str, $node->field_in_person_links['und'][0]['safe_value']);
+                        }
+
+                        if (isset($node->field_website_links['und'][0]['value'])) {
+                            $node->field_website_links['und'][0]['value'] = str_replace($find_str, $replace_str, $node->field_website_links['und'][0]['value']);
+                            $node->field_website_links['und'][0]['safe_value'] = str_replace($find_str, $replace_str, $node->field_website_links['und'][0]['safe_value']);
+                        }
+
+                        if (isset($node->field_info_for_contact_center['und'][0]['value'])) {
+                            $node->field_info_for_contact_center['und'][0]['value'] = str_replace($find_str, $replace_str, $node->field_info_for_contact_center['und'][0]['value']);
+                            $node->field_info_for_contact_center['und'][0]['safe_value'] = str_replace($find_str, $replace_str, $node->field_info_for_contact_center['und'][0]['safe_value']);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+function _all_childsite_misc_feature_alias(&$node)
+{
+    $siteName   = variable_get('site_name');
+    $siteIsBlog = ( stripos($siteName, 'blog') === false ? false : true );
+    $siteIsKids = ( stripos($siteName, 'kids') === false ? false : true );
+    $siteIsGob  = ( stripos($siteName, 'gobi') === false ? false : true );
+    $siteIsUsa  = ! ( $siteIsBlog || $siteIsKids || $siteIsGob );
+
+    if ( $siteIsKids )
+    {
+        return;
+    }
+
+    // Failsafe for "Trying to get property of non-object" error
+    if ( empty($node->type) )
+    {
+        return;
+    }
+
+    if ( !in_array( $node->type, ['html_content_type','text_content_type']) )
+    {
+        return;
+    }
+
+    $isFeature = false;
+    if (!empty($node->field_for_use_by_text)
+        && !empty($node->field_for_use_by_text['und'])
+        && is_array($node->field_for_use_by_text['und']) )
+    {
+        foreach ( $node->field_for_use_by_text['und'] as $for_use_by )
+        {
+            if ( !empty($for_use_by['value']) && trim(strtolower($for_use_by['value'])) === 'feature' )
+            {
+                $isFeature = true;
+                break;
+            }
+        }
+    }
+
+    $termFriendlyUrls = db_query(
+        "SELECT field_friendly_url_value, 1 FROM field_data_field_friendly_url"
+    )->fetchAllAssoc('nid',PDO::FETCH_ASSOC);
+
+    // Determine the Drupal system-path
+    $sysPath = 'node/'.$node->nid;
+    $alias = '';
+    $title = _aliasPathHelper_urlFriendlyString($node->title);
+
+    if ( $siteIsBlog )
+    {
+        $alias = $title;
+    } else if ( $isFeature ) {
+        if ( $siteIsUsa )
+        {
+            $alias = 'features/'  . $title;
+        } else if ( $siteIsGob ) {
+            $alias = 'novedades/' . $title;
+        }
+    }
+
+    if ( empty($title) ) { return; }
+    if ( empty($alias) ) { return; }
+
+    /// don't take over a friendly_url
+    if ( isset($termFriendlyUrls[$alias]) || isset($termFriendlyUrls['/'.$alias]) ) { return; }
+
+    // done this weird way because this argument must be by-reference
+    db_query("DELETE FROM url_alias WHERE  ( source like 'node%' and alias=:alias ) OR source=:source",
+        array( ':alias' => $alias, ':source'=>$sysPath )); // yup, because path_save() is too dumb to check for duplicates
+    $newPathAlias = array( 'source' => $sysPath, 'alias' => $alias );
+    path_save( $newPathAlias ); // sets the alias path
+
+    error_log("Info: CDSC Sync has set {$sysPath} to have an alias-path of {$alias}");
+
+    /// give it a direct url alias
+}
+
+function all_childsite_misc_cdsc_node_post_import( $node )
+{
+    if(!empty($node))
+    {
+        _all_childsite_misc_update_usasearch_index($node);
+        _clear_theme_cache();
+    }
+    return $node;
+}
+function all_childsite_misc_cdsc_term_post_import( $term )
+{
+    if (!empty($term)) {
+        _clear_theme_cache();
+    }
+}
+
+function _clear_theme_cache(){
+    cache_clear_all('theme_registry', 'cache', TRUE);
+}
+
+function _all_childsite_misc_update_usasearch_index( $node )
+{
+    global $base_url, $secure_base_url, $insecure_base_url;
+
+    if ( !function_exists('usasearch_api_convert_node_to_document') ) { return null; }
+    if ( $node->type !== 'text_content_type' ) { return null; }
+
+    $old_base_url          = $base_url;
+    $old_secure_base_url   = $secure_base_url;
+    $old_insecure_base_url = $insecure_base_url;
+
+    $base_url          = __public_hostname($base_url);
+    $secure_base_url   = __public_hostname($secure_base_url);
+    $insecure_base_url = __public_hostname($insecure_base_url);
+
+    /// delete then reinsert document - we use these specific functions because theme_registry
+    /// skip the usasearch_api checks for whether or not this node type is indexable
+    /// we have already told the usasearch_api nothing is indexable
+    try
+    {
+        $document = usasearch_api_convert_node_to_document($node);
+        usasearch_api_request('DELETE', 'api/v1/documents/' . $document->getDocumentId());
+        if ($node->status !== 0 )
+        {
+            usasearch_api_request('POST', 'api/v1/documents', array('json' => $document->json()));
+        }
+    } catch (Exception $e) {
+        error_log("Error: CDSC usasearch api ".$e->getMessage());
+    } finally {
+        $base_url          = $old_base_url;
+        $secure_base_url   = $old_secure_base_url;
+        $insecure_base_url = $old_insecure_base_url;
+    }
+
+    return true;
+}
+function __public_hostname( $hostname )
+{
+    if ( strtolower(getenv('CMP_DRUPAL_ENVIRONMENT_NAME')) === 'prod' )
+    {
+        if ( stristr($hostname,'blog') !== FALSE )
+        {
+            $hostname = "https://blog.usa.gov";
+        } else if ( stristr($hostname,'kids') !== FALSE ) {
+            $hostname = "https://kids.usa.gov";
+        } else if ( stristr($hostname,'gobierno') !== FALSE ) {
+            $hostname = "https://gobierno.usa.gov";
+        } else if ( stristr($hostname,'usa') !== FALSE ) {
+            $hostname = "https://www.usa.gov";
+        }
+    }
+    return $hostname;
+}
+
+function search_objects($objects, $key, $value) {
+
+    $return = array();
+    foreach ($objects as $object) {
+        $objVars = get_object_vars($object);
+        if (isset($objVars[$key]) && $objVars[$key] == $value) {
+            $return[] = $object;
+        }
+    }
+    return $return;
+}
+
+function all_childsite_misc_form_alter(&$form, &$form_state, $form_id) {
+    // Kill any way for someone to reset the admin password - we can do this in the database if we need to
+    // Or we can: drush uli
+    if ( $form_id === 'user_pass' || $form_id === 'user_pass_block' ) {
+        $form = array();
+        exit('Service disabled');
+    }
+
+    // Disable the user log-in form, unless the correct security key is provided
+    if ( $form_id === 'user_login' || $form_id === 'user_login_block' ) {
+
+        // Disable the user log-in form, unless the correct security key is provided
+        if ( strpos($_SERVER['REQUEST_URI'], getenv('CMP_DRUPAL_AUTH_NONCE')) === false && getenv('CMP_DRUPAL_ENVIRONMENT_NAME')!=='Local' ) {
+            while ( @ob_get_length() ) { @ob_end_clean(); }
+            exit('Access denied');
+        }
+
+        // Force HTTPS with the login form
+        if ( empty($_SERVER['HTTPS']) && strpos($_SERVER['REQUEST_URI'], '-DEBUG-NO-HTTPS-REDIRECT-') === false ) {
+            while ( @ob_get_length() ) { @ob_end_clean(); }
+            header('Location: https://'.$_SERVER['HTTP_HOST'].request_uri_path());
+            drupal_add_http_header('Location', 'https://'.$_SERVER['HTTP_HOST'].request_uri_path());
+            exit();
+        }
+    }
+
+    if ( $form_id == 'akamai_settings' )
+    {
+        /// add cpcode setting
+        array_unshift( $form['#validate'], 'all_childsite_misc_akamai_settings_validate' );
+        $form['akamai_cpcode'] = array(
+            '#type' => 'textfield',
+            '#title' => 'CP Code',
+            '#default_value' => variable_get( 'akamai_cpcode' )
+        );
+        return;
+    } else if ( $form_id == 'akamai_cache_control' ) {
+        /// add "entire site" option
+        $form['#submit_og'] = $form['#submit'];
+        $form['#submit'] = ['all_childsite_misc_akamai_cache_control_submit'];
+        return;
+    }
+
+}
+
+
+//Survey for usagov and gobierno
+function survey_on_pages(){
+    // Get the site name
+    $siteName = variable_get('site_name', '');
+
+    // Determin which site we are running
+    $siteIsUSA = false;
+    $siteIsGobierno = false;
+    if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
+        $siteIsGobierno = true;
+    } else {
+        $siteIsUSA = true;
+    }
+
+    //print the survey based on which site
+    if($siteIsUSA == true){
+        $survey = '<!-- rendersource: all_child_misc --><h2 id="pagesurvey-hdr">What you think matters!</h2>
+            <div id="pagesurvey-trgt"></div>
+            <div id="pagesurvey-ombnum"><a href="/notices#item-211334">Form Approved OMB#3090-0297 Exp. Date 07/31/2019</a></div>
+            <noscript> <iframe src="https://survey.usa.gov/surveys/251" title="Page usefulness survey"></iframe> </noscript>
+            <script type="text/javascript" src="https://survey.usa.gov/widget/widget.js?survey_id=251&target_id=pagesurvey-trgt"></script>';
+    } else {
+        $survey = '<!-- rendersource : all_child_misc --><h2 id="pagesurvey-hdr">¡Su opinión es importante para nosotros!</h2>
+            <div id="pagesurvey-trgt"></div>
+            <div id="pagesurvey-ombnum"><a href="/avisos-sitio-web">Cuestionario aprobado OMB#3090-0297 Fecha de vencimiento 31 julio, 2019</a></div>
+            <noscript> <iframe src="https://survey.usa.gov/surveys/261" title="Cuestionario de utilidad de página web"></iframe> </noscript>
+            <script type="text/javascript" src="https://survey.usa.gov/widget/widget.js?survey_id=261&target_id=pagesurvey-trgt"></script>';
+    }
+
+    return $survey;
+}
+
+//Do you need help box
+function do_you_need_help(){
+    // Get the site name
+    $siteName = variable_get('site_name', '');
+
+    // Determin which site we are running
+    $siteIsUSA = false;
+    $siteIsGobierno = false;
+    if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
+        $siteIsGobierno = true;
+    } else {
+        $siteIsUSA = true;
+    }
+
+    //print the survey based on which site
+    if($siteIsUSA == true){
+
+        $cntctbx = '<div id="cntctbx">
+                    <h2 id="">Do you need help?</h2>
+                    <p>Ask us any question about the U.S. government for free. We\'ll get you the answer or tell you where to find it.</p>
+                    <ul>
+                        <li><a href="/phone">Call USA.gov</a></li>
+                        <li><a href="/chat">Chat with USA.gov</a></li>
+                        <li><a href="/email">Email USA.gov</a></li>
+                    </ul>
+                </div>';
+    } else {
+        $cntctbx = '<div id="cntctbx">
+                    <h2 id="">¿Necesita ayuda?</h2>
+                    <p>Pregúntenos sobre el Gobierno de Estados Unidos de forma gratuita. Le responderemos directamente o le diremos dónde puede encontrar la respuesta que necesita.</p>
+                    <ul>
+                        <li><a href="/centro-de-llamadas">Llame a GobiernoUSA.gov</a></li>
+                        <li><a href="/chat">Chatee con GobiernoUSA.gov</a></li>
+                        <li><a href="/email">Contáctenos por email</a></li>
+                    </ul>
+                </div>';
+    }
+
+    return $cntctbx;
+}
+
+
+
+if ( module_exists('akamai') )
+{
+    module_load_include( 'inc', 'all_childsite_misc', 'all_childsite_misc.akamai' );
+}
+
+/**
+ * string request_uri_path()
+ *
+ * ALWAYS use this instead of request_uri(), this functions scripts out the url-query and fragments.
+ */
+function request_uri_path() {
+
+    return strtok(strtok(request_uri(), '?'), '#');
+}
+
+function _federalAgenciesAutoComplete() {
+
+    // Determin which site we are running
+    $siteName = variable_get('site_name', '');
+    $siteIsUSA = false;
+    $siteIsGobierno = false;
+    if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
+        $siteIsGobierno = true;
+    } else {
+        $siteIsUSA = true;
+    }
+
+    $lang = ( $siteIsGobierno ? 'Spanish' : 'English' );
+    $defaultApiSource = 'http://platform-api.usa.gov';
+    $apiSource = variable_get('usagov_api_source', $defaultApiSource );
+    if ( empty($apiSource) ) { $apiSource = $defaultApiSource; }
+    $contextOptions=array(
+        "ssl"=>array(
+            "verify_peer"=>false,
+            "verify_peer_name"=>false,
+        ),
+    );
+    #$url = 'http://platform-api.usa.gov/api/v1/usagov/directory_records/autocomplete.json?directory_type=Federal%20Agencies&language='.$lang;
+    $url = rtrim($apiSource,'/').'/api/v1/usagov/directory_records/autocomplete.json?directory_type=Federal%20Agencies&language='.$lang;
+    $s = @file_get_contents($url, false, stream_context_create($contextOptions));
+    $d = json_decode($s, true);
+    if ( !empty($d['results']) ) {
+        foreach ($d['results'] as &$result) {
+            $result['source_url'] = str_replace('http://usa.gov/', '/', $result['source_url']);
+            $result['source_url'] = str_replace('http://www.usa.gov/', '/', $result['source_url']);
+            $result['source_url'] = str_replace('https://usa.gov/', '/', $result['source_url']);
+            $result['source_url'] = str_replace('https://www.usa.gov/', '/', $result['source_url']);
+            $result['source_url'] = str_replace('http://gobiernousa.gov/', '/', $result['source_url']);
+            $result['source_url'] = str_replace('https://gobiernousa.gov/', '/', $result['source_url']);
+            $result['source_url'] = str_replace('http://gobierno.usa.gov/', '/', $result['source_url']);
+            $result['source_url'] = str_replace('https://gobierno.usa.gov/', '/', $result['source_url']);
+        }
+    }
+    // Add in links to all "/state-government/<StateName>" links
+    if ( function_exists('directory_pages_acronymToStateName') ) {
+        $states = db_query("
+            SELECT DISTINCT field_state_value
+            FROM field_data_field_state
+            WHERE bundle='directory_record_content_type'
+        ")->fetchCol();
+        foreach ( $states as $state ) {
+
+            // At this point $state is an acronym
+            $stateName = ucwords( directory_pages_acronymToStateName($state) );
+            $stateName = str_replace('U.s.', 'U.S.', $stateName); // Bug-killer/cleanup for ucwords() usage
+            if ( $siteIsGobierno ) {
+                $stateName = t($stateName);
+            }
+            $stateLetter = strtoupper( substr($stateName, 0, 1) );
+
+            // Inject a result for this state
+            $d['results'][] = array(
+                'title' => $stateName,
+                'source_url' =>
+                    ($siteIsGobierno?'/gobiernos-estatales/':'/state-government/')
+                    ._sanitzie_path(str_replace(' ', '-', strtolower($stateName)))
+            );
+        }
+    }
+
+    //dsm($d);
+    //return 'test';
+
+    drupal_json_output($d);
+    exit();
+}
+
+/*
+ * Same function can be found in CMP site.
+ * If you change below function, DON't forgot to update in CMP-site as well.
+ *
+ * */
+
+
+
+function _aliasPathHelper_urlFriendlyString($string)
+{
+
+    $string = _aliasPathHelper_remove_accents($string);
+
+    $string = trim($string);
+    $string = strtolower($string);
+    $string = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $string);
+
+    $replaceWithDashe = array('_', '/', "\\", ' ', '.', '~', '(', ')', '[', ']', ':', ';', '!', '@', '”', '"', "'", "?");
+
+    $string = str_replace($replaceWithDashe, '-', $string);
+
+    while ( strpos($string, '--') !== false ) {
+        $string = str_replace('--', '-', $string);
+    }
+
+    // convert diacritics
+
+    // $string = strtr($string, array(
+    //     ' '=>'-', 'Š'=>'S', 'š'=>'s', 'Ð'=>'Dj', 'Ž'=>'Z', 'ž'=>'z', 'C'=>'C', 'c'=>'c', 'C'=>'C', 'c'=>'c',
+    //     'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
+    //     'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O',
+    //     'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U', 'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss',
+    //     'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'a', 'ç'=>'c', 'è'=>'e', 'é'=>'e',
+    //     'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o',
+    //     'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'ý'=>'y', 'þ'=>'b',
+    //     'ÿ'=>'y', 'R'=>'R', 'r'=>'r', "'"=>'-', '"'=>'-', '?'=>''
+    // ));
+
+    $string = trim($string, '-');
+    return $string;
+}
+
+function _aliasPathHelper_remove_accents($string)
+{
+    if ( !preg_match('/[\x80-\xff]/', $string) )
+        return $string;
+
+    if (_aliasPathHelper_seems_utf8($string)) {
+        $chars = array(
+            // Decompositions for Latin-1 Supplement
+            chr(194).chr(170) => 'a', chr(194).chr(186) => 'o',
+            chr(195).chr(128) => 'A', chr(195).chr(129) => 'A',
+            chr(195).chr(130) => 'A', chr(195).chr(131) => 'A',
+            chr(195).chr(132) => 'A', chr(195).chr(133) => 'A',
+            chr(195).chr(134) => 'AE',chr(195).chr(135) => 'C',
+            chr(195).chr(136) => 'E', chr(195).chr(137) => 'E',
+            chr(195).chr(138) => 'E', chr(195).chr(139) => 'E',
+            chr(195).chr(140) => 'I', chr(195).chr(141) => 'I',
+            chr(195).chr(142) => 'I', chr(195).chr(143) => 'I',
+            chr(195).chr(144) => 'D', chr(195).chr(145) => 'N',
+            chr(195).chr(146) => 'O', chr(195).chr(147) => 'O',
+            chr(195).chr(148) => 'O', chr(195).chr(149) => 'O',
+            chr(195).chr(150) => 'O', chr(195).chr(153) => 'U',
+            chr(195).chr(154) => 'U', chr(195).chr(155) => 'U',
+            chr(195).chr(156) => 'U', chr(195).chr(157) => 'Y',
+            chr(195).chr(158) => 'TH',chr(195).chr(159) => 's',
+            chr(195).chr(160) => 'a', chr(195).chr(161) => 'a',
+            chr(195).chr(162) => 'a', chr(195).chr(163) => 'a',
+            chr(195).chr(164) => 'a', chr(195).chr(165) => 'a',
+            chr(195).chr(166) => 'ae',chr(195).chr(167) => 'c',
+            chr(195).chr(168) => 'e', chr(195).chr(169) => 'e',
+            chr(195).chr(170) => 'e', chr(195).chr(171) => 'e',
+            chr(195).chr(172) => 'i', chr(195).chr(173) => 'i',
+            chr(195).chr(174) => 'i', chr(195).chr(175) => 'i',
+            chr(195).chr(176) => 'd', chr(195).chr(177) => 'n',
+            chr(195).chr(178) => 'o', chr(195).chr(179) => 'o',
+            chr(195).chr(180) => 'o', chr(195).chr(181) => 'o',
+            chr(195).chr(182) => 'o', chr(195).chr(184) => 'o',
+            chr(195).chr(185) => 'u', chr(195).chr(186) => 'u',
+            chr(195).chr(187) => 'u', chr(195).chr(188) => 'u',
+            chr(195).chr(189) => 'y', chr(195).chr(190) => 'th',
+            chr(195).chr(191) => 'y', chr(195).chr(152) => 'O',
+            // Decompositions for Latin Extended-A
+            chr(196).chr(128) => 'A', chr(196).chr(129) => 'a',
+            chr(196).chr(130) => 'A', chr(196).chr(131) => 'a',
+            chr(196).chr(132) => 'A', chr(196).chr(133) => 'a',
+            chr(196).chr(134) => 'C', chr(196).chr(135) => 'c',
+            chr(196).chr(136) => 'C', chr(196).chr(137) => 'c',
+            chr(196).chr(138) => 'C', chr(196).chr(139) => 'c',
+            chr(196).chr(140) => 'C', chr(196).chr(141) => 'c',
+            chr(196).chr(142) => 'D', chr(196).chr(143) => 'd',
+            chr(196).chr(144) => 'D', chr(196).chr(145) => 'd',
+            chr(196).chr(146) => 'E', chr(196).chr(147) => 'e',
+            chr(196).chr(148) => 'E', chr(196).chr(149) => 'e',
+            chr(196).chr(150) => 'E', chr(196).chr(151) => 'e',
+            chr(196).chr(152) => 'E', chr(196).chr(153) => 'e',
+            chr(196).chr(154) => 'E', chr(196).chr(155) => 'e',
+            chr(196).chr(156) => 'G', chr(196).chr(157) => 'g',
+            chr(196).chr(158) => 'G', chr(196).chr(159) => 'g',
+            chr(196).chr(160) => 'G', chr(196).chr(161) => 'g',
+            chr(196).chr(162) => 'G', chr(196).chr(163) => 'g',
+            chr(196).chr(164) => 'H', chr(196).chr(165) => 'h',
+            chr(196).chr(166) => 'H', chr(196).chr(167) => 'h',
+            chr(196).chr(168) => 'I', chr(196).chr(169) => 'i',
+            chr(196).chr(170) => 'I', chr(196).chr(171) => 'i',
+            chr(196).chr(172) => 'I', chr(196).chr(173) => 'i',
+            chr(196).chr(174) => 'I', chr(196).chr(175) => 'i',
+            chr(196).chr(176) => 'I', chr(196).chr(177) => 'i',
+            chr(196).chr(178) => 'IJ',chr(196).chr(179) => 'ij',
+            chr(196).chr(180) => 'J', chr(196).chr(181) => 'j',
+            chr(196).chr(182) => 'K', chr(196).chr(183) => 'k',
+            chr(196).chr(184) => 'k', chr(196).chr(185) => 'L',
+            chr(196).chr(186) => 'l', chr(196).chr(187) => 'L',
+            chr(196).chr(188) => 'l', chr(196).chr(189) => 'L',
+            chr(196).chr(190) => 'l', chr(196).chr(191) => 'L',
+            chr(197).chr(128) => 'l', chr(197).chr(129) => 'L',
+            chr(197).chr(130) => 'l', chr(197).chr(131) => 'N',
+            chr(197).chr(132) => 'n', chr(197).chr(133) => 'N',
+            chr(197).chr(134) => 'n', chr(197).chr(135) => 'N',
+            chr(197).chr(136) => 'n', chr(197).chr(137) => 'N',
+            chr(197).chr(138) => 'n', chr(197).chr(139) => 'N',
+            chr(197).chr(140) => 'O', chr(197).chr(141) => 'o',
+            chr(197).chr(142) => 'O', chr(197).chr(143) => 'o',
+            chr(197).chr(144) => 'O', chr(197).chr(145) => 'o',
+            chr(197).chr(146) => 'OE',chr(197).chr(147) => 'oe',
+            chr(197).chr(148) => 'R',chr(197).chr(149) => 'r',
+            chr(197).chr(150) => 'R',chr(197).chr(151) => 'r',
+            chr(197).chr(152) => 'R',chr(197).chr(153) => 'r',
+            chr(197).chr(154) => 'S',chr(197).chr(155) => 's',
+            chr(197).chr(156) => 'S',chr(197).chr(157) => 's',
+            chr(197).chr(158) => 'S',chr(197).chr(159) => 's',
+            chr(197).chr(160) => 'S', chr(197).chr(161) => 's',
+            chr(197).chr(162) => 'T', chr(197).chr(163) => 't',
+            chr(197).chr(164) => 'T', chr(197).chr(165) => 't',
+            chr(197).chr(166) => 'T', chr(197).chr(167) => 't',
+            chr(197).chr(168) => 'U', chr(197).chr(169) => 'u',
+            chr(197).chr(170) => 'U', chr(197).chr(171) => 'u',
+            chr(197).chr(172) => 'U', chr(197).chr(173) => 'u',
+            chr(197).chr(174) => 'U', chr(197).chr(175) => 'u',
+            chr(197).chr(176) => 'U', chr(197).chr(177) => 'u',
+            chr(197).chr(178) => 'U', chr(197).chr(179) => 'u',
+            chr(197).chr(180) => 'W', chr(197).chr(181) => 'w',
+            chr(197).chr(182) => 'Y', chr(197).chr(183) => 'y',
+            chr(197).chr(184) => 'Y', chr(197).chr(185) => 'Z',
+            chr(197).chr(186) => 'z', chr(197).chr(187) => 'Z',
+            chr(197).chr(188) => 'z', chr(197).chr(189) => 'Z',
+            chr(197).chr(190) => 'z', chr(197).chr(191) => 's',
+            // Decompositions for Latin Extended-B
+            chr(200).chr(152) => 'S', chr(200).chr(153) => 's',
+            chr(200).chr(154) => 'T', chr(200).chr(155) => 't',
+            // Euro Sign
+            chr(226).chr(130).chr(172) => 'E',
+            // GBP (Pound) Sign
+            chr(194).chr(163) => '',
+            // Vowels with diacritic (Vietnamese)
+            // unmarked
+            chr(198).chr(160) => 'O', chr(198).chr(161) => 'o',
+            chr(198).chr(175) => 'U', chr(198).chr(176) => 'u',
+            // grave accent
+            chr(225).chr(186).chr(166) => 'A', chr(225).chr(186).chr(167) => 'a',
+            chr(225).chr(186).chr(176) => 'A', chr(225).chr(186).chr(177) => 'a',
+            chr(225).chr(187).chr(128) => 'E', chr(225).chr(187).chr(129) => 'e',
+            chr(225).chr(187).chr(146) => 'O', chr(225).chr(187).chr(147) => 'o',
+            chr(225).chr(187).chr(156) => 'O', chr(225).chr(187).chr(157) => 'o',
+            chr(225).chr(187).chr(170) => 'U', chr(225).chr(187).chr(171) => 'u',
+            chr(225).chr(187).chr(178) => 'Y', chr(225).chr(187).chr(179) => 'y',
+            // hook
+            chr(225).chr(186).chr(162) => 'A', chr(225).chr(186).chr(163) => 'a',
+            chr(225).chr(186).chr(168) => 'A', chr(225).chr(186).chr(169) => 'a',
+            chr(225).chr(186).chr(178) => 'A', chr(225).chr(186).chr(179) => 'a',
+            chr(225).chr(186).chr(186) => 'E', chr(225).chr(186).chr(187) => 'e',
+            chr(225).chr(187).chr(130) => 'E', chr(225).chr(187).chr(131) => 'e',
+            chr(225).chr(187).chr(136) => 'I', chr(225).chr(187).chr(137) => 'i',
+            chr(225).chr(187).chr(142) => 'O', chr(225).chr(187).chr(143) => 'o',
+            chr(225).chr(187).chr(148) => 'O', chr(225).chr(187).chr(149) => 'o',
+            chr(225).chr(187).chr(158) => 'O', chr(225).chr(187).chr(159) => 'o',
+            chr(225).chr(187).chr(166) => 'U', chr(225).chr(187).chr(167) => 'u',
+            chr(225).chr(187).chr(172) => 'U', chr(225).chr(187).chr(173) => 'u',
+            chr(225).chr(187).chr(182) => 'Y', chr(225).chr(187).chr(183) => 'y',
+            // tilde
+            chr(225).chr(186).chr(170) => 'A', chr(225).chr(186).chr(171) => 'a',
+            chr(225).chr(186).chr(180) => 'A', chr(225).chr(186).chr(181) => 'a',
+            chr(225).chr(186).chr(188) => 'E', chr(225).chr(186).chr(189) => 'e',
+            chr(225).chr(187).chr(132) => 'E', chr(225).chr(187).chr(133) => 'e',
+            chr(225).chr(187).chr(150) => 'O', chr(225).chr(187).chr(151) => 'o',
+            chr(225).chr(187).chr(160) => 'O', chr(225).chr(187).chr(161) => 'o',
+            chr(225).chr(187).chr(174) => 'U', chr(225).chr(187).chr(175) => 'u',
+            chr(225).chr(187).chr(184) => 'Y', chr(225).chr(187).chr(185) => 'y',
+            // acute accent
+            chr(225).chr(186).chr(164) => 'A', chr(225).chr(186).chr(165) => 'a',
+            chr(225).chr(186).chr(174) => 'A', chr(225).chr(186).chr(175) => 'a',
+            chr(225).chr(186).chr(190) => 'E', chr(225).chr(186).chr(191) => 'e',
+            chr(225).chr(187).chr(144) => 'O', chr(225).chr(187).chr(145) => 'o',
+            chr(225).chr(187).chr(154) => 'O', chr(225).chr(187).chr(155) => 'o',
+            chr(225).chr(187).chr(168) => 'U', chr(225).chr(187).chr(169) => 'u',
+            // dot below
+            chr(225).chr(186).chr(160) => 'A', chr(225).chr(186).chr(161) => 'a',
+            chr(225).chr(186).chr(172) => 'A', chr(225).chr(186).chr(173) => 'a',
+            chr(225).chr(186).chr(182) => 'A', chr(225).chr(186).chr(183) => 'a',
+            chr(225).chr(186).chr(184) => 'E', chr(225).chr(186).chr(185) => 'e',
+            chr(225).chr(187).chr(134) => 'E', chr(225).chr(187).chr(135) => 'e',
+            chr(225).chr(187).chr(138) => 'I', chr(225).chr(187).chr(139) => 'i',
+            chr(225).chr(187).chr(140) => 'O', chr(225).chr(187).chr(141) => 'o',
+            chr(225).chr(187).chr(152) => 'O', chr(225).chr(187).chr(153) => 'o',
+            chr(225).chr(187).chr(162) => 'O', chr(225).chr(187).chr(163) => 'o',
+            chr(225).chr(187).chr(164) => 'U', chr(225).chr(187).chr(165) => 'u',
+            chr(225).chr(187).chr(176) => 'U', chr(225).chr(187).chr(177) => 'u',
+            chr(225).chr(187).chr(180) => 'Y', chr(225).chr(187).chr(181) => 'y',
+            // Vowels with diacritic (Chinese, Hanyu Pinyin)
+            chr(201).chr(145) => 'a',
+            // macron
+            chr(199).chr(149) => 'U', chr(199).chr(150) => 'u',
+            // acute accent
+            chr(199).chr(151) => 'U', chr(199).chr(152) => 'u',
+            // caron
+            chr(199).chr(141) => 'A', chr(199).chr(142) => 'a',
+            chr(199).chr(143) => 'I', chr(199).chr(144) => 'i',
+            chr(199).chr(145) => 'O', chr(199).chr(146) => 'o',
+            chr(199).chr(147) => 'U', chr(199).chr(148) => 'u',
+            chr(199).chr(153) => 'U', chr(199).chr(154) => 'u',
+            // grave accent
+            chr(199).chr(155) => 'U', chr(199).chr(156) => 'u',
+        );
+
+        $string = strtr($string, $chars);
+    } else {
+        // Assume ISO-8859-1 if not UTF-8
+        $chars['in'] = chr(128).chr(131).chr(138).chr(142).chr(154).chr(158)
+            .chr(159).chr(162).chr(165).chr(181).chr(192).chr(193).chr(194)
+            .chr(195).chr(196).chr(197).chr(199).chr(200).chr(201).chr(202)
+            .chr(203).chr(204).chr(205).chr(206).chr(207).chr(209).chr(210)
+            .chr(211).chr(212).chr(213).chr(214).chr(216).chr(217).chr(218)
+            .chr(219).chr(220).chr(221).chr(224).chr(225).chr(226).chr(227)
+            .chr(228).chr(229).chr(231).chr(232).chr(233).chr(234).chr(235)
+            .chr(236).chr(237).chr(238).chr(239).chr(241).chr(242).chr(243)
+            .chr(244).chr(245).chr(246).chr(248).chr(249).chr(250).chr(251)
+            .chr(252).chr(253).chr(255);
+
+        $chars['out'] = "EfSZszYcYuAAAAAACEEEEIIIINOOOOOOUUUUYaaaaaaceeeeiiiinoooooouuuuyy";
+
+        $string = strtr($string, $chars['in'], $chars['out']);
+        $double_chars['in'] = array(chr(140), chr(156), chr(198), chr(208), chr(222), chr(223), chr(230), chr(240), chr(254));
+        $double_chars['out'] = array('OE', 'oe', 'AE', 'DH', 'TH', 'ss', 'ae', 'dh', 'th');
+        $string = str_replace($double_chars['in'], $double_chars['out'], $string);
+    }
+
+    return $string;
+}
+
+function _aliasPathHelper_seems_utf8($str)
+{
+    $length = strlen($str);
+    for ($i=0; $i < $length; $i++) {
+        $c = ord($str[$i]);
+        if ($c < 0x80) $n = 0; # 0bbbbbbb
+        elseif (($c & 0xE0) == 0xC0) $n=1; # 110bbbbb
+        elseif (($c & 0xF0) == 0xE0) $n=2; # 1110bbbb
+        elseif (($c & 0xF8) == 0xF0) $n=3; # 11110bbb
+        elseif (($c & 0xFC) == 0xF8) $n=4; # 111110bb
+        elseif (($c & 0xFE) == 0xFC) $n=5; # 1111110b
+        else return false; # Does not match any model
+        for ($j=0; $j<$n; $j++) { # n bytes matching 10bbbbbb follow ?
+            if ((++$i == $length) || ((ord($str[$i]) & 0xC0) != 0x80))
+                return false;
+        }
+    }
+    return true;
+}

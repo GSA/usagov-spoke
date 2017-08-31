@@ -1,0 +1,7 @@
+name = USA.gov Childsite - Misc
+description = A module for miscellaneous modifications needed on the USA.gov Childsite
+package = CTAC
+core = 7.x
+version = 7.x-1.1
+configure = admin/config/emailpage
+files[] = childsite_misc_usagov.module

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0" xml:base="http://www.usa.gov/rss/updates.xml" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+  <channel>
+    <title>USA.gov Updates</title>
+    <link>http://www.usa.gov/rss/updates.xml</link>
+    <description>Government news and featured content from the U.S. government's official website, USA.gov.</description>
+    <language>en</language>
+    <item>
+    <title>USAGov’s 11 National Parks You Can’t Miss in 2016</title>
+    <pubDate>Aug 24, 2016 13:15:45</pubDate>
+    <link>https://www.usa.gov/features/usagovs-11-national-parks-you-cant-miss-in-2016</link>
+    <description>Check out some of USAGov’s favorite parks as chosen by our own staff.</description>
+</item>
+<item>
+    <title>USAGov’s College Voting Guide</title>
+    <pubDate>Aug 23, 2016 13:30:30</pubDate>
+    <link>https://www.usa.gov/features/usagovs-college-voting-guide</link>
+    <description>As a college student you might have a choice about where to register to vote. Review USAGov’s college voting guide and learn about voting for college students.</description>
+</item>
+<item>
+    <title>Get Ready for School - 8 Tips for Parents from Kids.gov</title>
+    <pubDate>Aug 23, 2016 13:30:45</pubDate>
+    <link>https://www.usa.gov/features/get-ready-for-school-8-tips-for-parents-from-kids-gov</link>
+    <description>The end of summer marks the start of a new school year. These tips can help you as you get your family ready for the upcoming academic year.
+</description>
+</item>
+<item>
+    <title>Heads Up - Learn About Concussions</title>
+    <pubDate>Aug 23, 2016 13:30:45</pubDate>
+    <link>https://www.usa.gov/features/heads-up-learn-about-concussions</link>
+    <description>Learn how to protect yourself from a concussion, to recognize its symptoms and to get medical treatment.
+</description>
+</item>
+<item>
+    <title>USAGov’s Tips for National Anthem Etiquette</title>
+    <pubDate>Aug 04, 2016 14:15:15</pubDate>
+    <link>https://www.usa.gov/features/usagovs-tips-for-national-anthem-etiquette</link>
+    <description>These tips from USAGov, based on the U.S. Flag Code will help you know what to do anywhere the national anthem is played. </description>
+</item>
+<item>
+    <title>USAGov’s Top Five Questions for Election Season</title>
+    <pubDate>Jul 21, 2016 18:45:45</pubDate>
+    <link>https://www.usa.gov/features/usagovs-top-five-questions-for-election-season</link>
+    <description> USAGov answers the top five election season questions to get you ready for November 8. </description>
+</item>
+<item>
+    <title> The USAGov Contact Center Connects You to Answers from Your Government</title>
+    <pubDate>Jul 21, 2016 18:45:00</pubDate>
+    <link>https://www.usa.gov/features/the-usagov-contact-center-connects-you-to-answers-from-your-government</link>
+    <description>Learn how USAGov's Contact Center connects you with your government. </description>
+</item>
+<item>
+    <title>USAGov’s Guide to Displaying the American Flag</title>
+    <pubDate>Jun 29, 2016 20:15:00</pubDate>
+    <link>http://https://www.usa.gov/features/usagovs-guide-to-displaying-the-american-flag</link>
+    <description>This guide from USAGov, based on the Federal Flag Code, can help you show respect for the flag as you celebrate this Fourth of July.</description>
+</item>
+<item>
+    <title>USAGov’s Voting Guide for Military Members and Americans Abroad</title>
+    <pubDate>Jun 24, 2016 17:30:00</pubDate>
+    <link>https://www.usa.gov/features/usagovs-voting-guide-for-military-members-and-americans-abroad</link>
+    <description>USAGov is committed to informing and making sure members of the military, their families, and other Americans outside the U.S. don’t miss the chance to vote.</description>
+</item>
+<item>
+    <title>Critical Rx For a Healthy Home</title>
+    <pubDate>Jun 24, 2016 17:30:30</pubDate>
+    <link>https://www.usa.gov/features/critical-rx-for-a-healthy-home</link>
+    <description>Some people have health issues and may not realize their personal wellness and the health of their home are interconnected.</description>
+</item>
+<item>
+    <title>Discover Six of the Government's Best Mobile Apps</title>
+    <pubDate>Jun 24, 2016 17:15:30</pubDate>
+    <link>https://www.usa.gov/features/discover-six-of-the-government-s-best-mobile-apps</link>
+    <description>There’s an app for everything in this digital age, including hundreds developed by the federal government. Here are six apps that we found especially useful.</description>
+</item>
+<item>
+    <title>Support for Families When A Suicide Attempt Hits Home</title>
+    <pubDate>Jun 24, 2016 17:30:00</pubDate>
+    <link>https://www.usa.gov/features/support-for-families-when-a-suicide-attempt-hits-home</link>
+    <description>Find resources that could help you and your family after a suicide attempt by a loved one.</description>
+</item>
+<item>
+    <title>USAGov’s Five Tips to Get Great Deals from Government Auctions and Sales</title>
+    <pubDate>Jun 24, 2016 17:30:15</pubDate>
+    <link>https://www.usa.gov/features/usagovs-five-tips-to-get-great-deals-from-government-auctions-and-sales</link>
+    <description>You may have heard that you can buy “stuff” from the government. But how does it work? Can you really get good deals?</description>
+</item>
+<item>
+    <title>Clinical trials: Seeking Diversity in Women for Better Testing</title>
+    <pubDate>Jun 24, 2016 17:30:45</pubDate>
+    <link>https://www.usa.gov/features/clinical-trials-seeking-diversity-in-women-for-better-testing</link>
+    <description>Check out these four recommendations if you’re thinking of participating in a clinical trial or learning more about them.</description>
+</item>
+</channel>
+</rss>

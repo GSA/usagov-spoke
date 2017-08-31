@@ -1,0 +1,5 @@
+name = Childsite - Misc (for Kids.USA.gov)
+description = A module for miscellaneous modifications needed on the site - THIS IS ONLY FOR THE KIDS.GOV INSTANCE
+package = CTAC
+core = 7.x
+files[] = childsite_misc_kids.module

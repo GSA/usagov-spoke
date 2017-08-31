@@ -1,0 +1,13 @@
+# Spanish translation of GobiernoUSA.gov
+
+#: /
+msgid "aaa"
+msgstr "AAA"
+
+#: /
+msgid "bbb"
+msgstr "BBB"
+
+#: /
+msgid "this"
+msgstr "this is spanish new"

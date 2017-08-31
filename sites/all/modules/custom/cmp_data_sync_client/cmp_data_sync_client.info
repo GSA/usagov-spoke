@@ -1,0 +1,16 @@
+name = CMP Data Sync Client
+description = Read CMP data and update childsites
+package = CTAC
+core = 7.x
+dependencies[] = bundle_copy
+dependencies[] = ctools
+dependencies[] = entity
+dependencies[] = entityreference
+dependencies[] = field_group
+dependencies[] = file_entity
+dependencies[] = relation
+dependencies[] = relation_add
+dependencies[] = relation_uuid
+dependencies[] = uuid
+files[] = cmp_data_sync_client.queue.inc
+files[] = cmp_data_sync_client.module

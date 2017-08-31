@@ -1,0 +1,6 @@
+name = USA Taxonomy Management
+description = Manages creating pages and menu items based on taxonomy terms
+package = CTAC
+core = 7.x
+files[] = usa_tax_man.module
+configure = admin/content/usa-taxonomy-management

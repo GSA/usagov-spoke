@@ -1,0 +1,9 @@
+/* Center the loader */
+.loading {
+    background: url("Loading.svg") no-repeat center;
+    height: 140px;
+}
+.pagination_anchor, .prev, .next {
+    cursor: pointer;
+    cursor: hand;
+}

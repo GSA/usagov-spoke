@@ -1,0 +1,245 @@
+/* Global overrides */
+
+body {
+  background-color: #FFFFFF;
+  font-family: Tahoma, Verdana, Arial, Sans-serif;
+  font-size: 13px;
+  padding: 100px 20px 20px 20px;
+  margin:0;
+}
+body:before {
+    position:absolute;
+    display:block;
+    top:0;
+    left:0;
+    content:"";
+    height:80px;
+    width:100%;
+    background-image:url("/sites/all/themes/usa/images/Logo_USA_Survey.png");
+    background-size:contain;
+    background-repeat:no-repeat;
+    background-position:center;
+    background-color: #fff;
+}
+html:lang(es) body:before {
+    background-image:url("/sites/all/themes/usa/images/Logo_Gobierno_Survey.png");
+}
+
+a:focus, input:focus, button:focus, textarea:focus {
+  outline: 3px solid #EDB864;
+}
+#intro {
+  text-align: center;
+}
+
+fieldset{
+  border:none;
+}
+
+a img {
+  border: 0 none;
+}
+
+textarea {
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 11px;
+}
+
+
+/* --------------------
+   Question list styles */
+
+ul.showList {
+	font-weight: normal;
+	color: #000;
+	line-height: normal;
+	padding: 0px;
+	margin: 0px;
+}
+
+li.outter {
+	margin: 0px 0px 15px 10px;
+	padding: 0px;
+	list-style-type: none;
+	list-style-position: outside;
+  text-align: left;
+}
+
+.vocquestiontext {
+    font-weight:bold;
+}
+
+.vocquestionnumber { }
+
+.required_question { }
+
+
+/* --------------
+   Question types */
+
+.vocradiosshort { }  /* combined answer text <= 90 chars */
+.vocradioslong { }   /* > 90 chars */
+.place_vert { }
+.place_horiz { }
+.vocradio { }
+
+.vocdropdown { }
+
+.vocmultiselect { }
+
+.voccheckboxes { }
+.voccheckbox { }
+
+.voctextfield { }
+.voctextarea { }
+.text_question_area {
+  width: 460px;
+  height: 80px;
+  margin: 10px;
+}
+
+
+/* ----------------------------
+   Page-level visibility toggle */
+
+.current_page { }
+
+.hidden_page {
+	display: none;
+}
+
+
+/* -----------------------------
+   Required field error messages */
+
+.error_messages {
+  width: 400px;
+  border: 2px solid #CF0000;
+  padding: 0px;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+  background-color: #f0f0f0;
+  font-size: 12px;
+}
+
+.error_messages h2 {
+  text-align: left;
+  font-weight: bold;
+  padding: 5px 10px;
+  font-size: 12px;
+  margin: 0;
+  background-color: #c00;
+  color: #fff;
+}
+
+.error_messages p {
+  margin: 8px 10px;
+}
+
+.error_messages ul {
+  margin: 0;
+}
+
+
+/* ----------------------
+   Survey page navigation */
+
+div.surveyNav {
+	color: rgba(0, 0, 0, 0);
+	text-align: center;
+}
+
+span.surveyNavPrev {
+	display: inline-block;
+}
+
+span.surveyNavNext {
+	display: inline-block;
+}
+
+span.surveyNavSub {
+	text-align: left;
+	display: inline-block;
+	padding: 0px 0px 0px 10px;
+}
+
+.start-survey, a.surveyNav, a.surveyNav:link, a.surveyNav:visited, .surveyNavSub input {
+  height:38px;
+  font-size:110%;
+  font-weight: bold;
+  padding: 10px 15px 10px 15px;
+  cursor: pointer;
+  color:#fff;
+  background: #c61f0c;
+  border: 1px #c61f0c solid;
+  margin: 0 5px 0 0;
+  text-decoration: none;
+}
+.surveyNavPrev a.surveyNav, .surveyNavPrev a.surveyNav:link, .surveyNavPrev a.surveyNav:visited {
+  height:38px;
+  font-size:110%;
+  font-weight: bold;
+  padding: 10px 15px 10px 15px;
+  cursor: pointer;
+  color:#154285;
+  background:#fff;
+  border: 1px #24496B solid;
+}
+.start-survey{
+  margin: auto;
+}
+.start-survey:hover, .start-survey:active, 
+a.surveyNav:hover, a.surveyNav:active,
+.surveyNavSub input:hover, .surveyNavSub input:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+
+/* ---------------------
+   System Thank You page */
+
+#thank_you_text { }
+
+#important_to_us { }
+
+
+/* ------------
+   Poll Results */
+
+#poll_results_title { }
+
+#poll_results { }
+
+.question_results {
+	margin: 20px 0px;
+}
+
+.question_statement { }
+
+.poll_answers { }
+
+.poll_answer {
+	margin: 5px 0px;
+}
+
+.answer_statement { }
+
+.bar_container { }
+
+.poll_result_bar {
+	background-color: LightBlue;
+	display: inline-block;
+	margin: 0px 5px;
+}
+
+.answer_percentage { }
+
+.total_question_answers { }
+
+@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+    body{
+        font-size: 15px;
+    }
+
+}

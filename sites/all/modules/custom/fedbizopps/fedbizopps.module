@@ -1,0 +1,848 @@
+<?php
+
+/*
+ * Implements HOOK_menu()
+ */
+function fedbizopps_menu() {
+
+    $items = array();
+
+    // Configuration page
+    $items['admin/config/fedbizopp'] = array(
+        'title' => 'FedBizOpps',
+        'description' => 'Config for FedBizOpps',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('_fedbizopp_config_form'),
+        'access arguments' => array('access administration pages'),
+        'type' => MENU_NORMAL_ITEM
+    );
+    $items['load-dummy-data'] = array(
+        'title' => 'FedBizOpps',
+        'page callback' => '_tttest',
+        'access callback' => true,
+        'type' => MENU_NORMAL_ITEM
+    );
+
+    $items['find-government-contracts'] = array(
+        'title' => 'FedBizOpps',
+        'page callback' => '_list_fbobizopp_data',
+        'access callback' => true,
+        'type' => MENU_NORMAL_ITEM
+    );
+
+    $items['searchFBOdatajax'] = array(
+        'title' => 'FedBizOpps',
+        'page callback' => '_returnFBODataResult',
+        'access callback' => true,
+        'type' => MENU_NORMAL_ITEM
+    );
+
+    return $items;
+}
+
+function _fedbizopp_config_form() {
+
+    $form['fedbizopp_es'] = array(
+        '#type' => 'textfield',
+        '#title' => t('FedBizzOpps Elastic Search Address'),
+        '#default_value' => variable_get('fedbizopp_es', ""),
+        '#description' => t('Elastic search api address for FedBizOpps data is stored'),
+        '#required' => TRUE,
+    );
+
+    return system_settings_form($form);
+}
+function _tttest(){
+
+    /*$ret = _setupES();
+    if ($ret) {
+        $p = array('keyword'=>'', 'postdate'=>null,'submitteddate'=>time(), 'location'=>'', 'setaside'=>'setaside', 'show_na_setaside'=>0);
+        dsm(json_encode($p));
+       $rr = _index_userinfo($p);
+        dsm($rr);
+    }*/
+
+    /*$elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
+    $header = array(
+        "CONTENT-TYPE: application/json; charset=utf-8"
+    );
+
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, $elasticsearch_server.'/opportunityuserinputs');
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+    curl_setopt($curl, CURLOPT_POST, 1);
+    $res = curl_exec($curl);
+    curl_close($curl);
+
+    $r = json_decode($res);
+
+    dsm($r);
+
+    return "hi";*/
+    return _userinput_report();
+}
+function _userinput_report(){
+    $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
+    $param = '"query": {
+        "match_all": {}
+    }';
+    $header = array(
+        "CONTENT-TYPE: application/json; charset=utf-8"
+    );
+
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, $elasticsearch_server."/opportunityuserinputs/_search?size=0&from=5&pretty");
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, $param);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+    $res = curl_exec($curl);
+    curl_close($curl);
+    $r = json_decode($res);
+    dsm( $r);
+    $datas = array();
+    $ret = '';
+    if(isset($r->hits->hits)){
+        $j = 1;
+        foreach($r->hits->hits as $o){
+            $data=array('keyword'=>$o->_source->keyword,
+                'postdate'=>$o->_source->postdate,
+                'submitteddate'=>$o->_source->submitteddate,
+                'location'=>$o->_source->location,
+                'setaside'=>$o->_source->setaside,
+                'show_na_setaside'=>$o->_source->show_na_setaside);
+            $datas[]= $data;
+            $ret .= $j.' - '.join(',',$data). '</hr>';
+            $j++;
+        }
+        dsm($datas);
+    }
+    return $ret;
+}
+function _index_userinfo($p){
+    $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
+    $resource = curl_init();
+    curl_setopt($resource, CURLOPT_URL, $elasticsearch_server.'/opportunityuserinputs/userinput/'.time());
+    curl_setopt($resource, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($resource, CURLOPT_POST, 1);
+    curl_setopt($resource, CURLOPT_POSTFIELDS, json_encode($p));
+    curl_setopt($resource, CURLOPT_HTTPHEADER, ['CONTENT-TYPE: application/json; charset=utf-8']);
+    $result = curl_exec($resource);
+    curl_close($resource);
+
+    if ($result) {
+        $r = json_decode($result);
+        if (!empty($r->errors)) {
+            $errors = [];
+            foreach ($r->items as $i) {
+                if (isset($i->index)  && $i->index->status  != 200 && $i->index->status  != 201) {
+                    $errors[] = $i->index->status .' '. $i->index->error->reason;
+                }
+                if (isset($i->update) && $i->update->status != 200 && $i->update->status != 201) {
+                    $errors[] = $i->update->status .' '. $i->update->error->reason;
+                }
+            }
+            $r->errors = $errors;
+        }
+        if (isset($r->items)) {
+            $r->items = count($r->items);
+        }
+        return $r;
+    }
+}
+
+function _returnFBODataResult(){
+    include(drupal_get_path('module', 'fedbizopps').'/mappings.php');
+    $params = array();
+    $size = 5;
+    $from = 0;
+
+    if (isset($_POST['keyword']) && $_POST['keyword'] !=''){
+        $params['keyword'] = $_POST['keyword'];
+    }
+    if (isset($_POST['from']) && $_POST['from'] != 0 ) {
+        $from = $_POST['from']; // pagination
+    }
+    if (isset($_POST['postdate']) && $_POST['postdate'] != '--') {
+        $params['postdate'] = $_POST['postdate'];
+    }
+    if (isset($_POST['state']) && $_POST['state'] !='') {
+        $params['state'] =$_POST['state'];
+    }
+    if (isset($_POST['setaside'])) {
+        $params['setaside'] = $_POST['setaside'];
+    }
+    $ret = _do_es_search($from, $size, $params);
+    if (isset($_POST['do_index']) && $_POST['do_index'] ==="1" ) {
+
+        // need to user data
+        $s = _setupES();
+        if ($s) {
+            if (isset($_POST['setaside'])) {
+                $sa = $params['setaside'];
+                $sa = array_diff($sa, array('N/A'));
+            } else {
+                $sa = array();
+            }
+
+            $p = array('keyword' => $_POST['keyword'],
+                'postdate' => ($_POST['postdate'] != '--' ? $_POST['postdate'] : null),
+                'submitteddate' => time(),
+                'location' => (isset($_POST['state']) && $_POST['state'] != '') ? $states[$_POST['state']] : '',
+                'setaside' => join(',', $sa),
+                'show_na_setaside' => (isset($_POST['setaside']) && in_array('N/A', $_POST['setaside'])) ? 1 : 0);
+
+            _index_userinfo($p);
+        }
+    }
+
+    drupal_json_output([
+        'opps'=>$ret['opps'],'total'=>$ret['total'],'size'=>$size, 'paramm'=>$ret['paramm'], 'elasticsearch'=>$ret['elasticsearch'], 'param'=>$params, 'do'=>$params['setaside'], 's'=>$_POST['setaside']
+    ]);
+}
+
+function _setupES(){
+    $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
+
+    $resource = curl_init();
+    curl_setopt($resource, CURLOPT_URL, $elasticsearch_server.'/opportunityuserinputs');
+    curl_setopt($resource, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($resource, CURLOPT_CUSTOMREQUEST, "HEAD");
+    curl_setopt($resource, CURLOPT_HEADER, true);
+    curl_setopt($resource, CURLOPT_NOBODY, true);
+    curl_setopt($resource, CURLOPT_HTTPHEADER, ['CONTENT-TYPE: application/json; charset=utf-8']);
+    $httpcode = curl_getinfo($resource, CURLINFO_HTTP_CODE);
+    curl_close($resource);
+    if ($httpcode == '200') {
+        echo "Index already exist\n";
+        return true;
+    }
+    $data = '{
+          "settings" : {
+               "index" : {
+                   "number_of_shards" : 1,
+                   "number_of_replicas" : 0
+               }
+          },
+          "mappings": {
+            "userinput": {
+              "properties": {
+
+                "setaside" : {
+                  "type": "string",
+                  "fields": {
+                    "raw" : {
+                      "type": "string",
+                      "index": "not_analyzed"
+                    }
+                  }
+                },
+                "keyword" : {
+                  "type": "string",
+                  "fields": {
+                    "raw" : {
+                      "type": "string",
+                      "index": "not_analyzed"
+                    }
+                  }
+                },
+                "location" : {
+                  "type": "string",
+                  "fields": {
+                    "raw" : {
+                      "type": "string",
+                      "index": "not_analyzed"
+                    }
+                  }
+                },
+                "submitteddate" : {
+                  "type": "integer"
+                },
+                "postdate" : {
+                  "type": "date",
+                  "format": "yyyy-MM-dd"
+                },
+                "show_na_setaside" : {
+                  "type": "string",
+                  "fields": {
+                    "raw" : {
+                      "type": "string",
+                      "index": "not_analyzed"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }';
+
+    $resource = curl_init();
+    curl_setopt($resource, CURLOPT_URL, $elasticsearch_server.'/opportunityuserinputs');
+    curl_setopt($resource, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($resource, CURLOPT_CUSTOMREQUEST, "PUT");
+    curl_setopt($resource, CURLOPT_POSTFIELDS, $data);
+    curl_setopt($resource, CURLOPT_HTTPHEADER, ['CONTENT-TYPE: application/json; charset=utf-8']);
+    $result = curl_exec($resource);
+    curl_close($resource);
+    if ($result) {
+        if ( !empty($result->error) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    return false;
+}
+
+function _do_es_search($from, $size, $params){
+
+    $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
+
+    $kp = '';
+    if (isset($params['keyword'])) {
+
+        $params['keyword'] = strtolower($params['keyword']);
+
+        if (strpos($params['keyword'], '"')  === false && strpos($params['keyword'], ' ')  !== false) {
+            // or
+            $kwords = explode(" ", $params['keyword']);
+
+            $kpts = array();
+            foreach($kwords as $ww){
+                $kpts["solnbr"][] = '{"wildcard" : {"solnbr": "*'.$ww.'*"}}';
+                $kpts["naicscode"][] = '{"wildcard" : {"naicscode": "*'.$ww.'*"}}';
+                $kpts["naicsvalue"][] = '{"wildcard" : {"naicsvalue": "*'.$ww.'*"}}';
+                $kpts["naics"][] = '{"wildcard" : {"naics": "*'.$ww.'*"}}';
+                $kpts["classvalue"][] = '{"wildcard" : {"classvalue": "*'.$ww.'*"}}';
+                $kpts["classcode"][] = '{"wildcard" : {"classcode": "*'.$ww.'*"}}';
+                $kpts["zip"][] = '{"wildcard" : {"zip": "*'.$ww.'*"}}';
+                $kpts["subject"][] = '{"wildcard" : {"subject": "*'.$ww.'*"}}';
+                $kpts["desc"][] = '{"wildcard" : {"desc": "*'.$ww.'*"}}';
+                $kpts["agency"][] = '{"wildcard" : {"agency": "*'.$ww.'*"}}';
+                $kpts["office"][] = '{"wildcard" : {"office": "*'.$ww.'*"}}';
+                $kpts["state"][] = '{"wildcard" : {"state": "*'.$ww.'*"}}';
+                $kpts["setaside"][] = '{"wildcard" : {"setaside": "*'.$ww.'*"}}';
+            }
+
+            foreach($kpts as $k=>$v){
+                $kpkp[]= '{"bool":{"must" : [' . join(',',$v) . ']}}';
+            }
+            $kp = '"should" : [' . join(',', $kpkp) . ']';
+        }
+        else {
+            $params['keyword'] = str_replace('"', '', $params['keyword']);
+            // and
+            $kpt[] = '{"match_phrase": {"subject": "' . $params['keyword'] . '"}}';
+            $kpt[] = '{"match_phrase": {"desc": "' . $params['keyword'] . '"}}';
+            $kpt[] = '{"match_phrase": {"agency": "' . $params['keyword'] . '"}}';
+            $kpt[] = '{"match_phrase": {"office": "' . $params['keyword'] . '"}}';
+            $kpt[] = '{"match_phrase": {"zip": "' . $params['keyword'] . '"}}';
+            $kpt[] = '{"match_phrase": {"state": "' . $params['keyword'] . '"}}';
+            $kpt[] = '{"match_phrase": {"solnbr ": "' . $params['keyword'] . '"}}';
+            $kpt[] = '{"match_phrase": {"classcode": "' . $params['keyword'] . '"}}';
+            $kpt[] = '{"match_phrase": {"classvalue": "' . $params['keyword'] . '"}}';
+            $kpt[] = '{"match_phrase": {"naicscode": "' . $params['keyword'] . '"}}';
+            $kpt[] = '{"match_phrase": {"naicsvalue": "' . $params['keyword'] . '"}}';
+            $kpt[] = '{"match_phrase": {"naics": "' . $params['keyword'] . '"}}';
+            $kpt[] = '{"term" : {"setaside" : "' . $params['keyword'] . '"}}';
+            $kpt[] = '{"wildcard" : {"solnbr": "*'.$params['keyword'].'*"}}';
+            $kpt[] = '{"wildcard" : {"naicscode": "*'.$params['keyword'].'*"}}';
+            $kpt[] = '{"wildcard" : {"naicsvalue": "*'.$params['keyword'].'*"}}';
+            $kpt[] = '{"wildcard" : {"naics": "*'.$params['keyword'].'*"}}';
+            $kpt[] = '{"wildcard" : {"classvalue": "*'.$params['keyword'].'*"}}';
+            $kpt[] = '{"wildcard" : {"classcode": "*'.$params['keyword'].'*"}}';
+            $kpt[] = '{"wildcard" : {"zip": "*'.$params['keyword'].'*"}}';
+            $kpt[] = '{"wildcard" : {"subject": "*'.$params['keyword'].'*"}}';
+            $kpt[] = '{"wildcard" : {"desc": "*'.$params['keyword'].'*"}}';
+            $kpt[] = '{"wildcard" : {"agency": "*'.$params['keyword'].'*"}}';
+            $kpt[] = '{"wildcard" : {"office": "*'.$params['keyword'].'*"}}';
+            $kpt[] = '{"wildcard" : {"state": "*'.$params['keyword'].'*"}}';
+            $kpt[] = '{"wildcard" : {"setaside": "*'.$params['keyword'].'*"}}';
+        }
+
+        if (count($kpt) > 0) {
+            $kp = '"should" : [' . join(',', $kpt) . ']';
+        }
+    }
+    $st = '';
+    // if there is setaside is selected
+    if (isset($params['setaside'])){
+        foreach($params['setaside'] as $s) {
+            $st_tmp[] = '{"term" : {"setaside.raw" : "'.$s.'"}}';
+        }
+        if (count($st_tmp) > 0){
+            $st = '"should" : ['.join(',',$st_tmp).']';
+        }
+    }
+
+    $cd = '';
+    // if there is closing date range
+    if (isset($params['postdate'])){
+        $cd = '"range": {"postdate": {"gte": "'.$params['postdate'].'"}}';
+    }
+
+    $sta = '';
+    if (isset($params['state'])){
+        $sta = '"term" : {"state" : "'.strtolower($params['state']).'"}';;
+    }
+
+    try{
+        $sort = '"sort" : [{"closedate" : {"order" : "asc"}},{"postdate" : {"order" : "desc"}}, {"subject" : {"order" : "asc"} }]';
+        $param = '{
+            "query": {';
+        if($kp=='' && $st == '' && $cd=='' && $sta!=''){ // state only
+            $param .= '"constant_score" : {"filter" : { '.$sta.' }}';;
+        }
+        elseif($kp=='' && $st == '' && $cd!='' && $sta=='') { // postadate only
+            $param .= '"constant_score" : {"filter" : { '.$cd.' }}';
+        }
+        elseif($kp=='' && $st != '' && $cd=='' && $sta==''){ // setaside only
+            $param .= '"constant_score" : {';
+            $param .= '"filter" : { "bool" : { ' . $st . ' }}';
+            $param .= '}';
+        }
+        elseif($kp!='' && $st == '' && $cd=='' && $sta==''){ // keyword only
+            $param .= ' "bool" : { ' . $kp . ' }';
+        }
+        else{
+
+            $tmp_param = array();
+            if ($st != ''){
+                $tmp_param[] = '{"bool": { ' . $st . ' }}';
+            }
+            if ($kp != ''){
+                $tmp_param[] = '{"bool": { ' . $kp . ' }}';
+
+            }
+            if ($cd != ''){
+                $tmp_param[] = '{'.$cd.'}';
+            }
+            if ($sta != ''){
+                $tmp_param[] = '{'.$sta.'}';
+            }
+            if (count($tmp_param) > 0){
+                $param .= '"bool" : { "must" :';
+                $param .= '['.join(',',$tmp_param).']';
+                $param .= '}';
+            }
+            else {
+                // or default
+            }
+
+        }
+        $param .='}, '.$sort.'}';
+        //$param .='}}';
+
+        $header = array(
+            "CONTENT-TYPE: application/json; charset=utf-8"
+        );
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $elasticsearch_server."/opportunities/opportunity/_search?size=".$size."&from=".$from."&pretty");
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $param);
+        //dsm($param);
+
+        $res = curl_exec($curl);
+        curl_close($curl);
+        $r = json_decode($res);
+
+        if(isset($r->hits->hits)){
+            $sols = _get_array_of_obj($r->hits->hits);
+            $ret['opps'] = $sols;
+            $ret['total'] = $r->hits->total;
+            $ret['paramm']= $param;
+            $ret['elasticsearch'] =$elasticsearch_server."/opportunities/opportunity/_search?size=".$size."&from=".$from."&pretty";
+            return $ret;
+        }
+        else {
+            $ret['opps'] = array();
+            $ret['total'] = $r->hits->total;
+            $ret['paramm']= $param;
+            $ret['elasticsearch'] =$elasticsearch_server."/opportunities/opportunity/_search?size=".$size."&from=".$from."&pretty";
+            return $ret;
+        }
+
+    } catch(Exception $e){
+        drupal_set_message("Error", "Elastic search issue");
+        return false;
+    }
+}
+
+function _list_fbobizopp_data(){
+
+    drupal_add_js(drupal_get_path('module','fedbizopps').'/fedbizopps.js');
+    drupal_add_css(drupal_get_path('module','fedbizopps').'/fedbizopps.css');
+    include(drupal_get_path('module', 'fedbizopps').'/mappings.php');
+    $state ='';
+    $state .= "<select id='stateselect' class='kpd'  onkeypress='return event.keyCode != 13;' name='stateselect'>";
+    $state .= "<option value='' >Select</option>";
+    foreach($states as $k=>$val){
+        $state .= "<option value='".$k."' >".$val."</option>";
+    }
+    $state .= "</select>";
+
+    $day = '<select id="dayselect" name="dayselect" onkeypress="return event.keyCode != 13;" class="kpd">';
+    $day .= "<option value='' >Select</option>";
+    for($i=1; $i<32; $i++){
+        $day .= "<option value='{$i}'>{$i}</option>";
+    }
+    $day .= '</select>';
+
+    $year = '<select id="yearselect" name="yearselect" onkeypress="return event.keyCode != 13;" class="kpd">';
+    $year .= "<option value='' >Select</option>";
+    for($i=2010; $i<(date('Y',time())+2); $i++){
+        $year .= "<option value='{$i}'>{$i}</option>";
+    }
+    $year .='</select>';
+
+    $ret .= '<article><div id="facetedsearch"><div class="clearfix"><div class="term-listing-heading">';
+    $ret .= '<header><h1>Find Opportunities to Contract with the Federal Government (Beta)</h1></header>';
+    $ret .= ' <p>The Contracting Opportunity Finder (Beta) <span class="tooltip-left" role="tooltip" tabindex="0">'
+        .' <img class="tooltip-icon-beta" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="tooltip" aria-hidden="true">'
+        .'<span class="tooltip-left-text">Beta means we’re still developing the tool, so it will likely change.</span></span>  can help your small and/or disadvantaged business learn about opportunities to contract with federal agencies.'
+        .' This tool searches for opportunities that are currently open or may be open soon. It’s geared to businesses new to federal contracting.</p>'
+        .'<ul class="introlist">'
+        .'<li><a href="/understand-contracting-terms">Visit the glossary page</a> to learn about common terms and to see if your company qualifies as a small and/or disadvantaged business. </li>'
+        .'<li>Explore the <a href="/government-contracting-for-beginners">Introduction to Federal Government Contracting</a>.</li></ul>';
+
+    $ret .= "<header>
+              <h2>How to Start Searching for Opportunities</h2>
+            </header>";
+    $ret .= '<p id="secondpara">On this page, you’ll find four different filters you can use to search for contracting opportunities that are right for your business.'
+            .' You can choose to use some or all of the filters, but you must leave at least one box checked in the “Filter by Special Business Label” section. '
+            .'Once you’ve chosen your filters and entered your information, select the “Apply Selected Filters” button to display your results. '
+            .'When you find an opportunity that interests you, select “Description of Opportunity” in the result. Then, follow the link to read the agency’s solicitation on <a href="https://www.fbo.gov/">FedBizOpps</a>. </p>';
+
+    $ret .= " <p>*A field with an asterisk (*) before it is a required field.</p>";
+
+    $ret .= '<form id="facetedSearchForm" name="facetedSearchForm" method="get" accept-charset="UTF-8" class="" onsubmit="return validateForm(this, event, true)"><section>';
+    $ret .= '<div class="container usa-grid">';
+    $ret .= '<div class="all-btn" role="tablist">
+                    <button class="usa-button-big usa-accordion-toggle-all openall-text" data-toggledtext="Close All Filters" aria-expanded="false" aria-controls="facetedSearchAccordion" type="button">Open All Filters</button>
+                  </div>';
+    $ret .= '<div class="section-box">
+                    <div class="usa-grid">
+                      <div id="facetedSearchAccordion" class="usa-accordion">
+                        <ul class="">
+                          <li class="filter-box">
+                            <button class="usa-accordion-button" aria-expanded="false" aria-controls="filter1" type="button">Filter by Keyword</button>
+                            <!--<div class="section-box">-->
+                            <div id="filter1" class="usa-accordion-content" aria-hidden="true">
+                              <p>Search for opportunities using keywords. For example, you can enter terms like “building construction” or “national security.” This will search all words and numbers in a solicitation, including agency names, ZIP Codes, NAICS codes, and set-aside types.</p>
+                              <div role="search">
+                                <label for="business-search">Search</label>
+                                <input id="faceted" name="faceted" type="hidden" value="usagov-business">
+                                <input id="business-search" class="kpdd" type="search" name="query" placeholder="Enter Keyword(s)" onfocus="this.placeholder = \'\'" >
+                              </div>
+                            </div>
+                          </li>
+                          <li class="filter-box">
+                            <button class="usa-accordion-button" aria-controls="filter2" type="button" aria-expanded="false">Filter by Location</button>
+                            <div id="filter2" class="usa-accordion-content" aria-hidden="true">
+                        <div class="state-select">   <label for="stateselect"> Find your state or territory: </label></div>
+                              <div class="custom-select">
+                               '.$state.'
+                              </div><button id="statego">Go</button>
+                            </div>
+                          </li>
+                          <li class="filter-box">
+                            <button class="usa-accordion-button" aria-controls="filter3" aria-expanded="false" type="button"> Filter by Posted Date</button>
+                            <div id="filter3" class="usa-accordion-content usa-input-error no-error no-future-date-error" aria-hidden="true"><fieldset>
+                              <p>Select a date to view opportunities that have been posted <strong>on and after that date</strong>. You must select a day, month, and year before today’s date.</p>
+                              <span class="usa-input-error-message future-date-error-message" role="alert">Error: You must select a date in the past to search by posted date.</span>
+                              <div class="col-md-4 col-sm-6 col-xs-12 usa-input-error no-error">
+                                <label for="monthselect">Month</label>
+                                <span class="usa-input-error-message" id="month-error-message" role="alert">Error: To search by posted date, you must select a month</span>
+                                <div class="posted-select">
+                                  <select id="monthselect" name="monthselect" onkeypress="return event.keyCode != 13;" class="kpd" aria-describedby="month-error-message">
+                                    <option value="">Select</option>
+                                    <option value="1">January</option>
+                                    <option value="2">February</option>
+                                    <option value="3">March</option>
+                                    <option value="4">April</option>
+                                    <option value="5">May</option>
+                                    <option value="6">June</option>
+                                    <option value="7">July</option>
+                                    <option value="8">August</option>
+                                    <option value="9">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div class="col-md-4 col-sm-6 col-xs-12 usa-input-error no-error">
+                                <label for="dayselect">Day</label>
+                                <span class="usa-input-error-message" id="day-error-message" role="alert" aria-describedby="day-error-message">Error: To search by posted date, you must select a day</span>
+                                <div class="posted-select">
+                                '.$day.'
+                                </div>
+                              </div>
+                              <div class="col-md-4 col-sm-6 col-xs-12 usa-input-error no-error">
+                                <label for="yearselect">Year</label>
+                                <span class="usa-input-error-message" id="year-error-message" role="alert" aria-describedby="year-error-message">Error: To search by posted date, you must select a year</span>
+                                <div class="posted-select">
+                                    '.$year.'
+                                </div>
+                              </div>
+                            </fieldset></div>
+                          </li>
+                          <li class="filter-box">
+                            <button class="usa-accordion-button setaside" aria-controls="filter4" aria-expanded="false" type="button">Filter by Special Business Label (Set-Aside Type)</button>
+                            <div id="filter4" class="usa-accordion-content tltp usa-input-error no-error" aria-hidden="true">
+                              <p>Check any special label (set-aside type) that describes your business. This will search for open opportunities that are “set aside” for businesses that qualify for these special labels.</p>
+                              <fieldset class="usa-fieldset-inputs usa-sans">
+                                <legend class="lgd">*Select at least one Set-Aside Type</legend>
+                                <ul class="usa-unstyled-list dwnlvl">
+                                  <li class="ttli usa-width-one-half">
+                                    <input id="8a" type="checkbox" checked name="8a" value="Competitive 8(a)" class="kpd" aria-describedby="setaside-error-message">
+                                    <label for="8a">Competitive 8(a)</label>
+                                    <span class="tooltip" role="tooltip" tabindex="0"><img class="tooltip-icon" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="Help for Competitive 8 a" aria-hidden="true" >
+                                    <span aria-label="tooltip - For small socially and economically disadvantaged businesses. Must apply through SBA."></span>
+                                    <span class="tooltiptext">For small socially and economically disadvantaged businesses. Must apply through SBA.</span></span>
+                                   </li>
+                                  <li class="ttli usa-width-one-half">
+                                    <input id="ecosmbiz" type="checkbox" checked name="ecosmbiz" class="kpd" value="Economically Disadvantaged Women-Owned Small Business" aria-describedby="setaside-error-message">
+                                    <label for="ecosmbiz"> Economically Disadvantaged Woman Owned Small Business</label>
+                                    <span class="tooltip" role="tooltip" tabindex="0"><img class="tooltip-icon" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="Help for Economically Disadvantaged Women-Owned Small Business" aria-hidden="true">
+                                    <span aria-label="tooltip - For small businesses owned by economically disadvantaged women. Must be certified through SBA."></span>
+                                    <span class="tooltiptext">For small businesses owned by economically disadvantaged women. Must be certified through SBA.</span></span>
+                                  </li>
+                                  <li class="ttli usa-width-one-half">
+                                    <input id="emergingbiz" type="checkbox" checked name="emergingbiz" class="kpd" value="Emerging Small Business" aria-describedby="setaside-error-message">
+                                    <label for="emergingbiz"> Emerging Small Business</label>
+                                    <span class="tooltip" role="tooltip" tabindex="0"><img class="tooltip-icon" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="Help for Emerging Small Business " aria-hidden="true" >
+                                    <span aria-label="Tooltip - For very small businesses. Must meet SBA size standards."></span>
+                                    <span class="tooltiptext">For very small businesses. Must meet SBA size standards.</span></span>
+                                  </li>
+                                  <li class="ttli usa-width-one-half">
+                                    <input id="hbcu" type="checkbox" checked name="hbcu" value="HBCU/MI" class="kpd" class="kpd" aria-describedby="setaside-error-message">
+                                    <label for="hbcu"> HBCU/MI</label>
+                                    <span class="tooltip" role="tooltip" tabindex="0"><img class="tooltip-icon" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="Help for HBCU/MI" aria-hidden="true" >
+                                    <span aria-label="Tooltip - For historically black or minority institutions. Must be identified by U.S. Dept. of Education."></span>
+                                    <span class="tooltiptext">For historically black or minority institutions. Must be identified by U.S. Dept. of Education.</span></span>
+                                  </li>
+                                  <li class="ttli usa-width-one-half">
+                                    <input id="hubzone" type="checkbox" checked name="hubzone" class="kpd" value="HUBZone">
+                                    <label for="hubzone">HUBZone</label>
+                                    <span class="tooltip" role="tooltip" tabindex="0"> <img class="tooltip-icon" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="tooltip" >
+                                    <span aria-label="Tooltip - For small businesses in specific rural and urban communities. Must apply through SBA."></span>
+                                    <span class="tooltiptext">For small businesses in specific rural and urban communities. Must apply through SBA.</span></span>
+
+                                  </li>
+                                  <li class="ttli usa-width-one-half">
+                                    <input id="indianeco" type="checkbox" checked name="indianeco" class="kpd" value="Indian Economic Enterprises" aria-describedby="setaside-error-message">
+                                    <label for="indianeco"> Indian Economic Enterprises</label>
+                                    <span class="tooltip" role="tooltip" tabindex="0"><img class="tooltip-icon" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="Help for Indian Economic Enterprises" aria-hidden="true">
+                                    <span aria-label="Tooltip - For small businesses owned by American Indians. Must be member of federally recognized tribe or Native village."></span>
+                                    <span class="tooltiptext">For businesses owned by American Indians. Must be member of federally recognized tribe or Native village.</span></span>
+                                  </li>
+                                </ul>
+                                <ul class="usa-unstyled-list dwnlvl">
+                                  <li class="ttli usa-width-one-half">
+                                    <input id="indiansmbiz" type="checkbox" checked name="indiansmbiz" class="kpd" value="Indian Small Business Economic Enterprises" aria-describedby="setaside-error-message">
+                                    <label for="indiansmbiz"> Indian Small Business Economic Enterprises</label>
+                                    <span class="tooltip" role="tooltip" tabindex="0"><img class="tooltip-icon" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="Help for Indian Small Business Economic Enterprises" aria-hidden="true" >
+                                    <span aria-label="Tooltip - For businesses owned by American Indians. Must be member of federally recognized tribe or Native village."></span>
+                                    <span class="tooltiptext">For small businesses owned by American Indians. Must be member of federally recognized tribe or Native village.</span></span>
+                                  </li>
+                                  <li class="ttli usa-width-one-half">
+                                    <input id="sdvosmbiz" type="checkbox" checked name="sdvosmbiz" class="kpd" value="Service-Disabled Veteran-Owned Small Business" aria-describedby="setaside-error-message">
+                                    <label for="sdvosmbiz"> Service-Disabled Veteran-Owned Small Business</label>
+                                    <span class="tooltip" role="tooltip" tabindex="0"><img class="tooltip-icon" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="Help for Service-Disabled Veteran-Owned Small Business" aria-hidden="true" >
+                                    <span aria-label="Tooltip - For small businesses owned by service-disabled veterans. Must be verified through VA."></span>
+                                    <span class="tooltiptext">For small businesses owned by service-disabled veterans. Must be verified through VA.</span></span>
+                                  </li>
+                                  <li class="ttli usa-width-one-half">
+                                    <input id="smbiz" type="checkbox" checked name="setaside_count[]" class="kpd" value="smbiz" aria-describedby="setaside-error-message">
+                                    <label for="smbiz"> Small Business</label>
+                                    <span class="tooltip" role="tooltip" tabindex="0"><img class="tooltip-icon" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="Help for Small Business" aria-hidden="true" >
+                                    <span aria-label="Tooltip - For small businesses. Must meet SBA size standards."></span>
+                                    <span class="tooltiptext">For small businesses. Must meet SBA size standards.</span></span>
+                                  </li>
+                                  <li class="ttli usa-width-one-half">
+                                    <input id="vetsmbiz" type="checkbox" checked name="setaside_count[]" class="kpd" value="Veteran-Owned Small Business" title="Veteran-Owned Small Business" aria-describedby="setaside-error-message">
+                                    <label for="vetsmbiz"> Veteran-Owned Small Business</label>
+                                    <span class="tooltip" role="tooltip" tabindex="0"><img class="tooltip-icon" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="Help for Veteran-Owned Small Business" aria-hidden="true" >
+                                    <span aria-label="Tooltip - For small businesses owned by veterans. Must be verified through VA."></span>
+                                    <span class="tooltiptext">For small businesses owned by veterans. Must be verified through VA.</span></span>
+                                  </li>
+                                  <li class="ttli usa-width-one-half">
+                                    <input id="womensmbiz" type="checkbox" checked name="setaside_count[]" class="kpd" value="Woman Owned Small Business" aria-describedby="setaside-error-message">
+                                    <label for="womensmbiz"> Woman Owned Small Business</label>
+                                    <span class="tooltip" role="tooltip" tabindex="0"><img class="tooltip-icon" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="Help for Women-Owned Small Business" aria-hidden="true" >
+                                    <span aria-label="Tooltip - For small businesses owned by women. Must be verified through SBA."></span>
+                                    <span class="tooltiptext">For small businesses owned by women. Must be verified through SBA.</span></span>
+                                  </li>
+                                  <li class="ttli  usa-width-one-half">
+                                    <input id="addition" type="checkbox" checked name="setaside_count[]" class="kpd" value="N/A" aria-describedby="setaside-error-message">
+                                    <label for="addition"><strong>Opportunities with no Set-Aside Types</strong></label>
+                                    <span class="tooltip" tabindex="0" role="tooltip" tabindex="0"><img class="tooltip-icon" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="Opportunities with NO Set-aside Types" aria-hidden="true" >
+                                    <span aria-label="Tooltip - Check these opportunities even if you qualify for a Set-aside type."></span>
+                                    <span class="tooltiptext">Check these opportunities even if you qualify for a Set-aside type.</span></span>
+                                  </li>
+                                </ul></fieldset>
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  ';
+    $ret .= '<div class="applycontainer">
+                <div class="button_wrapper">
+                      <input type="hidden" id="storeuserinput" value="0"/>
+                      <button class="usa-button-primary-alt" id="apply-selected-filter" name="apply_selected_filters" type="submit" value="submit">Apply Selected Filters</button>
+                      <button id="FacetedSearchReset" class="usa-button-outline" type="reset" value="reset" aria-controls=""> Clear Selected Filters</button>
+                  <div class="usa-full"></div>
+                </div>
+              </div>';
+
+    $ret .= "</div></div></section><input type='hidden' id='cind' value='0' /></form>";
+    $ret .= '<p class="volver clearfix bttop1"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl">Back to Top</span></a></p>';
+    // this is importent for listing placeholder
+    $ret .='<div id="main-list-container"></div>';
+
+
+    $ret .='</div><div class="col-md-12">
+  <div id="cntctbx">
+    <h2 id="">Do you need help?</h2>
+    <p class=".plsurvey-text">Ask us any question about the U.S. government for free. We\'ll get you the answer or tell you where to find it.</p>
+    <ul>
+      <li><a href="/phone">Call USA.gov</a></li>
+      <li><a href="/chat">Chat with USA.gov</a></li>
+      <li><a href="/email">Email USA.gov</a></li>
+    </ul>
+  </div>';
+    $ret .='<div class="plsurvey"> '.survey_on_pages().'</div></div>';
+    $ret .= "</div></div></article>";
+    return $ret;
+}
+
+function _get_array_of_obj($obj){
+    $r = array();
+
+    foreach($obj as $o){
+        $r[] = array('type'=> $o->_source->type,
+            'agency'=> $o->_source->agency,
+            'office'=> $o->_source->office,
+            'location'=> $o->_source->location,
+            'classcod'=> $o->_source->classcod,
+            'naics'=> $o->_source->naics,
+            'subject'=> $o->_source->subject,
+            'solnbr'=> $o->_source->solnbr,
+            'desc'=> $o->_source->desc,
+            'setaside'=> $o->_source->setaside,
+            'popcountry'=> $o->_source->popcountry,
+            'popzip'=> $o->_source->popzip,
+            'link'=> $o->_source->link,
+            'source'=> $o->_source->source,
+            'contact'=> $o->_source->contact,
+            'postdate'=> $o->_source->postdate,
+            'closedate'=> $o->_source->closedate,
+            'state'=> $o->_source->state,
+            'zip'=> $o->_source->zip,
+        );
+    }
+
+    return $r;
+}
+
+function _search_opportunity($options=''){
+
+    $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
+    //$ret = array();
+    try{
+
+        $param = '{
+            "aggs" : {
+                "setaside_count" : { "terms" : { "field" : "setaside.raw" } },
+                "office_count" : { "terms" : { "field" : "office.raw" } },
+                "classcod_count" : { "terms" : { "field" : "classcod.raw" } },
+                "agency_count" : { "terms" : { "field" : "agency.raw" } }
+            }
+        }';
+        $header = array(
+            "CONTENT-TYPE: application/json; charset=utf-8"
+        );
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $elasticsearch_server."/opportunities/_search?size=0&pretty");
+        curl_setopt($curl,CURLOPT_HTTPHEADER, $header);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $param);
+        $res = curl_exec($curl);
+        curl_close($curl);
+        $r = json_decode($res);
+
+        if (is_object($r)) {
+            dsm($r);
+        }
+
+    } catch(Exception $e){
+        drupal_set_message("Errow", "Elastic search issue");
+    }
+    //return $ret;
+}
+
+function _get_facets_info(){
+    $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
+    $ret = array();
+    try{
+
+        $param = '{
+            "aggs" : {
+                "setaside_count" : { "terms" : { "field" : "setaside.raw" } },
+                "office_count" : { "terms" : { "field" : "office.raw" } },
+                "classcod_count" : { "terms" : { "field" : "classcod.raw" } },
+                "agency_count" : { "terms" : { "field" : "agency.raw" } }
+            }
+        }';
+        $header = array(
+            "CONTENT-TYPE: application/json; charset=utf-8"
+        );
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $elasticsearch_server."/opportunities/_search?size=0&pretty");
+        curl_setopt($curl,CURLOPT_HTTPHEADER, $header);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $param);
+        $res = curl_exec($curl);
+        curl_close($curl);
+        $r = json_decode($res);
+
+        if (is_object($r)) {
+            if (isset($r->aggregations)) {
+
+                $aggVars = array('setaside_count','office_count','classcod_count','agency_count');
+                foreach($aggVars as $aggVar) {
+                    if (isset($r->aggregations->{$aggVar}) && !empty($r->aggregations->{$aggVar}->buckets)) {
+                        foreach ($r->aggregations->{$aggVar}->buckets as $v) {
+                            $ret[$aggVar][]=array('k'=>$v->key, 'c'=>$v->doc_count);
+                        }
+                    }
+                }
+            }
+        }
+
+    } catch(Exception $e){
+        drupal_set_message("Errow", "Elastic search issue");
+    }
+    return $ret;
+}
+
+function _load_data(){
+    $filename = drupal_get_path('module','fedbizopps').'/FBOFeed20170501.xml';
+    if ( strpos($filename,'Full')!==FALSE )
+    {
+        $full = new FBOFullFile($filename);
+        // $full->processFile();
+    } else {
+        $daily = new FBODailyFile($filename);
+        $daily->processFile();
+    }
+}
+

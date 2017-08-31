@@ -1,0 +1,6 @@
+name = Media-Links-Alteration Script
+description = This module will inject jQuery of pages in order to alter anchors that point to media elements
+package = CTAC
+core = 7.x
+files[] = media_link_alter.module
+configure = admin/config/media-link-alteration

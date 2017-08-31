@@ -1,0 +1,5 @@
+name = USA.gov for spanish Childsite - Translation
+description = A module for USA.gov translation
+package = CTAC
+core = 7.x
+version = 7.x-1.1

@@ -1,0 +1,1621 @@
+<?php
+
+define('CDSC_SUCCESS',   TRUE  );
+define('CDSC_TRY_AGAIN', FALSE );
+define('CDSC_FATAL',     NULL  );
+
+function cmp_data_sync_client_menu()
+{
+
+    $items['admin/content/cmp-data-sync-client'] = array(
+         'title' => 'CMP Data Sync',
+         'page callback' => 'drupal_get_form',
+         'page arguments' => array('cmp_data_sync_client_config_form'),
+         'access arguments' => array('administer cmp data sync'),
+         'type' => MENU_NORMAL_ITEM,
+         'file' => 'cmp_data_sync_client.admin.inc',
+    );
+    $items['admin/content/cmp-data-sync-client/api/schema_sync'] = array(
+        'title'           => 'Schema Sync',
+        'description'     => 'Schema Sync',
+        'page callback'   => '_cdsc_ajax_schema_sync',
+        'access arguments' => array('administer cmp data sync'),
+        'type'            => MENU_CALLBACK,
+        'file'            => 'cmp_data_sync_client.admin.inc'
+    );
+    $items['admin/content/cmp-data-sync-client/api/partial_sync'] = array(
+        'title'           => 'Partial Sync',
+        'description'     => 'Partial Sync',
+        'page callback'   => '_cdsc_ajax_partial_sync',
+        'access arguments' => array('administer cmp data sync'),
+        'type'            => MENU_CALLBACK,
+        'file'            => 'cmp_data_sync_client.admin.inc'
+    );
+    $items['admin/content/cmp-data-sync-client/api/full_sync'] = array(
+        'title'           => 'Partial Sync',
+        'description'     => 'Partial Sync',
+        'page callback'   => '_cdsc_ajax_full_sync',
+        'access arguments' => array('administer cmp data sync'),
+        'type'            => MENU_CALLBACK,
+        'file'            => 'cmp_data_sync_client.admin.inc'
+    );
+    $items['admin/content/cmp-data-sync-client/api/last_sync_date'] = array(
+        'title'           => 'Last Sync Date',
+        'description'     => 'Last Sync Date',
+        'page callback'   => '_cdsc_ajax_last_sync_date',
+        'access arguments' => array('administer cmp data sync'),
+        'type'            => MENU_CALLBACK,
+        'file'            => 'cmp_data_sync_client.admin.inc'
+    );
+    $items['admin/content/cmp-data-sync-client/api/check_queue_status'] = array(
+        'title'           => 'Check Queue Status',
+        'description'     => 'Display Queue Status',
+        'page callback'   => '_cdsc_ajax_check_queue_status',
+        'access arguments' => array('administer cmp data sync'),
+        'type'            => MENU_CALLBACK,
+        'file'            => 'cmp_data_sync_client.admin.inc'
+    );
+    $items['admin/content/cmp-data-sync-client/api/partial_queue'] = array(
+        'title'           => 'Partial Queue',
+        'description'     => 'Partial Queue',
+        'page callback'   => '_cdsc_ajax_partial_queue',
+        'access arguments' => array('administer cmp data sync'),
+        'type'            => MENU_CALLBACK,
+        'file'            => 'cmp_data_sync_client.admin.inc'
+    );
+    $items['admin/content/cmp-data-sync-client/api/full_queue'] = array(
+        'title'           => 'Full Queue',
+        'description'     => 'Full Queue',
+        'page callback'   => '_cdsc_ajax_full_queue',
+        'access arguments' => array('administer cmp data sync'),
+        'type'            => MENU_CALLBACK,
+        'file'            => 'cmp_data_sync_client.admin.inc'
+    );
+    $items['admin/content/cmp-data-sync-client/api/process_queue'] = array(
+        'title'           => 'Process Queue',
+        'description'     => 'Process Queue',
+        'page callback'   => '_cdsc_ajax_process_queue',
+        'access arguments' => array('administer cmp data sync'),
+        'type'            => MENU_CALLBACK,
+        'file'            => 'cmp_data_sync_client.admin.inc'
+    );
+    $items['admin/content/cmp-data-sync-client/api/validate_elasticsearch'] = array(
+        'title'           => 'Validate Elasticsearch',
+        'description'     => 'Validate Elasticsearch',
+        'page callback'   => '_cdsc_ajax_validate_elasticsearch',
+        'access arguments' => array('administer cmp data sync'),
+        'type'            => MENU_CALLBACK,
+        'file'            => 'cmp_data_sync_client.admin.inc'
+    );
+   return $items;
+}
+
+function cmp_data_sync_client_init()
+{
+    global $conf;
+    if ( !empty($conf['elasticsearch_server']) )
+    {
+        $conf['cdsc_elasticsearch_server'] = 'http://'.$conf['elasticsearch_server'];
+        if ( !empty($conf['elasticsearch_port']) )
+        {
+            $conf['cdsc_elasticsearch_server'] .= ':'.$conf['elasticsearch_port'];
+        }
+    }
+    /// turn off usasearch indexing behavior for all node types
+    foreach ( node_type_get_names() as $node_type=>$node_name )
+    {
+        $conf['usasearch_node_include_'.$node_type] = FALSE;
+    }
+}
+
+/// we will let cron catch this change, no need for drupal_exit
+// function cmp_data_sync_client_exit()
+// {
+//     if ( !empty(variable_get('cdsc_content_changed',false)) )
+//     {
+//         _cdsc_finish_request();
+//         _cdsc_clear_cdn_cache();
+//     }
+// }
+/// we want to trigger an akamai cache flush no matter who made a node/term change
+function cmp_data_sync_client_node_save($node)            { variable_set('cdsc_content_changed',true); }
+function cmp_data_sync_client_node_update($node)          { variable_set('cdsc_content_changed',true); }
+function cmp_data_sync_client_node_delete($node)          { variable_set('cdsc_content_changed',true); }
+function cmp_data_sync_client_taxonomy_term_save($term)   { variable_set('cdsc_content_changed',true); }
+function cmp_data_sync_client_taxonomy_term_update($term) { variable_set('cdsc_content_changed',true); }
+function cmp_data_sync_client_taxonomy_term_delete($term) { variable_set('cdsc_content_changed',true); }
+
+function cmp_data_sync_client_cron_queue_info()
+{
+    /// will pull items off the queue while cron is running
+    $queues = array();
+    $queues['cmp_data_sync'] = array(
+      'worker callback' => '_cdsc_process_queue_data',
+      'time'            => 60
+    );
+    return $queues;
+}
+function cmp_data_sync_client_cron()
+{
+    /// do a partial queue
+    _cdsc_partial_queue();
+    /// let cron_queue_info do the processing
+}
+
+function cmp_data_sync_client_cronapi($op, $job = NULL)
+{
+
+    $items['cmp_data_sync_client_clean_akamai'] = array(
+        'description' => 'Clear akamai cache after sync queue is processed',
+        'rule' => '* * * * *',
+        'callback' => '_cmp_data_sync_client_clear_akamai_cache',
+    );
+
+    return $items;
+}
+function _cmp_data_sync_client_clear_akamai_cache()
+{
+    if ( variable_get('cdsc_content_changed',false) )
+    {
+        $queue = DrupalQueue::get('cmp_data_sync');
+        $currQueueCount = $queue->numberOfItems();
+        $lastQueueCount = variable_get('cdsc_cdn_last_q_count',0);
+        variable_set('cdsc_cdn_last_q_count',$currQueueCount);
+        //_cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' Q COUNTS LAST('.$lastQueueCount.') CURR('.$currQueueCount.')');
+
+        if ( $currQueueCount !== $lastQueueCount )
+        {
+            //_cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' Q COUNTS UNEQUAL - resetting count to 0');
+            variable_set('cdsc_cdn_same_count',0);
+        }
+        if ( empty($currQueueCount) )
+        {
+            _cdsc_clear_cdn_cache();
+            variable_set('cdsc_content_changed',false);
+            //_cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' Q EMPTY: CRON FLUSH TRIGGERED');
+            return;
+        }
+        if ( $currQueueCount === $lastQueueCount )
+        {
+           $same_count = variable_get('cdsc_cdn_same_count',0);
+           $same_count = intval($same_count) + 1;
+           variable_set('cdsc_cdn_same_count',$same_count);
+           //_cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' Q COUNTS EQUAL - incrementing count');
+           if ( $same_count === 5 ) /// it has been the same count for 5 cron runs (~ 5mins)
+           {                        /// assume queue is stuck and trigger flush as if queue is finished
+               _cdsc_clear_cdn_cache();
+               variable_set('cdsc_content_changed',false);
+               //_cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' Q CLOGGED: CRON FLUSH TRIGGERED');
+               return;
+           }
+        }
+        //_cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' Q NOT EMPTY: CRON FLUSH SKIPPED !!!!');
+        /// if Q different than last time : reset same-counter to 0
+        /// if Q empty : send clear request, set cdsc_content_changed false
+        /// if Q same as last time : tick same-count counter
+        /// if Q same for the last X times : send clear request, set cdsc_content_changed false
+    //} else {
+    //    _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' NO Q CHANGES: CRON FLUSH SKIPPED !!!!');
+    }
+}
+
+function cmp_data_sync_client_permission()
+{
+  return array(
+    'administer cmp data sync' => array(
+      'title' => t('Administer Childsite Syncing behavior'),
+    )
+  );
+}
+
+function _cdsc_setup_drupal()
+{
+    $dv = _cdsc_setup_drupal_vars();
+    $dq = _cdsc_setup_drupal_queue();
+    return ( $dq && $dv );
+}
+function _cdsc_teardown_drupal()
+{
+    $dq = _cdsc_teardown_drupal_queue();
+    $dv = _cdsc_teardown_drupal_vars();
+    return ( $dq && $dv );
+}
+function _cdsc_setup_drupal_queue()
+{
+    if ( variable_get('queue_class_cmp_data_sync')===null )
+    {
+        variable_set('queue_class_cmp_data_sync', 'CDSQueue');
+    }
+    $queue = DrupalQueue::get('cmp_data_sync');
+    $queue->createQueue();
+}
+function _cdsc_teardown_drupal_queue()
+{
+    $queue = DrupalQueue::get('cmp_data_sync');
+    $queue->deleteQueue();
+    variable_del('queue_class_cmp_data_sync');
+}
+function _cdsc_setup_drupal_vars()
+{
+    /// check this logic: don't want to clobber with empty values if already exists
+    if ( variable_get('cdsc_site_name_filter')===null )
+    {
+        variable_set('cdsc_site_name_filter', '');
+    }
+    if ( variable_get('cdsc_elasticsearch_server')===null )
+    {
+        variable_set('cdsc_elasticsearch_server', '');
+    }
+    if ( variable_get('cdsc_syncing_enabled')===null )
+    {
+        variable_set('cdsc_syncing_enabled',false);
+    }
+    if ( variable_get('cdsc_last_sync_time')===null )
+    {
+        variable_set('cdsc_last_sync_time',null);
+    }
+    if ( variable_get('cdsc_schema_data')===null )
+    {
+        variable_set('cdsc_schema_data',null);
+    }
+    if ( variable_get('cdsc_schema_term_sha1')===null )
+    {
+        variable_set('cdsc_schema_term_sha1',null);
+    }
+    if ( variable_get('cdsc_schema_node_sha1')===null )
+    {
+        variable_set('cdsc_schema_node_sha1',null);
+    }
+    if ( variable_get('cdsc_schema_relation_sha1')===null )
+    {
+        variable_set('cdsc_schema_relation_sha1',null);
+    }
+    if ( variable_get('cdsc_schema_data')===null )
+    {
+        variable_set('cdsc_schema_data',null);
+    }
+    if ( variable_get('cdsc_cdn_last_q_count')===null )
+    {
+        variable_set('cdsc_cdn_last_q_count',null);
+    }
+    if ( variable_get('cdsc_cdn_same_count')===null )
+    {
+        variable_set('cdsc_cdn_same_count',null);
+    }
+    // if ( variable_get('cdsc_node_bundles')===null )
+    // {
+    //     variable_set('cdsc_node_bundles',array());
+    // }
+    // if ( variable_get('cdsc_term_bundles')===null )
+    // {
+    //     variable_set('cdsc_term_bundles',array());
+    // }
+}
+function _cdsc_teardown_drupal_vars()
+{
+    // variable_del('queue_class_cmp_data_sync');
+    variable_del('cdsc_elasticsearch_server');
+    variable_del('cdsc_site_name_filter');
+    variable_del('cdsc_last_sync_time');
+    variable_del('cdsc_schema_data');
+    variable_del('cdsc_schema_term_sha1');
+    variable_del('cdsc_schema_node_sha1');
+    variable_del('cdsc_schema_relation_sha1');
+    variable_del('cdsc_cdn_last_q_count');
+    variable_del('cdsc_cdn_same_count');
+    // variable_del('cdsc_node_bundles');
+    // variable_del('cdsc_term_bundles');
+}
+
+
+function _cdsc_validate_elasticsearch_server()
+{
+  $elasticsearch_server = variable_get('cdsc_elasticsearch_server');
+  if ( empty($elasticsearch_server) )
+  {
+    return false;
+  }
+  try{
+      $response = drupal_http_request($elasticsearch_server, array('method'=>'HEAD') );
+      if ( $response->code !== '200' )
+      {
+          return false;
+      }
+      return true;
+  } catch(Exception $e){
+      return false;
+  }
+}
+function _cdsc_validate_elasticsearch_content_index()
+{
+  $elasticsearch_server = variable_get('cdsc_elasticsearch_server');
+  try{
+      $response = drupal_http_request($elasticsearch_server.'/cmp-data-entities', array('method'=>'HEAD') );
+      if ( $response->code !== '200' )
+      {
+        return false;
+      }
+      return true;
+  } catch(Exception $e){
+      return false;
+  }
+}
+function _cdsc_validate_elasticsearch_schema_index()
+{
+  $elasticsearch_server = variable_get('cdsc_elasticsearch_server');
+  try{
+      $response = drupal_http_request($elasticsearch_server.'/cmp-data-schema', array('method'=>'HEAD') );
+      if ( $response->code !== '200' )
+      {
+        return false;
+      }
+      return true;
+  } catch(Exception $e){
+      return false;
+  }
+}
+
+
+function _cdsc_sync_schema( $force=false )
+{
+    $elasticsearch_server = variable_get('cdsc_elasticsearch_server');
+
+    $result = drupal_http_request($elasticsearch_server.'/cmp-data-schema/schema/node_term');
+
+    if ( $result->code !== '200' || empty($result->data) )
+    {
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' could not talk to Elasticsearch');
+        return false;
+    }
+
+    $data = json_decode($result->data);
+
+    if ( $data===null || empty($data->_source) )
+    {
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' could not json_decode Elasticsearch result');
+        return false;
+    }
+
+    variable_set('cdsc_schema_data',$data->_source);
+
+    _cdsc_update_schema($force);
+}
+function _cdsc_update_schema( $force=false )
+{
+    $schema        = variable_get('cdsc_schema_data');
+    $term_sha1     = variable_get('cdsc_schema_term_sha1');
+    $node_sha1     = variable_get('cdsc_schema_node_sha1');
+    $relation_sha1 = variable_get('cdsc_schema_relation_sha1');
+
+    // if ( $schema->term_sha1 !== $term_sha1
+    //   || $schema->node_sha1 !== $node_sha1   )
+    // {
+    //     _cdsc_remove_missing_fields();
+    // }
+
+    if ( empty($schema) || empty($schema->term_sha1) || $schema->term_sha1 !== $term_sha1 || $force )
+    {
+        // handle special case : field type changed, but not name.
+        // maybe just trigger a full site sync
+        try {
+            $fake_submit = array(
+                'values' => array(
+                    'macro' => $schema->term
+                )
+            );
+            _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' syncing TERM schema');
+            /// seed the database with the correct vids
+            preg_match_all("/\'vid\'\s+\=\>\s+\'(?<vid>\d+)\'.*?\'machine_name\'\s+\=\>\s+\'(?<machine_name>\w+)\'/ms",$schema->term,$matches);
+            if ( !empty($matches['vid']) && !empty($matches['machine_name']) && count($matches['vid'])===count($matches['machine_name']) )
+            {
+                $vid_params = [];
+                foreach ( $matches['machine_name'] as $i=>$machine_name )
+                {
+                    if ( !empty($matches['vid'][$i]) )
+                    {
+                        $vid_params[] = $matches['vid'][$i];
+                        $vid_params[] = $matches['machine_name'][$i];
+                    }
+                }
+                if ( !empty($vid_params) )
+                {
+                    db_query('INSERT IGNORE INTO {taxonomy_vocabulary} (vid,machine_name) VALUES '.rtrim(str_repeat('(?,?),',count($vid_params)/2),','),
+                             $vid_params);
+                }
+            }
+            $status = bundle_copy_import_submit(array(), $fake_submit);
+            variable_set('cdsc_schema_term_sha1',$schema->term_sha1);
+        } catch ( Exception $e ) {
+            _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception bundle_copy_import_submit: '.$e->getMessage() );
+        }
+    }
+
+    if ( empty($schema) || empty($schema->node_sha1) || $schema->node_sha1 !== $node_sha1 || $force )
+    {
+        try {
+            $fake_submit = array(
+                'values' => array(
+                    'macro' => $schema->node
+                )
+            );
+            _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' syncing NODE schema');
+            $status = bundle_copy_import_submit(array(), $fake_submit);
+            variable_set('cdsc_schema_node_sha1',$schema->node_sha1);
+        } catch ( Exception $e ) {
+            _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception bundle_copy_import_submit: '.$e->getMessage() );
+        }
+    }
+
+    if ( empty($schema) || empty($schema->relation_sha1) || $schema->relation_sha1 !== $relation_sha1 || $force )
+    {
+        try {
+            $data = array();
+            eval($schema->relation);
+        } catch (Exception $e) {
+            _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception evaling relation schema: '.$e->getMessage() );
+        }
+        try {
+            if ( !empty($data) )
+            {
+                foreach ( $data as $relation_type )
+                {
+                    if ( !empty($relation_type->relation_type) )
+                    {
+                        $found = db_query("SELECT 1 FROM {relation_type} WHERE relation_type=:relation_type",
+                                        array(':relation_type'=>$relation_type->relation_type))
+                               ->fetchColumn();
+                        if ( !empty($found) )
+                        {
+                            $write_records_keys = 'relation_type';
+                        } else {
+                            $write_records_keys = array();
+                        }
+                        _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' '.((empty($write_records_keys))?'creating':'updating').' RELATION schema:'.$relation_type->relation_type );
+                        relation_type_save($relation_type, $write_records_keys);
+                    } else {
+                        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' $relation_type has no type');
+                    }
+                }
+                variable_set('cdsc_schema_relation_sha1',$schema->relation_sha1);
+            } else {
+                _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' data is empty');
+            }
+        } catch ( Exception $e ) {
+            _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception relation_type_save: '.$e->getMessage() );
+        }
+    }
+
+}
+function _cdsc_clear_cdn_cache()
+{
+    /// cache_clear_all('theme_registry', 'cache', TRUE); # not sure if we need this ???
+    if ( function_exists('akamai_clear_site') )
+    {
+        $cpcode = variable_get('akamai_cpcode',null);
+        if ( !empty($cpcode) )
+        {
+            $response = akamai_clear_site($cpcode);
+            if ( !empty($response) )
+            {
+                _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' Akamai flush sent');
+            } else {
+                _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Akamai flush failed');
+            }
+        }
+    }
+}
+function _cdsc_remove_missing_fields()
+{
+    $schema = variable_get('cdsc_schema_data');
+
+    $cmp_fields = array('node'=>array(),'taxonomy_term'=>array());
+    foreach ( ['term','node'] as $schema_type )
+    {
+        if ( empty($schema->{$schema_type}) ) { continue; }
+        eval($schema->{$schema_type});
+
+        foreach($data['fields'] as $field_name=>$field_info)
+        {
+            foreach ( $field_info['bundles'] as $entity_type=>$bundle_names )
+            {
+                if ( !isset($cmp_fields[$entity_type]) )
+                {
+                    $cmp_fields[$entity_type] = array();
+                }
+                foreach($bundle_names as $bundle_name)
+                {
+                    if ( !isset($cmp_fields[$entity_type][$bundle_name]) )
+                    {
+                        $cmp_fields[$entity_type][$bundle_name] = array();
+                    }
+                    $cmp_fields[$entity_type][$bundle_name][$field_name]=true;
+                }
+            }
+        }
+    }
+
+    $child_fields=array('node'=>array(),'taxonomy_term'=>array());
+    $result = db_query('select entity_type, bundle as bundle_name, field_name from field_config_instance where deleted=0');
+    while ( $record = $result->fetchObject() )
+    {
+        if ( !isset($child_fields[$record->entity_type]) )
+        {
+            $child_fields[$record->entity_type]=array();
+        }
+        if ( !isset($child_fields[$record->entity_type][$record->bundle_name]) )
+        {
+            $child_fields[$record->entity_type][$record->bundle_name]=array();
+        }
+        $child_fields[$record->entity_type][$record->bundle_name][] = $record->field_name;
+    }
+
+    foreach ( ['taxonomy_term','node'] as $entity_type )
+    {
+        if ( !isset($child_fields[$entity_type]) ) { continue; }
+        foreach($child_fields[$entity_type] as $bundle_name=>$child_field_names)
+        {
+            if ( isset($cmp_fields[$entity_type]) &&
+                 isset($cmp_fields[$entity_type][$bundle_name]) )
+            {
+                foreach ( $child_field_names as $field_name )
+                {
+                    if ( !isset($cmp_fields[$entity_type][$bundle_name][$field_name]) )
+                    {
+                        $field_instance = field_read_instance($entity_type, $field_name, $bundle_name);
+                        if ( !empty($field_instance) )
+                        {
+                            field_delete_instance($field_instance);
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+}
+
+function _cdsc_get_all_entities_from_elasticsearch()
+{
+    // _cdsc_get_uuids_from_elasticsearch(['8275013f-5eb8-4bdd-8a73-1ab584e88b19']);
+    _cdsc_get_entities_from_elasticsearch();
+}
+function _cdsc_get_changed_entities_from_elasticsearch($since=0)
+{
+    $since = !empty($since) ? intval($since) : variable_get('cdsc_last_sync_time',0);
+    return _cdsc_get_entities_from_elasticsearch($since);
+}
+function _cdsc_get_entities_from_elasticsearch($since=0)
+{
+    $es_batch_size = 1;
+
+    $elasticsearch_server = variable_get('cdsc_elasticsearch_server');
+
+    $scroll_id = null;
+    $sanity    = 100000;
+    $items_queued = 0;
+    while ( $sanity-- )
+    {
+        try
+        {
+            if ( $scroll_id===null )
+            {
+                $_search = '';
+                $_query  = '';
+                $_filter = '';
+                $since = intval($since);
+                if ( !empty($since) )
+                {
+                    $_query = '"query": {"range": {"changed": {"gte": '.$since.' } } }';
+                } else {
+                    $_query = '"query": {"match_all": {} }';
+                }
+                $site_name = variable_get('cdsc_site_name_filter');
+                $site_name = preg_replace("/[^\w\_\.\-]/","",$site_name);
+                $site_name = json_encode($site_name);
+                if ( !empty($site_name) )
+                {
+                    $should = array(
+                        '{ "missing": { "field": "field_for_use_by" } }',
+                        '{ "query":   { "term":{ "field_for_use_by.und.value":'.$site_name.' } } }'
+                    );
+                    if ( in_array($site_name,['"USA.gov"','"GobiernoUSA.gov"']) )
+                    {
+                        $should[] = '{ "query":   { "term":{ "type":"directory_record_content_type" } } }';
+                    }
+                    $_filter = ',"filter": {"bool": { "should": ['. join(',',$should) .'] } }';
+                }
+                $_search = '{'
+                .'  "query": {'
+                .'    "filtered" : {'
+                .'        '.$_query
+                .'        '.$_filter
+                .'    }'
+                .'  },'
+                .'  "size" : '.$es_batch_size
+                .'}';
+                $options = array(
+                    'method' => 'POST',
+                    'data' => $_search
+                );
+
+                $result = drupal_http_request($elasticsearch_server.'/cmp-data-entities/_search?scroll=1m',$options);
+                if ( !isset($result->data) )
+                {
+                    continue;
+                }
+                $results_data = json_decode($result->data,true);
+                if ( $result->code!=='200' || empty($results_data['_scroll_id']) )
+                {
+                    /// we should get some base64 encoded string
+                    _cdsc_log('Info: CDSC '.__FUNCTION__.' items queued:'.$items_queued);
+                    return $items_queued;
+                }
+                $scroll_id = $results_data['_scroll_id'];
+            } else {
+                $options = array(
+                    'method' => 'POST',
+                    'data' => $scroll_id
+                );
+                $result = drupal_http_request($elasticsearch_server.'/_search/scroll?scroll=1m',$options);
+                if ( !isset($result->data) )
+                {
+                    continue;
+                }
+                $results_data = json_decode($result->data,true);
+                if ( $result->code!=='200' || empty($results_data['_scroll_id']) || $scroll_id!==$results_data['_scroll_id'] )
+                {
+                    /// something messed up - we should always get same one back
+                    _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' items queued:'.$items_queued);
+                    return $items_queued;
+                }
+            }
+
+            if ( !isset($results_data['hits']) || !isset($results_data['hits']['hits']) )
+            {
+                continue;
+            }
+
+            if ( empty($results_data['hits']['hits']) )
+            {
+                /// no more results in this scroll
+                _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' items queued:'.$items_queued);
+                return $items_queued;
+            }
+        } catch (Exception $e) {
+            _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception reading response: '.$e->getMessage() .' : '. $e->getTraceAsString() );
+            if ( $scroll_id===null )
+            {
+                /// if we died trying to get scroll_id, we can't recover
+                _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' items queued:'.$items_queued);
+                return $items_queued;
+            } else {
+                /// if we died trying to json_decode this item, we can skip and move on
+                continue;
+            }
+        }
+
+        foreach( $results_data['hits']['hits'] as $result )
+        {
+            try
+            {
+                $entity = $result['_source'];
+                $e_uuid = $entity['uuid'];
+                $e_json = json_encode($entity);
+                if( isset($entity['nid']) )
+                {
+                    $e_type='node';
+                } else if ( isset($entity['tid']) ) {
+                    $e_type='taxonomy_term';
+                }
+                $items_queued += _cdsc_add_entity_to_queue($e_uuid, $e_type, $e_json);
+
+            } catch (Exception $e) {
+                _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception parsing entity: '.$e->getMessage() .' : '. $e->getTraceAsString() );
+                continue;
+            }
+        }
+    }
+    _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' items queued:'.$items_queued);
+    return $items_queued;
+}
+function _cdsc_get_uuids_from_elasticsearch($uuids)
+{
+    if ( !is_array($uuids) )
+    {
+        $uuids = array($uuids);
+    }
+
+    $elasticsearch_server = variable_get('cdsc_elasticsearch_server');
+    $items_queued = 0;
+
+    foreach ( $uuids as $uuid )
+    {
+        $result = drupal_http_request($elasticsearch_server.'/cmp-data-entities/entity/'.$uuid);
+        if ( !isset($result->data) || $result->code!=='200' )
+        {
+            continue;
+        }
+        $result = json_decode($result->data,true);
+        if ( !isset($result['_source']) )
+        {
+            continue;
+        }
+
+        try
+        {
+            $entity = $result['_source'];
+            $e_uuid = $entity['uuid'];
+            $e_json = json_encode($entity);
+            if( isset($entity['nid']) )
+            {
+                $e_type='node';
+            } else if ( isset($entity['tid']) ) {
+                $e_type='taxonomy_term';
+            }
+            $items_queued += _cdsc_add_entity_to_queue($e_uuid, $e_type, $e_json);
+
+        } catch (Exception $e) {
+            _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception parsing entity: '.$e->getMessage() .' : '. $e->getTraceAsString() );
+            continue;
+        }
+    }
+    return $items_queued;
+}
+
+function _cdsc_add_entity_to_queue($e_uuid, $e_type, $e_json)
+{
+    // _cdsc_log('DBG: CDSC '.__FUNCTION__.'.'.__LINE__.' adding to queue uuid'.$e_uuid);
+    try
+    {
+        $queue = DrupalQueue::get('cmp_data_sync');
+        $return_val = $queue->createItem(array(
+            'uuid' => $e_uuid,
+            'type' => $e_type,
+            'json' => $e_json
+        ));
+        return true;
+    } catch (Exception $e) {
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception : entity_id='.$e_uuid.' entity_type='.$e_type .' message='. $e->getMessage() .' trace='. $e->getTraceAsString());
+        return false;
+    }
+}
+
+function _cdsc_process_queue()
+{
+    $queue = DrupalQueue::get('cmp_data_sync');
+
+    $attempted  = 0;
+    $success    = 0;
+    $lease_time = 10;
+    $queued_item_count = 0;
+
+    $allowed_retry_attempts = 5;
+    $retry_attempts = [];
+
+    $loop = 0;
+    $initial_queued_item_count=$queue->numberOfItems();
+    while( ($queued_item_count=$queue->numberOfItems())>0 )
+    {
+        // _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' loop:'.$loop);
+        if ( ($loop%10)==0 && _cdsc_syncing_disabled() )
+        {
+            // _cdsc_log('Info: CDSC '.__FUNCTION__.' Syncing Disabled, stopped processing');
+            break;
+        }
+        $loop++;
+        $q_item = $queue->claimItem($lease_time);
+        if ( empty($q_item) )
+        {
+            /// we done
+            // _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' queue is empty');
+            break;
+        }
+        // _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' attempting to process item:'.$q_item->data_uuid);
+        $attempted++;
+        try
+        {
+            if ( isset($retry_attempts[$q_item->data_uuid]) )
+            {
+                $retry_attempts[$q_item->data_uuid]++;
+            } else {
+                $retry_attempts[$q_item->data_uuid] = 0;
+            }
+            // _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' attempt:'.$retry_attempts[$q_item->data_uuid].' for item:'.$q_item->data_uuid);
+            if ( $retry_attempts[$q_item->data_uuid] > $allowed_retry_attempts )
+            {
+                _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' deleted after attempt:'.$retry_attempts[$q_item->data_uuid].' for item:'.$q_item->data_uuid);
+                $queue->deleteItem($q_item);
+                continue;
+            }
+            $result = _cdsc_process_queue_data($q_item->data);
+            /// we always want to remove an item in all cases
+            if ( $result===CDSC_FATAL )
+            {
+                /// we can't possibly process this
+                /// just remove it
+                $queue->deleteItem($q_item);
+            } else if ( $result===CDSC_SUCCESS ) {
+                $queue->deleteItem($q_item);
+                $success++;
+            } else {
+                /// success===CDSC_TRY_AGAIN means there was a non-fatal problem
+                /// _cdsc_process_queue_data already re-added this item to the queue for us
+                /// $queue->deleteItem($q_item);
+                // _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' releasing back to queue on attempt:'.$retry_attempts[$q_item->data_uuid].' for item:'.$q_item->data_uuid);
+                $queue->releaseItem($q_item);
+            }
+        } catch(Exception $e) {
+            _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception processing q_item: message='.$e->getMessage() .' trace='. $e->getTraceAsString() );
+            $queue->deleteItem($q_item);
+        }
+    }
+    _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' results : '.$success.'/'.$attempted.' of '.$initial_queued_item_count.' total');
+    return $success;
+}
+function _cdsc_process_queue_data($q_data)
+{
+    //_cdsc_log('DBG: CDSC '.__FUNCTION__.'.'.__LINE__.' uuid'.$q_data->data_uuid);
+    try
+    {
+        if ( empty($q_data['type']) || empty($q_data['json']) )
+        {
+            return CDSC_FATAL;
+        }
+
+        try
+        {
+            $entity = json_decode($q_data['json'],TRUE);
+            $entity = (object) $entity;
+
+        } catch( Exception $e ) {
+            return CDSC_FATAL;
+        }
+
+        if($entity===null)
+        {
+            return CDSC_FATAL;
+        }
+
+        if ( $q_data['type'] === 'node' )
+        {
+            if ( $entity->deleted )
+            {
+                $success = _cdsc_remove_node_from_drupal($entity->uuid);
+            } else {
+                $success = _cdsc_add_node_to_drupal($entity);
+            }
+        } elseif ( $q_data['type'] === 'taxonomy_term' ) {
+            if ( $entity->deleted )
+            {
+                $success = _cdsc_remove_term_from_drupal($entity->uuid);
+            } else {
+                $success = _cdsc_add_term_to_drupal($entity);
+            }
+        } else {
+            return CDSC_FATAL;
+        }
+        if ( $success===CDSC_TRY_AGAIN )
+        {
+            //$queue->createItem($q_data);
+            return $success;
+        }
+        return $success;
+    } catch (Exception $e) {
+        //$queue->createItem($q_data);
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() .' : '. $e->getTraceAsString() );
+        return CDSC_TRY_AGAIN;
+    }
+}
+
+function _cdsc_clear_queue()
+{
+    try
+    {
+        db_query("DELETE FROM {cds_queue} WHERE name='cmp_data_sync'");
+        return true;
+    } catch( Exception $e ) {
+        return false;
+    }
+}
+
+function _cdsc_remove_node_from_drupal($uuid)
+{
+    try
+    {
+        $ids = entity_get_id_by_uuid('node', array($uuid) );
+        if ( empty($ids) )
+        {
+            return CDSC_SUCCESS;
+        }
+        _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' uuid='.$uuid);
+        entity_uuid_delete('node',$uuid);
+        return CDSC_SUCCESS;
+    } catch( Exception $e ) {
+        return CDSC_TRY_AGAIN;
+    }
+}
+function _cdsc_remove_term_from_drupal($uuid)
+{
+    try
+    {
+        $ids = entity_get_id_by_uuid('taxonomy_term', array($uuid) );
+        if ( empty($ids) )
+        {
+            return CDSC_SUCCESS;
+        }
+        _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' uuid='.$uuid);
+        entity_uuid_delete('taxonomy_term',$uuid);
+        return CDSC_SUCCESS;
+    } catch( Exception $e ) {
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() .' : '. $e->getTraceAsString() );
+        return CDSC_TRY_AGAIN;
+    }
+}
+
+function _cdsc_add_node_to_drupal($node)
+{
+    try {
+        _cdsc_entity_validate_references($node);
+    } catch ( Exception $e ) {
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() );
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getTraceAsString() );
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$node->nid.' '.$node->uuid );
+    }
+    try
+    {
+        // $drupal_uuids = &_cdsc_drupal_uuids();
+        $node->uid      = 1;
+        $node->revision = 1;
+        $node->vid      = null;
+        $incorrect_uuid = null;
+        $incorrect_nid  = null;
+        if ( !empty($node->uuid) || !empty($node->nid) )
+        {
+            $existing = db_query('SELECT uuid,nid FROM {node} WHERE uuid=:uuid OR nid=:nid',
+                                array(':uuid'=>$node->uuid,':nid'=>$node->nid));
+            foreach ( $existing as $item )
+            {
+                if ( $item->nid != $node->nid )
+                {
+                    $incorrect_nid = $item->nid;
+                } else if ( $item->uuid != $node->uuid ) {
+                    $incorrect_uuid = $item->uuid;
+                }
+            }
+        }
+    } catch ( PDOException $e ) {
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() .' : '. $e->getTraceAsString() );
+        if ($e->getCode()>=2000 && $e->getCode()<3000 )
+        {
+            return CDSC_TRY_AGAIN;
+        } else {
+            /// log better - we are skipping so we need a record
+            return CDSC_FATAL;
+        }
+    } catch ( Exception $e ) {
+        /// log better - we are skipping so we need a record
+       return CDSC_FATAL;
+    }
+    if ( $incorrect_uuid && $incorrect_nid )
+    {
+        /// both the uuid and nid belong to conflicting items
+        /// assume the uuid is correct and represents this node
+        /// and we need to adopt the local nid instead of ours
+        _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' adopting new nid from:'.$node->nid.' to:'.$incorrect_nid);
+        $node->nid = $incorrect_nid;
+    } else if ( !$incorrect_uuid && $incorrect_nid ) {
+        /// uuid exists, but with different id
+        /// we are assuming that the id is wrong only because some entity referenced this item during import
+        /// and an empty version of this item was created previously, which got an auto-incremented id
+        /// so we must update the existing id with ours
+        _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' correcting site nid from='.$incorrect_nid.' to='.$node->nid);
+        try {
+            db_query("UPDATE {node} SET nid=:correct_uuid WHERE nid=:incorrect_nid AND uuid=:uuid",
+                    array(':correct_nid'=>$node->nid,':incorrect_nid'=>$incorrect_nid,':uuid'=>$node->uuid));
+        } catch ( Exception $e ) {
+            _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() .' : '. $e->getTraceAsString() );
+            // _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$node->nid.' '.$node->uuid );
+        }
+    } else if ( !$incorrect_nid && $incorrect_uuid ) {
+        /// nid exists, but with conflicting uuid
+        /// this nid is already in use, we must get a local nid by removing ours
+        _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' dropping colliding nid:'.$node->nid);
+        unset($node->nid);
+    }
+    try {
+        $invocation = module_invoke_all('cdsc_node_pre_import',$node);
+    } catch ( Exception $e ) {
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() .' : '. $e->getTraceAsString() );
+        // _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$node->nid.' '.$node->uuid );
+    }
+    try
+    {
+        if ( !empty($node->uuid) )
+        {
+            _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' saving node uuid='.$node->uuid);
+            try {
+                if ( !empty($node->nid) )
+                {
+                    /// seed the db with the desired nid
+                    db_query("INSERT IGNORE INTO {node} (nid,uuid) VALUES(:nid,:uuid)",
+                                array(':nid'=>$node->nid,':uuid'=>$node->uuid));
+                }
+                node_save($node);
+                if ( _cdsc_correct_self_references($node) )
+                {
+                    node_save($node);
+                }
+                try {
+                    $invocation = module_invoke_all('cdsc_node_post_import',$node);
+                } catch ( Exception $e ) {
+                    _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() .' : '. $e->getTraceAsString() );
+                    // _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$node->nid.' '.$node->uuid );
+                }
+            } catch ( Exception $e ) {
+                _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() .' : '. $e->getTraceAsString() );
+                _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$node->nid.' '.$node->uuid );
+            }
+        }
+        return CDSC_SUCCESS; /// remove from queue
+    } catch ( Exception $e ) {
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() );
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getTraceAsString() );
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$node->nid.' '.$node->uuid );
+        return CDSC_TRY_AGAIN; /// put back on queue
+    }
+}
+function _cdsc_add_term_to_drupal($term)
+{
+    try {
+        _cdsc_entity_validate_references($term);
+    } catch ( Exception $e ) {
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() );
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getTraceAsString() );
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$term->tid.' '.$term->uuid );
+    }
+    try
+    {
+        $incorrect_tid  = null;
+        $incorrect_uuid = null;
+        if ( !empty($term->uuid) || !empty($term->tid) )
+        {
+            $existing = db_query('SELECT uuid,tid FROM {taxonomy_term_data} WHERE uuid=:uuid OR tid=:tid',
+                                array(':uuid'=>$term->uuid,':tid'=>$term->tid));
+            foreach ( $existing as $item )
+            {
+                if ( $item->tid != $term->tid )
+                {
+                    $incorrect_tid = $item->tid;
+                } else if ( $item->uuid != $term->uuid ) {
+                    $incorrect_uuid = $item->uuid;
+                }
+            }
+        }
+    } catch ( PDOException $e ) {
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() .' : '. $e->getTraceAsString() );
+        if ($e->getCode()>=2000 && $e->getCode()<3000 )
+        {
+            return CDSC_TRY_AGAIN;
+        } else {
+            /// log better - we are skipping so we need a record
+            return CDSC_FATAL;
+        }
+    } catch ( Exception $e ) {
+        /// log better - we are skipping so we need a record
+       return CDSC_FATAL;
+    }
+    if ( $incorrect_uuid && $incorrect_tid )
+    {
+        /// both the uuid and id belong to some other item
+        /// assume the uuid is correct and represents this item
+        /// and we need to adopt the local id instead of ours
+        _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' adopting new tid from:'.$term->tid.' to:'.$incorrect_tid);
+        $term->tid = $incorrect_tid;
+    } else if ( !$incorrect_uuid && $incorrect_tid ) {
+        /// uuid exists, but with wrong id
+        /// we are assuming that the id is wrong only because some entity referenced this item during import
+        /// and an empty version of this item was created previously, which got an auto-incremented id
+        /// so we must update the existing id with ours
+        try {
+            _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' correcting site tid from='.$incorrect_tid.' to='.$term->tid);
+            _cdsc_change_tid($incorrect_tid,$term->tid);
+        } catch ( Exception $e ) {
+            _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() .' : '. $e->getTraceAsString() );
+            // _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$term->tid.' '.$term->uuid );
+        }
+    } else if ( !$incorrect_tid && $incorrect_uuid ) {
+        /// id exists, but with wrong uuid
+        /// this id is already in use, we must get a local id by removing ours
+        _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' dropping our colliding tid:'.$term->tid);
+        unset($term->tid);
+    }
+
+    try {
+        $invocation = module_invoke_all('cdsc_term_pre_import',$term);
+    } catch ( Exception $e ) {
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() );
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getTraceAsString() );
+    }
+
+    $term->field_term_owner = array("und"=>array(0=>array("target_id"=>"1")));
+
+    try
+    {
+        if ( !empty($term->uuid) )
+        {
+            _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' saving term uuid='.$term->uuid." vocab=".$term->vocabulary_machine_name);
+            try {
+                if ( !isset($term->vid) )
+                {
+                    $term->vid = 0;
+                    if ( !empty($term->vocabulary_machine_name) )
+                    {
+                        $term_vocabs  = &_cdsc_term_vocabs();
+                        if ( isset($term_vocabs[$term->vocabulary_machine_name]) )
+                        {
+                            $term->vid = $term_vocabs[$term->vocabulary_machine_name];
+                        }
+                    }
+                }
+                if ( !empty($term->tid) )
+                {
+                    db_query("INSERT IGNORE INTO {taxonomy_term_data} (tid,uuid) VALUES(:tid,:uuid)",
+                                array(':tid'=>$term->tid,':uuid'=>$term->uuid));
+                }
+                taxonomy_term_save($term);
+                if ( _cdsc_correct_self_references($term) )
+                {
+                    taxonomy_term_save($term);
+                }
+                try {
+                    $invocation = module_invoke_all('cdsc_term_post_import',$term);
+                } catch ( Exception $e ) {
+                    _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() );
+                    _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getTraceAsString() );
+                }
+
+            } catch ( Exception $e ) {
+                _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() );
+                _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getTraceAsString() );
+                _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$term->tid.' '.$term->uuid );
+            }
+            // $drupal_uuids[$term->uuid] = $term->tid;
+        }
+        return CDSC_SUCCESS; /// remove from queue
+    } catch ( Exception $e ) {
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() );
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getTraceAsString() );
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$term->tid.' '.$term->uuid );
+        return CDSC_TRY_AGAIN; /// put back on queue
+    }
+}
+
+function _cdsc_change_tid($existing_tid,$new_tid)
+{
+    $existing_tid = intval($existing_tid);
+    $new_tid      = intval($new_tid);
+    db_query("UPDATE {taxonomy_term_data} SET tid=:new_tid WHERE tid=:existing_tid",
+            array(':new_tid'=>$new_tid,':existing_tid'=>$existing_tid));
+    db_query("UPDATE {taxonomy_dates} SET tid=:new_tid WHERE tid=:existing_tid",
+            array(':new_tid'=>$new_tid,':existing_tid'=>$existing_tid));
+    db_query("UPDATE {taxonomy_index} SET tid=:new_tid WHERE tid=:existing_tid",
+            array(':new_tid'=>$new_tid,':existing_tid'=>$existing_tid));
+    db_query("UPDATE {taxonomy_menu} SET tid=:new_tid WHERE tid=:existing_tid",
+            array(':new_tid'=>$new_tid,':existing_tid'=>$existing_tid));
+    db_query("UPDATE {taxonomy_term_hierarchy} SET tid=:new_tid tid=:existing_tid",
+            array(':new_tid'=>$new_tid,':existing_tid'=>$existing_tid));
+    db_query("UPDATE {taxonomy_term_hierarchy} SET parent=:new_tid WHERE parent=:existing_tid",
+            array(':new_tid'=>$new_tid,':existing_tid'=>$existing_tid));
+}
+
+function _cdsc_entity_validate_references( &$entity )
+{
+    /// don't bother vetting deleted items
+    if ( !empty($entity->deleted) )
+    {
+        return CDSC_SUCCESS;
+    }
+    try
+    {
+        if ( $entity->type=='taxonomy_term' )
+        {
+            $entity_type   = $entity->type;
+            $entity_bundle = $entity->vocabulary_machine_name;
+        } else {
+            $entity_type   = 'node';
+            $entity_bundle = $entity->type;
+        }
+        $fields = field_info_instances($entity_type,$entity_bundle);
+        foreach ( array_keys($fields) as $field )
+        {
+            if ( $field==='field_owner' || $field==='field_term_owner' || !isset($entity->{$field}) || !isset($entity->{$field}['und']) ) { continue; }
+            $field_info = field_info_field($field);
+            if ( !isset($field_info['type'])
+              || !in_array($field_info['type'],
+                  ['entityreference','taxonomy_term_reference','relation_add']) )
+            {
+                continue;
+            }
+            $ref_type   = null;
+            $ref_bundle = null;
+            /// set some default guesses on what content type these should be
+            if ( $field_info['type']==='taxonomy_term_reference' )
+            {
+                $ref_type   = 'taxonomy_term';
+                if ( !empty($field_info['settings']['allowed_values']) )
+                {
+                    $ref_bundle = $field_info['settings']['allowed_values'][0]['vocabulary'];
+                }
+            } else if ( $field_info['type']==='entityreference' ) {
+                $ref_type   = $field_info['settings']['target_type'];
+                if ( !empty($field_info['settings']['handler_settings']['target_bundles']) )
+                {
+                    $ref_bundle = reset($field_info['settings']['handler_settings']['target_bundles']);
+                }
+            } else if ( $field_info['type']==='relation_add' ) {
+                $ref_type   = 'relation_add';
+            }
+            foreach ( $entity->{$field}['und'] as $k=>$ref )
+            {
+
+                $ref_uuid = null;
+                if ( isset($ref['uuid'])   ) { $ref_uuid   = $ref['uuid'];   }
+                if ( isset($ref['type'])   ) { $ref_type   = $ref['type'];   }
+                if ( isset($ref['relation_type']) ) { $ref_bundle = $ref['relation_type']; }
+                else if ( isset($ref['bundle']) )   { $ref_bundle = $ref['bundle']; }
+
+                if ( empty($ref_uuid) )
+                {
+                    _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' empty ref_uuid in field:'.$field.' of entity_uuid:'.$entity->uuid.' bundle:'.$ref_bundle);
+                    unset($entity->{$field}['und'][$k]);
+                    return CDSC_FATAL;
+                }
+
+                if ( isset($ref['tid']) )
+                {
+                    if ( $entity->uuid==$ref_uuid )
+                    {
+                        $entity->_self_refs[] =& $entity->{$field}['und'][$k]['tid'];
+                    }
+                    $uuid_count = _cdsc_uuid_count($ref_uuid);
+                    if ( empty($uuid_count) )
+                    {
+                        _cdsc_create_empty_entity($ref['tid'],$ref_uuid,$ref_type,$ref_bundle);
+                    }
+
+                } else if ( isset($ref['target_id']) ) {
+                    if ( $entity->uuid==$ref_uuid )
+                    {
+                        $entity->_self_refs[] =& $entity->{$field}['und'][$k]['target_id'];
+                    }
+                    $uuid_count = _cdsc_uuid_count($ref_uuid);
+                    if ( empty($uuid_count) )
+                    {
+                        _cdsc_create_empty_entity($ref['target_id'],$ref_uuid,$ref_type,$ref_bundle);
+                    }
+
+                /// a relation add field is really three references
+                /// one to the relation_add entity and two more for each endpoint
+                } else if ( isset($ref['rid']) ) {
+                    if ( isset($ref['endpoints']) && isset($ref['endpoints']['und']) )
+                    {
+                        foreach ( $ref['endpoints']['und'] as $j=>$ep )
+                        {
+                            if ( isset($ep['entity_uuid']) )
+                            {
+                                if ( $ep['entity_uuid']==$entity->uuid )
+                                {
+                                    $entity->_self_refs[] =& $entity->{$field}['und'][$k]['endpoints']['und'][$j]['entity_id'];
+                                } else {
+                                    $uuid_count = _cdsc_uuid_count($ep['entity_uuid']);
+                                    if ( empty($uuid_count) )
+                                    {
+                                        _cdsc_create_empty_entity($ep['entity_id'],$ep['entity_uuid'],$ep['entity_type'],$ep['entity_bundle']);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    $uuid_count = _cdsc_uuid_count($ref_uuid);
+                    if ( empty($uuid_count) )
+                    {
+                        _cdsc_create_empty_entity($ref['rid'],$ref_uuid,$ref_type,$ref_bundle,$ref);
+                    } else {
+                        $relation = (object) $ref;
+                        $relation->is_new = false;
+                        $relation->uid = 1;
+                        $retry = 0;
+                        while ( $retry++ <= 5 )
+                        {
+                            try {
+                                // _cdsc_log('DBG: CDSC '.__FUNCTION__.'.'.__LINE__.' save_existing relation uuid='.$ref_uuid);
+                                relation_save($relation);
+                            } catch( Exception $e ) {
+                                if ( $e->getCode()==40001 )
+                                {
+                                    usleep(100);
+                                    continue;
+                                } else {
+                                    _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception code:'.$e->getCode().' uuid:'.$entity->uuid.' rid:'.$ref['rid'].' ruuid:'.$ref_uuid.' '.$e->getMessage() );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return CDSC_SUCCESS;
+    } catch( Exception $e ) {
+        _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() .' : '. $e->getTraceAsString() );
+        return CDSC_FATAL;
+    }
+}
+function _cdsc_correct_self_references( &$entity )
+{
+    /// if our id has changed, so must all self references
+    $needs_resave = false;
+    if ( !empty($entity->_self_refs) )
+    {
+        foreach ( $entity->_self_refs as &$ref_id )
+        {
+            if ( property_exists($entity,'tid') && $ref_id!==$entity->tid )
+            {
+                $ref_id = $entity->tid;
+                $needs_save = true;
+            } else if ( property_exists($entity,'nid') && $ref_id!==$entity->nid  ) {
+                $ref_id = $entity->nid;
+                $needs_save = true;
+            }
+        }
+    }
+    return $needs_resave;
+}
+function _cdsc_create_empty_entity($id,$uuid,$type,$bundle,$defaults=array())
+{
+    //_cdsc_log('DBG: CDSC '.__FUNCTION__.".".__LINE__." uuid={$uuid} type={$type} bundle={$bundle} defaults=".count($defaults));
+    // $drupal_uuids = &_cdsc_drupal_uuids();
+    if ( $type==='relation_add' )
+    {
+        // _cdsc_log('DBG: CDSC '.__FUNCTION__.'.'.__LINE__.' save_new relation uuid='.$uuid);
+       $relation = (object) $defaults;
+       $relation->uid = 1;
+       try {
+           $relation->is_new = false;
+           db_query("INSERT IGNORE INTO {relation} (rid,uuid) VALUES(:rid,:uuid)",
+                       array(':rid'=>$relation->rid,':uuid'=>$relation->uuid));
+           relation_save($relation);
+       } catch( Exception $e ) {
+           _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' code:'.$e->getCode() .' Exception: '.$e->getMessage() .' : '. $e->getTraceAsString() );
+       }
+    //    $drupal_uuids[$relation->uuid] = $relation->rid;
+       return $relation->rid;
+    } else if ( $type==='node') {
+        $node = new stdClass();
+        $node->nid      = $id;
+        $node->uuid     = $uuid;
+        $node->type     = $bundle;
+        $node->title    = 'cdsc-temp';
+        $node->is_new   = false;
+        $node->uid      = 1;
+        $node->revision = 0;
+        $node->vid      = null;
+        $node->tnid     = 0;
+        try {
+            // node_save($node);
+            db_query("INSERT IGNORE INTO {node} (nid,uuid) VALUES(:nid,:uuid)",
+                        array(':nid'=>$id,':uuid'=>$uuid));
+            // entity_make_entity_local('node', $node);
+            node_save($node);
+            // entity_uuid_save('node',$node);
+        } catch( Exception $e ) {
+            _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() .' : '. $e->getTraceAsString() );
+        }
+        // $drupal_uuids[$node->uuid] = $node->nid;
+        return $node->nid;
+    } else if ( $type==='taxonomy_term' ) {
+        $term_vocabs  = &_cdsc_term_vocabs();
+        $term = new stdClass();
+        $term->tid  = $id;
+        $term->uuid = $uuid;
+        $term->vocabulary_machine_name = $bundle;
+        $term->name = 'cdsc-temp';
+        $term->vid  = isset($term_vocabs[$bundle]) ? $term_vocabs[$bundle] : 0;
+        try {
+            db_query("INSERT IGNORE INTO {taxonomy_term_data} (tid,uuid) VALUES(:tid,:uuid)",
+                        array(':tid'=>$term->tid,':uuid'=>$term->uuid));
+            // entity_uuid_save('taxonomy_term',$term);
+            // entity_make_entity_local('taxonomy_term', $term);
+            taxonomy_term_save($term);
+        } catch( Exception $e ) {
+            _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() .' : '. $e->getTraceAsString() );
+        }
+        // $drupal_uuids[$term->uuid] = $term->tid;
+        return $term->tid;
+    }
+    return false;
+}
+
+function &_cdsc_term_vocabs( $refresh=false )
+{
+    $term_vocabs = &drupal_static(__FUNCTION__);
+    if ( $term_vocabs===null || $refresh )
+    {
+        $term_vocabs = db_query("
+            SELECT machine_name, vid
+            FROM {taxonomy_vocabulary}
+        ")->fetchAllKeyed();
+    }
+    return $term_vocabs;
+}
+function _cdsc_uuid_count( $uuid )
+{
+    $uuid_count = db_query("
+        SELECT SUM(num) FROM (
+            ( SELECT count(nid) as num FROM node WHERE uuid=:uuid )
+            UNION
+            ( SELECT count(tid) as num FROM taxonomy_term_data WHERE uuid=:uuid )
+            UNION
+            ( SELECT count(rid) as num FROM relation WHERE uuid=:uuid )
+        ) X
+    ",array(':uuid'=>$uuid))->fetchField();
+    return intval($uuid_count);
+}
+
+function _cdsc_syncing_disabled()
+{
+    $var = db_query(
+        'SELECT value FROM {variable} where name=:name',
+        array(':name'=>'cdsc_syncing_enabled')
+    )->fetchObject();
+    if ( empty($var) )
+    {
+        return true;
+    }
+    return ! boolval(unserialize($var->value));
+}
+function _cdsc_full_sync()
+{
+    _cdsc_sync_schema(true);
+    _cdsc_full_queue();
+    _cdsc_process_queue();
+    // if ( _cdsc_process_queue() )
+    // {
+    //     _cdsc_clear_cdn_cache();
+    // }
+}
+function _cdsc_full_queue()
+{
+    $curr_sync_attempt = time();
+    $items_queued = _cdsc_get_all_entities_from_elasticsearch();
+    if ( $items_queued  > 0 )
+    {
+        variable_set('cdsc_last_sync_time',$curr_sync_attempt);
+    }
+}
+function _cdsc_partial_sync()
+{
+    _cdsc_sync_schema();
+    _cdsc_partial_queue();
+    _cdsc_process_queue();
+    // if ( _cdsc_process_queue() )
+    // {
+    //     _cdsc_clear_cdn_cache();
+    // }
+}
+function _cdsc_partial_queue()
+{
+    $curr_sync_attempt = time();
+    $last_sync_attempt = variable_get('cdsc_last_sync_time');
+    $items_queued = _cdsc_get_changed_entities_from_elasticsearch($last_sync_attempt);
+    if ( $items_queued  > 0 )
+    {
+        variable_set('cdsc_last_sync_time',$curr_sync_attempt);
+    }
+}
+
+
+function _cdsc_log( $message, $destination='php' )
+{
+    if ( $destination == 'php' )
+    {
+        watchdog('CDSC',$message);
+        error_log($message);
+    } else if ( $destination == 'slack'
+             && function_exists('slack_send_message')
+             && in_array(
+                 strtolower(getenv('CMP_DRUPAL_ENVIRONMENT_NAME')),
+                 ['production','prod','prd',
+                  'staging','stage','stg',
+                  'testing','test','tst']))
+    {
+        slack_send_message(
+            slack_get_default_webhook_url(),
+            $message,
+            "#cmp-notify",
+            $_SERVER['HTTP_HOST'],
+            ['type'=>'','icon'=>0,'emoji'=>0]
+        );
+    }
+}
+
+if ( function_exists('cssFriendlyString') === false ) {
+   function cssFriendlyString($inputString, $charactersToRemove = ' -_/!?@#$%^&*()[]{}<>\'"', $forceLowerCase = true, $trimString = true) {
+       return getEasyCompareString($inputString, $charactersToRemove, $forceLowerCase, $trimString);
+   }
+}
+
+/**
+* string getEasyCompareString(string inputString[, string/array $charactersToRemove, bool forceLowerCase = true])
+*
+* Returns the given string with certain characters removed, and converted to lowercase if desiered.
+* This makes things easier to compare two strings in certain situations.
+*/
+if ( function_exists('getEasyCompareString') === false ) {
+   function getEasyCompareString($inputString, $charactersToRemove = " -_/\\!?@#$%^&*'\"()[]{}<>", $forceLowerCase = true, $trimString = true, $stripUnicodeCharacters = true, $replaceCharsWith = '-', $killRepeatingReplacements = true) {
+
+       $ret = $inputString;
+
+       if ( is_null($charactersToRemove) ) {
+           $charactersToRemove = " -_/\\!?@#$%^&*'\"()[]{}<>";
+       }
+
+       if ( !is_array($charactersToRemove) ) {
+           $charactersToRemove = str_split($charactersToRemove);
+       }
+       $charactersToRemove[] = '%20';
+
+       foreach ( $charactersToRemove as $charToRemove ) {
+           $ret = str_replace($charToRemove, $replaceCharsWith, $ret);
+       }
+
+       if ( $forceLowerCase ) {
+           $ret = strtolower( $ret );
+       }
+
+       if ( $trimString ) {
+           $ret = trim( $ret );
+       }
+
+       if ( $stripUnicodeCharacters ) {
+           $ret = stripUnicode($ret, $replaceCharsWith);
+       }
+
+       if ( $replaceCharsWith !== '' && $killRepeatingReplacements == true ) {
+           while ( strpos($ret, $replaceCharsWith . $replaceCharsWith) !== false ) {
+               $ret = str_replace($replaceCharsWith . $replaceCharsWith, $replaceCharsWith, $ret);
+           }
+       }
+
+       return $ret;
+   }
+}
+
+/**
+* string stripUnicode(string $inputString)
+*
+* Returns $inputString with all Unicode characters stripped
+*/
+if ( function_exists('stripUnicode') === false ) {
+   function stripUnicode($inputString, $replaceUnicodeCharsWith = '') {
+
+       $removeCharacters = array();
+       for ( $x = strlen($inputString) - 1 ; $x > -1 ; $x-- ) {
+           $thisChar = $inputString[$x];
+           $charCode = ord($thisChar);
+           if (
+               ( 96 < $charCode && $charCode < 123 )
+               || ( 64 < $charCode && $charCode < 91 )
+               || ( 47 < $charCode && $charCode < 58 )
+           ) {
+               // Then this is a character, a-z, A-Z, or 0-1
+           } else {
+               $removeCharacters[$thisChar] = $thisChar;
+           }
+       }
+
+       $inputString = str_replace(array_values($removeCharacters), $replaceUnicodeCharsWith, $inputString);
+
+       return $inputString;
+   }
+}

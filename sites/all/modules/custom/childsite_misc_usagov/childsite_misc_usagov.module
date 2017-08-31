@@ -1,0 +1,668 @@
+<?php
+/**
+ * Implements hook_menu().
+ */
+
+function __childsite_misc_usagov_menu() {
+    $items['unittest'] = array(
+        'title'            => 'UNIT TEST',
+        'page callback'    => 'unittest',
+        'type'             => MENU_NORMAL_ITEM
+    );
+    $items['emailpage'] = array(
+        'title'            => 'Email This Page to a Friend',
+        'page callback'    => '_childsite_misc_usagov_email_page',
+        'access callback' => TRUE,
+        'type' => MENU_LOCAL_TASK
+
+    );
+    $items['emailpage/thanks'] = array(
+        'title'            => 'Thanks for using Email This Page to a Friend',
+        'page callback'    => '_childsite_misc_usagov_show_thanks',
+        'access callback' => TRUE,
+        'type' => MENU_LOCAL_TASK
+
+    );
+    $items['admin/config/emailpage'] = array(
+        'description'      => 'Configure settings for email page.',
+        'title'            => 'Email Page',
+        'page callback'    => 'drupal_get_form',
+        'page arguments'   => array('childsite_misc_usagov_admin_settings'),
+        'file'             => 'childsite_misc_usagov.admin.inc',
+        'access arguments' => array('access administration pages'),
+        'type'             => MENU_NORMAL_ITEM
+    );
+
+    return $items;
+}
+
+function __unittest() {
+
+    $node=node_load(187776);
+    $ret_node =_usa_data_migration_alter_content($node);
+    node_save($ret_node);
+    dsm($ret_node);
+    return "hi";
+}
+
+function _childsite_misc_usagov_show_thanks () {
+
+    $msg = __t('Thank you! Your message was successfully sent.');
+    $ret = '<div class="messages status">' . $msg . '</div>';
+    return $ret;
+}
+
+function _childsite_misc_usagov_email_page() {
+    return 'Unaccessable';
+
+    // MySQL injection security
+    $path = @$_REQUEST['path'];
+    if ( strpos($path, '\'') !== false ) {
+        exit('ACESS DENIED <!-- Possible MySQL injection attempt? -->');
+    }
+
+    // Argument validation
+    if ( empty($path) ) {
+        return 'Missing path argument';
+    }
+
+    // Get the information for the target page to email
+    list($title, $description, $url) = array_values( _getEmailPageAttributes($path) );
+
+    // EMail-Content validation
+    if ( $title === false ) {
+        return 'Sorry - The selected page cannot be emailed';
+    }
+
+    $use_html = variable_get('emailpage_use_HTML_asset', FALSE);
+    $email_form_node_id = variable_get('HTML_asset_node_id');
+
+    if($use_html && isset($email_form_node_id) && is_numeric($email_form_node_id)) {
+        // render html asset;
+        $email_form_node = node_load($email_form_node_id);
+        if (!empty($_POST)) {
+            // assuming html form post
+            if (isset($_POST["recipients"])) {
+                // normalize address entries
+                $recipients = trim($_POST["recipients"]);
+                $recipients = str_replace(array("\r\n", "\n", "\r"), ',', $recipients);
+                $recipients = str_replace(' ', '', $recipients);
+
+                // convert addresses to an array
+                $err=false;
+                $recipient_addresses = explode(',', $recipients);
+                if ($recipients == '') {
+                    drupal_set_message(t('You did not enter any recipients.'));
+                    $err=true;
+                }
+                else {
+                    foreach ($recipient_addresses as $address) {
+                        if ((user_validate_mail($address)) && ($address != '')) {
+                            drupal_set_message(t('One of your Recipient addresses is invalid:') . '<br />' . check_plain($address));
+                            $err=true;
+                        }
+                    }
+                }
+
+                if (!$err) {
+                    $recipients = trim($_POST["recipients"]);
+                    $recipients = preg_replace('/,,+/', ',', trim($recipients,','));
+                    $recipients = str_replace(array("\r\n", "\n", "\r"), ',', $recipients);
+                    $recipients = explode(',', $recipients);
+
+                    // Subject
+                    $params['subject'] = variable_get('site_name', "USA.gov") . ' has sent you a message from ' . variable_get('site_name', "USA.gov");
+
+                    // body
+                    $params['body'] = l(t('Click here to read more on our site'), $_POST['path'], array());
+
+
+                    $from = variable_get('forward_sender_address', '');
+                    if (empty($from)) {
+                        $from = variable_get('site_mail', '');
+                    }
+
+                    //$params['from'] = trim(mime_header_encode(variable_get('site_name', "USA.gov")) . ' <' . $from . '>');
+                    $params['headers']['Reply-To'] = $params['from'] = trim(mime_header_encode(variable_get('site_name', "USA.gov")) . ' <do.not.reply@usa.gov>');
+
+                    foreach ($recipients as $to) {
+                        $res = drupal_mail('childsite_misc_usagov', 'forward_page', trim($to), language_default(), $params, $params['from']);
+
+                        // Flood control
+                        flood_register_event('childsite_misc_usagov');
+                    }
+                    if(isset($res['result']) && $res['result']) {
+                        drupal_set_message('Email has been successfully sent.');
+                    }
+                    else {
+                        drupal_set_message("Please check email config");
+                    }
+                }
+            }
+            else {
+                drupal_set_message("Please check form. Form doesn't meet minimal requirement.");
+            }
+        }
+
+        $html = $email_form_node->field_html['und'][0]['value'];
+
+    }
+    else {
+        // render drupal default form
+        drupal_add_js(drupal_get_path("module", "childsite_misc_usagov")."/childsite_misc_usagov.js");
+        $html = drupal_get_form('_childsite_misc_usagov_forward_form');
+    }
+
+    return $html;
+}
+
+/**
+ * array _getEmailPageAttributes(string $path)
+ *
+ * Given a relative URL path to some page on this site, this function will lookup what
+ * information should be sent in an email about the given page.
+ *
+ * Returns; on success; an associative array(
+ *     'title' => {title fo the page}
+ *     'description' => {a descriptor of the page, or field data from a content item}
+ *     'url' => {a full absolute-path URL to the target page}
+ * )
+ *
+ * ON FAILURE; Returns the same associative array with all FALSE;
+ * array('title' => false, 'description' => false, 'url' => false)
+ *
+ */
+function _getEmailPageAttributes($path) {
+
+    // What to return. On failure; we always want to return an array to make list() usage easier
+    $ret = array('title' => false, 'description' => false, 'url' => false);
+
+    // Security safeguard
+    $path = '/'.ltrim($path, '/'); // make sure the path begins with a slash
+    if ( strpos($path, '\'') !== false ) {
+        error_log(__FUNCTION__ . '() - possible MySQL injection attempt? Bailing.');
+        return $ret;
+    }
+
+    // Detect which site we are running on
+    $siteIsGobierno = false;
+    if ( strpos(strtolower(variable_get('site_name')), 'gobierno') !== false ) {
+        $siteIsGobierno = true;
+    }
+
+    // Search for a taxonomy-term that calims this page
+    $tid = db_query("
+        SELECT entity_id as tid
+        FROM field_data_field_friendly_url
+        WHERE field_friendly_url_value LIKE '{$path}'
+    ")->fetchColumn();
+
+    // Is there is an entity claiming this URL-path [alias], we'll use the data in that content-item
+    if ( $tid !== false ) {
+
+        $term = taxonomy_term_load($tid);
+
+        $ret['title'] = @$term->field_browser_title['und'][0]['value'];
+        $ret['title'] = ( empty($ret['title']) ? '!! NOT SET IN CMP !!' : $ret['title']);
+
+        $ret['description'] = @$term->field_page_intro['und'][0]['value'];
+        $ret['description'] = ( empty($ret['description']) ? '!! NOT SET IN CMP !!' : $ret['description'] );
+
+        $ret['url'] = 'https://' . $_SERVER['HTTP_HOST'] . $path;
+
+        return $ret;
+    }
+
+    // The $path may be pointing to one of the many types of /federal-agencies/* pages...
+    if ( strpos($path, '/federal-agencies') === 0 || strpos($path, '/agencias-federales') === 0 ) {
+
+        // The $path may be pointing to one of the A-Z fed-ag pages
+        if ( strlen($path) === strlen('/federal-agencies/a') ) {
+            return array(
+                'title' => ( !$siteIsGobierno ? 'Government Departments and Agencies' : 'Agencias y Departamentos del Gobierno Federal' ),
+                'description' => ( !$siteIsGobierno ? 'A-Z Index of U.S. Government Departments and Agencies' : 'Agencias y Departamentos del Gobierno Federal' ),
+                'url' => 'https://' . $_SERVER['HTTP_HOST'] . $path,
+            );
+        }
+
+        // The $path may be pointing to one of the /federal-agencies/ + {Alpha-Name} pages
+        if ( function_exists('directory_pages_pathIsAlphaName') && function_exists('directory_pages_pathIsFedAgencyTitle') ) {
+            $records = array();
+            $records = array_merge($records, directory_pages_pathIsAlphaName($path));
+            $records = array_merge($records, directory_pages_pathIsFedAgencyTitle($path));
+            if ( count($records) > 0 ) {
+
+                $ret['title'] = @$records[0]->title;
+                $ret['title'] = ( empty($ret['title']) ? '!! NOT SET IN CMP !!' : $ret['title'] );
+
+                $ret['description'] = @$records[0]->field_description['und'][0]['value'];
+                $ret['description'] = ( empty($ret['description']) ? '!! NOT SET IN CMP !!' : $ret['description'] );
+
+                $ret['url'] = 'https://' . $_SERVER['HTTP_HOST'] . $path;
+
+                return $ret;
+            }
+        }
+    }
+
+    // The $path may be pointing to one of the /state-government/ + {state} pages
+    if ( function_exists('directory_pages_pathIsStateName') ) {
+        if ( !empty( $state = directory_pages_pathIsStateName($path) ) ) {
+
+            $state = ucwords( directory_pages_acronymToStateName($state) );
+
+            $descr = 'Primary contact information along with key agencies and offices for the government of ' . $state;
+            if ( $siteIsGobierno ) {
+                $descr = 'Informacion sobre el Gobierno estatal.';
+            }
+
+            return array(
+                'title' => ( !$siteIsGobierno ? 'Government Departments and Agencies' : 'Gobierno de '.t($state) ),
+                'description' => $descr,
+                'url' => 'https://' . $_SERVER['HTTP_HOST'] . $path,
+            );
+        }
+    }
+
+    // The $path may be pointing to one of the /state-consumer/ + {state} pages
+    if ( function_exists('directory_pages_pathIsConsumerPlusStatePath') ) {
+        if ( !empty( $state = directory_pages_pathIsConsumerPlusStatePath($path) ) ) {
+
+            $state = ucwords( directory_pages_acronymToStateName($state) );
+            return array(
+                'title' =>
+                    ( !$siteIsGobierno ? 'State and Local Consumer Agencies in ' : 'Organizaciones de ayuda al consumidor de ' )
+                    .t($state),
+                'description' => ( !$siteIsGobierno ? 'Get advice, help with complaints, and more.' : '' ),
+                'url' => 'https://' . $_SERVER['HTTP_HOST'] . $path,
+            );
+        }
+    }
+
+    // The $path may be pointing to the site-index
+    if ( $path === '/site-index' || $path === '/sitio-indice' ) {
+
+        return array(
+            'title' => ( !$siteIsGobierno ? 'Site index' : 'Sitio Indice' ),
+            'description' => ( !$siteIsGobierno ? 'A-Z Site-index.' : '' ),
+            'url' => 'https://' . $_SERVER['HTTP_HOST'] . $path,
+        );
+    }
+
+    return $ret;
+}
+
+function _childsite_misc_get_translated_text() {
+
+    $lookup = array();
+
+    $lookup['en'] = array(
+        'Email This Page to a Friend'=>"Email This Page to a Friend",
+        'Separate multiple addresses with a comma.'=>'Separate multiple addresses with a comma.',
+        'Send To'=>'Send To',
+        'Your Name'=>'Your Name',
+        'Required field'=>'Required field',
+        'Send a copy of this message to me.'=>'Send a copy of this message to me.',
+        'Send Message'=>'Send Message',
+        'Your Email Address'=>'Your Email Address',
+        'Header injection attempt detected.  Do not enter line feed characters into the from field!'=>'Header injection attempt detected.  Do not enter line feed characters into the from field!',
+        'Your Email address is invalid.'=>'Your Email address is invalid.',
+        'You must enter your name.'=>'You must enter your name.',
+        'You did not enter any recipients.'=>'You did not enter any recipients.',
+        'One of your Recipient addresses is invalid:'=>'One of your Recipient addresses is invalid:',
+        'Thank you! Your message was successfully sent.'=>'<h3>Thank you!</h3> <br/> Your message was successfully sent.',
+        'USA.gov'=>'USA.gov',
+        'Please check email config'=>'Please check email config',
+        'is the U.S. government\'s official web portal to all federal, state, and local government web resources and services.'=>'is the U.S. government\'s official web portal to all federal, state, and local government web resources and services.',
+        'sent you the'=>'sent you the',
+        'page from'=>'page from',
+        'Fields with an asterisk (*) are required'=>'Fields with an asterisk (*) are required'
+    );
+
+    $lookup['es'] = array(
+        'Email This Page to a Friend'=>"Envíe esta página a un familiar o amigo",
+        'Separate multiple addresses with a comma.'=>'Separe distintos emails con una coma.',
+        'Send To'=>'Enviar a',
+        'Your Name'=>'Su nombre',
+        'Required field'=>'Campo obligatorio',
+        'Send a copy of this message to me.'=>'Enviarme una copia de este mensaje a mí.',
+        'Send Message'=>'Enviar mensaje',
+        'Your Email Address'=>'Su email',
+        'Header injection attempt detected.  Do not enter line feed characters into the from field!'=>'Intento de inyección de encabezamiento detectada . No entre caracteres de salto de línea en el campo de !',
+        'Your Email address is invalid.'=>'Su dirección de correo electrónico no es válida.',
+        'You must enter your name.'=>'Debe introducir su nombre.',
+        'You did not enter any recipients.'=>'No ha especificado ningún destinatario .',
+        'One of your Recipient addresses is invalid:'=>'Una de las direcciones de destinatarios no es válido :',
+        'Thank you! Your message was successfully sent.'=>'<h3>¡Gracias!</h3> <br/> Su mensaje fue enviado.',
+        'USA.gov'=>'GobiernoUSA.gov',
+        'Please check email config'=>'Por favor, consulte config email',
+        'is the U.S. government\'s official web portal to all federal, state, and local government web resources and services.'=>'es el portal oficial del Gobierno de Estados Unidos en español donde puede encontrar información sobre programas y servicios a nivel federal, estatal y local.',
+        'sent you the'=>'le envió la página',
+        'page from'=>'de',
+        'Fields with an asterisk (*) are required'=>'La información marcada con un asterisco ( *)'
+    );
+    return $lookup;
+}
+
+function __t($str){
+    $txts = _childsite_misc_get_translated_text();
+    $ln = variable_get("language_setting");
+
+    return (isset($txts[$ln][$str]))? $txts[$ln][$str]: $str;
+}
+
+function _childsite_misc_usagov_forward_form(){
+
+    $path = $_REQUEST["path"];
+
+    drupal_set_title(__t('Email This Page to a Friend'));
+
+    _childsite_misc_get_translated_text();
+
+    $form['recipients'] = array(
+        '#type' => 'textarea',
+        '#title' => __t('Send To') .' (' .__t('Separate multiple addresses with a comma.').')',
+        '#cols' => 50,
+        '#rows' => 5,
+        '#weight'=> 0,
+        '#prefix'=> '<p><strong>'.__t('Fields with an asterisk (*) are required').'</strong></p>',
+        '#default_value'=>'',
+        //'#suffix'=>'<div id="def_text" >'.__t('Separate multiple addresses with a comma.').'</div>',
+        '#required' => TRUE,
+    );
+
+    // $form['name'] = array(
+    //     '#type' => 'textfield',
+    //     '#title' => __t('Your Name'),
+    //     '#size' => 58,
+    //     '#weight'=> 5,
+    //     '#maxlength' => 256,
+    //     '#required' => TRUE,
+    // );
+
+    $form['email'] = array(
+        '#type' => 'textfield',
+        '#title' => __t('Your Email Address'),
+        '#size' => 58,
+        '#weight'=> 10,
+        '#maxlength' => 256,
+        '#required' => TRUE,
+        '#suffix' => '<div> * '. __t('Required field') . '</div>'
+    );
+
+    $form['sendcopy'] = array(
+        '#type' => 'checkbox',
+        '#title' => __t('Send a copy of this message to me.'),
+        '#weight'=> 15,
+        '#maxlength' => 256,
+        '#required' => FALSE,
+        '#default_value'=>FALSE
+    );
+
+    $form['path'] = array(
+        '#type' => 'hidden',
+        '#value' => $path,
+    );
+
+    if ( !empty($_REQUEST['title']) ) {
+        $form['title'] = array(
+            '#type' => 'hidden',
+            '#value'=> $_REQUEST['title'],
+        );
+    }
+
+    if ( !empty($_REQUEST['description']) ) {
+        $form['description'] = array(
+            '#type' => 'hidden',
+            '#value'=> $_REQUEST['description'],
+        );
+    }
+
+    // When using a separate form page, use actions directly so Mollom knows where to place its content
+    $form['actions'] = array('#type' => 'actions');
+    $form['actions']['submit'] = array(
+        '#type' => 'submit',
+        '#value' => __t('Send Message'),
+        '#attributes' => array('class'=>array('redbuttoneml')),
+    );
+    $form['#prefix'] = '<div class="col-xs-12 emlfrnd"><header><h1>' . __t('Email This Page to a Friend') . '</h1></header><div id="emlfnd">';
+    $form['#suffix'] = '</div></div>';
+    return $form;
+}
+
+/**
+ * Validation callback function for forward form submit
+ */
+function _childsite_misc_usagov_forward_form_validate($form, &$form_state) {
+    global $base_url;
+
+    // normalize address entries
+    $recipients = trim($form_state['values']['recipients']);
+    $recipients = str_replace(array("\r\n", "\n", "\r"), ',', $recipients);
+    $recipients = str_replace(' ', '', $recipients);
+
+    // convert addresses to an array
+    $recipient_addresses = explode(',', $recipients);
+
+    $bad_items = array('Content-Type:', 'MIME-Version:', 'Content-Transfer-Encoding:', 'bcc:', 'cc:');
+    $bad_string = FALSE;
+    foreach ($bad_items as $item) {
+        if (preg_match("/$item/i", $form_state['values']['email'])) {
+            $bad_string = TRUE;
+        }
+    }
+    if (strpos($form_state['values']['email'], "\r") !== FALSE || strpos($form_state['values']['email'], "\n") !== FALSE || $bad_string == TRUE) {
+        form_set_error('email', __t('Header injection attempt detected.  Do not enter line feed characters into the from field!'));
+    }
+    if (user_validate_mail($form_state['values']['email'])) {
+        form_set_error('email', __t('Your Email address is invalid.'));
+    }
+    // if (!$form_state['values']['name']) {
+    //     form_set_error('name', __t('You must enter your name.'));
+    // }
+    if ($recipients == '') {
+        form_set_error('recipients', __t('You did not enter any recipients.'));
+    }
+    else {
+        foreach ($recipient_addresses as $address) {
+            if ((user_validate_mail($address)) && ($address != '')) {
+                form_set_error('recipients', __t('One of your Recipient addresses is invalid:') . '<br />' . check_plain($address));
+            }
+        }
+    }
+}
+
+/**
+ * Submit callback function for forward form submit
+ */
+function _childsite_misc_usagov_forward_form_submit($form, &$form_state) {
+
+    // MySQL injection security
+    $path = @$_REQUEST['path'];
+    if ( strpos($path, '\'') !== false ) {
+        exit('ACESS DENIED <!-- Possible MySQL injection attempt? -->');
+    }
+
+    // Argument validation
+    if ( empty($path) ) {
+        return 'Missing path argument';
+    }
+
+    // Get the information for the target page to email
+    list($title, $description, $url) = array_values( _getEmailPageAttributes($path) );
+
+    // EMail-Content validation
+    if ( $title === false ) {
+        return 'Sorry - The selected page cannot be emailed';
+    }
+
+    $recipient_list = _childsite_misc_usagov_recipient_list($form_state);
+    $recipients = $recipient_list['recipients'];
+
+    // need to add Directory link logic checking
+
+    // get page info by path
+    $tid = db_query("SELECT entity_id as tid FROM {field_data_field_friendly_url} WHERE LOWER(field_friendly_url_value) LIKE :page_url ", array(':page_url'=>$form_state['values']['path']))->fetchField();
+
+    $vars = array();
+    $vars['page_title'] = $title;
+    #$vars['name'] = $form_state['values']['name'];
+    $vars['name'] = $form_state['values']['email'];
+    $vars['page_url'] = $url;
+    $vars['page_description'] = $description;
+    $vars['site_url'] = $url;
+
+    $vars['site_name'] = __t('USA.gov');
+
+    // Subject
+    $params['subject'] = $vars['page_title'] . " | " . $vars['site_name'];
+    // body
+    $params['body'] = _childsite_misc_usagov_get_email_body($vars);
+
+    $from = variable_get('forward_sender_address', '');
+    if (empty($from)) {
+        $from = variable_get('site_mail', '');
+    }
+
+    $params['from'] = trim(mime_header_encode(variable_get('site_name', "USA.gov")) . ' <do.not.reply@usa.gov>');
+    #$params['headers']['Reply-To'] = trim(mime_header_encode($form_state['values']['name']) . ' <' . $form_state['values']['email'] . '>');
+    $params['headers']['Reply-To'] = trim(mime_header_encode($form_state['values']['email']));
+    #$params['headers']['Reply-To'] = $params['from'];
+
+    // if send to checked or not
+    if (isset($form_state['values']['sendcopy'])) {
+        $recipients[] = $form_state['values']['email'];
+    }
+
+    foreach ($recipients as $to) {
+        $res = drupal_mail('childsite_misc_usagov', 'forward_page', trim($to), language_default(), $params, $params['from'], TRUE);
+
+        // Flood control
+        flood_register_event('childsite_misc_usagov');
+    }
+    if(isset($res['result']) && $res['result']) {
+        drupal_goto("emailpage/thanks");
+    }
+    else {
+        drupal_set_message(__t("Please check email config"));
+    }
+}
+
+function _childsite_misc_usagov_get_email_body($vars)
+{
+
+ return '<p>'. $vars['page_title'] . ' '.__t('page from').' ' . $vars['site_name'] . '.</p>'
+ . '<p><a href="' . $vars['site_url'] . '">' . $vars['page_title'] . '</a> - ' . $vars['site_url'] . '<br />'
+ . $vars['page_description'] .'</p>'
+ . '<p><a href="https://'. $_SERVER['HTTP_HOST'] . '">' . $vars['site_name'] . '</a> '.__t('is the U.S. government\'s official web portal'
+ . ' to all federal, state, and local government web resources and services.').'</p>';
+
+}
+/**
+ * Implements hook_theme().
+ *
+ */
+function __childsite_misc_theme() {
+    return array(
+        'forward_email' => array(
+            'variables' => array('vars' => NULL),
+            'template' => 'forward_email'
+        ),
+    );
+}
+
+/**
+ * Implements hook_mail().
+ *
+ *
+ * Constructs the email notification message when the site is out of date.
+ *
+ * @param $key
+ *   Unique key to indicate what message to build, always 'forward_page'.
+ * @param $message
+ *   Reference to the message array being built.
+ * @param $params
+ *   Array of parameters to indicate what text to include in the message body.
+ *
+ * @see drupal_mail()
+ * @see _update_cron_notify()
+ * @see _update_message_text()
+ */
+function __childsite_misc_usagov_mail($key, &$message, $params) {
+    $language = $message['language'];
+    if ($key == 'forward_page') {
+        $message['headers']['MIME-Version'] = '1.0';
+        $message['headers']['Content-Type'] = 'text/html; charset=utf-8';
+        $message['headers']['Reply-To'] = $params['headers']['Reply-To'];
+
+        $message['subject']=t($params['subject']);
+        $message['body'][]=$params['body'];
+        $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed';
+    }
+}
+
+/*
+ * Create a forward receipients list and token
+ */
+function _childsite_misc_usagov_recipient_list($form_state) {
+    // Process variables for use as tokens.
+    $recipients = trim($form_state['values']['recipients']);
+    $recipients = preg_replace('/,,+/', ',', trim($recipients,','));
+    $recipients = str_replace(array("\r\n", "\n", "\r"), ',', $recipients);
+    $recipients = explode(',', $recipients);
+    $token = array(
+        'sender' => $form_state['values']['email'],
+        'recipients' => $recipients,
+    );
+    return array('recipients' => $recipients, 'token' => $token);
+}
+
+/**
+ * Modify the drupal mail system to send HTML emails for the Childsite_misc_usagov module.
+ */
+class __Childsite_misc_usagovMailSystem implements MailSystemInterface {
+    /**
+     * Concatenate and wrap the email body for plain-text mails.
+     *
+     * @param $message
+     *   A message array, as described in hook_mail_alter().
+     *
+     * @return
+     *   The formatted $message.
+     */
+    public function format(array $message) {
+        $message['body'] = implode("\n\n", $message['body']);
+        return $message;
+    }
+
+    /**
+     * Send an email message, using Drupal variables and default settings.
+     *
+     * @see http://php.net/manual/en/function.mail.php
+     * @see drupal_mail()
+     *
+     * @param $message
+     *   A message array, as described in hook_mail_alter().
+     * @return
+     *   TRUE if the mail was successfully accepted, otherwise FALSE.
+     */
+    public function mail(array $message) {
+        $mimeheaders = array();
+        foreach ($message['headers'] as $name => $value) {
+            $mimeheaders[] = $name . ': ' . mime_header_encode($value);
+        }
+        $line_endings = variable_get('mail_line_endings', MAIL_LINE_ENDINGS);
+        return mail(
+            $message['to'],
+            mime_header_encode($message['subject']),
+            // Note: email uses CRLF for line-endings. PHP's API requires LF
+            // on Unix and CRLF on Windows. Drupal automatically guesses the
+            // line-ending format appropriate for your system. If you need to
+            // override this, adjust $conf['mail_line_endings'] in settings.php.
+            preg_replace('@\r?\n@', $line_endings, $message['body']),
+            // For headers, PHP's API suggests that we use CRLF normally,
+            // but some MTAs incorrectly replace LF with CRLF. See #234403.
+            join("\n", $mimeheaders)
+        );
+    }
+}

@@ -1,0 +1,166 @@
+#header {
+		padding: 10px 0 0 0;
+	}
+
+/*video start -sg 8/9/16 */
+
+p.embedTtl {
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
+	font-weight: bold;
+}
+.embed{
+	margin: 10px auto 10px auto; /*sg 8/1/16 - changed from auto auto auto auto*/
+	width: 100%;
+	max-width: 586px;
+}
+.embed iframe{
+	 width: 100%;
+}
+
+header h3 button {
+	display: block;
+	z-index: 9999;
+	margin: 0 0 0 0;
+	background: none;
+	border: none;
+	font-size: 100%;
+	font-family:  Tahoma, Verdana, Arial, Sans-serif;
+}
+
+button:hover{
+background: #fff;
+}
+
+h3.vidscrpt{
+	background: url(../images/Icon_Video_Transcript.png) 0px 3px no-repeat;
+	padding: 0 0 0 25px;
+}
+
+header h3 span {
+	color: #1a51a1;
+	font-size: 90%;
+	font-weight: bold;
+	padding: 0px 27px 3px 0; /*sg - 8/16/16 - changed the top padding from 8px to 0*/
+	background: url(../images/Icon_Red_Arrow_Up.png) no-repeat;
+	text-decoration: underline;
+	cursor: pointer;
+	background-position: right bottom;
+	width: auto;
+	display: inline-block;
+}
+
+header h3 span.arrowDwn  {
+	padding: 0px 27px 3px 0; /*sg - 8/12/16 - changed top padding from 8px to 0 */
+	background: url(../images/Icon_Red_Arrow_Down.png) no-repeat;
+	text-decoration: underline;
+	cursor: pointer;
+	background-position: right bottom;
+	width: auto;
+	display: inline-block;
+	font-size: 90%;
+}
+.transcript, .infographicdesc {
+	margin: 0 0 0 35px;
+	border-left: 10px solid #ebe6de;
+	display: none;
+}
+.transcript p, .infographicdesc p {
+	padding: 0 0 0 15px;
+}
+
+.speaker{
+	font-weight: bold;
+}
+
+
+p,pre{
+	margin: .8em 0; /*sg - 8/12/16 - changed from 1.5em to .8em */
+}
+
+
+/*video end -sg 8/9/16 */
+
+
+div.searchbkgnd{
+		margin-top:10px;
+		padding: 17px 20px 10px 20px;	
+}
+
+#search button{
+	height: 40px;
+}
+
+#search input[type="text"]{
+	border-radius: 0;
+	height: 40px;	
+}
+
+h1,h2 {
+	padding: 0;
+}
+
+li p,pre {
+	margin: 0;
+}
+
+.shade p {
+	padding: 25px;
+}
+
+.sclmedia h2 {
+	margin: 10px 0 10px 0;
+}
+
+.field-type-image img{
+	padding: 10px 0 0 0;
+}
+
+.icon-backtotopHP{
+	background-image:
+	url("https://www.usa.gov/sites/all/themes/usa/images/Icon_Back_to_top.png");
+}
+
+@media (min-width: 769px) {
+	div.searchbkgnd{
+		height: 74px;
+	}
+}
+
+@media (max-width: 768px){
+	
+	#search {
+	width: 100%;
+	display: inline-block;	
+}	
+	#header {
+		padding: 0 0 0 0
+	}
+	
+	#logo {
+    margin: 10px 0 0 0; 
+  }
+  
+  div.searchbkgnd{
+		height: 123px;
+	}
+ }
+
+@media (max-width: 480px){
+	#logo img {
+	    width: 80px;
+	}
+	
+div.searchbkgnd {
+	margin: 10px 0 0 0;
+	}
+div.searchbkgnd {
+		height: 100px;
+		padding: 7px 20px 10px 20px;	
+}
+	}	
+@media (max-width: 320px){
+	#header {
+		height: auto;
+		}	
+}

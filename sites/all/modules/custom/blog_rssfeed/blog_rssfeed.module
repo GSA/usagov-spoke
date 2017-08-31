@@ -1,0 +1,122 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function blog_rssfeed_menu() {
+
+    $items['updates.rss'] = array(
+        'title' => 'Updates.rss Request Handler',
+        'page callback' => 'blog_rssfeed_doRender',
+        'access callback' => 'blog_rssfeed_true',
+        'type' => MENU_CALLBACK
+    );
+
+  return $items;
+}
+
+function blog_rssfeed_true() {
+    return true;
+}
+
+/**
+ * Implements hook_theme().
+ *
+ */
+function blog_rssfeed_theme() {
+
+    $themes = array();
+
+    // This impements blog_rssfeed_item.tpl.php
+    $themes['blog_rssfeed_item'] = array(
+        'variables' => array(),
+        'template' => 'blog_rssfeed_item'
+    );
+
+    // This impements blog_rssfeed_main.tpl.php
+    $themes['blog_rssfeed_main'] = array(
+        'variables' => array(
+            'items' => array('Error - Items not built and supplied to template')
+        ),
+        'template' => 'blog_rssfeed_main'
+    );
+
+    return $themes;
+}
+
+/**
+ * Implements preproccessor for HOOK_preprocess_hook
+ *
+ * Preproccessfor for blog_rssfeed_main.tpl.php
+ */
+function blog_rssfeed_preprocess_blog_rssfeed_main(&$variables) {
+
+    // Supply item information to blog_rssfeed_main.tpl.php
+    $variables['items'] = array();
+
+    // I'll just do this through MySQL since its faster this way
+    $results = db_query("
+        SELECT
+            n.nid AS 'nid', 
+            n.title AS 'title', 
+            r.timestamp AS 'pubdate',
+            b.body_value AS 'description',
+            o.field_blog_owner_value AS 'author',
+            m.field_related_multimedia_two_target_id AS 'image_nid'
+        FROM node n 
+        LEFT JOIN node_revision r ON ( 
+            n.nid = r.nid 
+            AND r.status = 1 
+        )
+        LEFT JOIN field_data_body b ON ( 
+            b.entity_id = n.nid 
+            AND b.entity_type = 'node' 
+        )
+        LEFT JOIN field_revision_field_blog_owner o ON ( 
+            o.entity_id = n.nid 
+            AND o.entity_type = 'node' 
+            AND o.revision_id = r.vid
+        )
+        LEFT JOIN field_revision_field_related_multimedia_two m ON ( 
+            m.entity_id = n.nid 
+            AND m.entity_type = 'node' 
+            AND m.revision_id = r.vid
+        )
+        WHERE
+            n.type = 'text_content_type'
+        LIMIT 10
+    ");
+
+    foreach ( $results as $result ) {
+
+        // If this node happens to have an associated image...
+        if ( !empty($result->image_nid) ) {
+
+            // ...pull the actual (not the S3) link for it
+            $result->image = db_query("
+                SELECT field_file_media_url_value 
+                FROM field_data_field_file_media_url 
+                WHERE 
+                    entity_id = {$result->image_nid}
+                    AND entity_type = 'node'
+            ")->fetchColumn();
+        } else {
+            $result->image = false;
+        }
+
+        $variables['items'][] = (array) $result;
+    }
+
+}
+
+function blog_rssfeed_doRender() {
+
+    header('Content-Type: application/rss+xml');
+
+    @ob_end_clean();
+    while ( @ob_end_clean() );
+
+    print theme('blog_rssfeed_main');
+
+    exit();
+}

@@ -1,0 +1,56 @@
+<?php
+
+/* implements HOOK_usa_data_migration_synched */
+function hit_akamai_example_usa_data_migration_synched($entityType, $entityIds) {
+	
+	dsm("This message comes line ".__LINE__." in ".__FILE__);
+	dsm("We have just synched ".count($entityIds)." {$entityType} into this environment");
+
+	if ( $entityType == 'nodes' ) {
+		dsm(
+			array(
+				'node IDs synched' => $entityIds
+			)
+		);
+	}
+
+	if ( $entityType == 'terms' ) {
+		dsm(
+			array(
+				'taxonomy-term IDs synched' => $entityIds
+			)
+		);
+	}
+
+}
+
+/*
+ * array findSiteStructTermsThatReferenceNode(int $nid)
+ *
+ * Searches MySQL to find all taxonomy terms that reference 
+ * $nid in any of the "Asset Placement" fields.
+ * Returns an array of term-ids.
+ */
+function findSiteStructTermsThatReferenceNode($nid) {
+
+    $ret = array();
+
+    // Tables to search
+    $tables = array(
+        "field_data_field_asset_order_carousel",
+        "field_data_field_asset_order_content",
+        "field_data_field_asset_order_sidebar",
+        "field_data_field_asset_order_bottom",
+    );
+
+    foreach ( $tables as $table ) {
+        $valueColumn = str_replace('field_data_', '', $table);
+        $results = db_query("SELECT entity_id FROM {$table} WHERE {$valueColumn}_target_id={$nid}");
+        foreach ( $results as $result ) {
+            $nid = $result->entity_id;
+            $ret[$nid] = $nid;
+        }
+    }
+
+    return array_values($ret);
+}
