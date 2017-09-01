@@ -1124,3 +1124,33 @@ function usa_preprocess_node(&$variables) {
     _usa_preprocess_html_toggles(   $variables, $variables['node'] );
 
 }
+
+function _get_whatsnew_nid($nid) {
+
+    $n = node_load($nid);
+
+    //get path alias
+    $nodePath = 'node/' . $nid;
+    $aliasPath = drupal_get_path_alias($nodePath);
+
+    //get image
+    if ( !empty($n->field_related_multimedia_two) ) {
+        $nidMultMedia = $n->field_related_multimedia_two['und'][0]['target_id'];
+        $nodeMultMedia = node_load($nidMultMedia);
+        if ( !empty( $nodeMultMedia->field_file_media_url['und'][0]['value'] ) ) {
+            $imgSrc = $nodeMultMedia->field_file_media_url['und'][0]['value'];
+        } else {
+            $imgSrc = false;
+        }
+    } else {
+        $imgSrc = false;
+    }
+
+    $ret = '<section class="usa-grid usa-section feature-hvr">
+        <a href="'.$aliasPath.'"><ul id="features-landing"><li>'.(($imgSrc)?('<img src="'.$imgSrc.'" class="rel-img" alt="">') :'').'<header>
+        <h2>'.$n->title.'</h2></header>'.
+        (!empty($n->field_description['und'][0]['value'])?
+         $n->field_description['und'][0]['value']:'').'</li></ul></a></section>';
+
+    return $ret;
+}

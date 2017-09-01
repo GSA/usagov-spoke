@@ -100,7 +100,7 @@ if(!empty($alertNode)){
         <div class="usa-grid">
             <div>
                 <button class="close top" onclick="closeEmergencyPopup()">
-                    <?php print ($siteIsUSA)? "Close":"Cerrar"; ?>
+                    <?php print ($siteIsUSA)? "Close" : "Cerrar"; ?>
                 </button>
                 <div class="icon">
 
@@ -172,12 +172,13 @@ if(!empty($alertNode)){
 
       <?php 
         if(!empty($whatsnewAssets)){
-          $wnassets = [];
+
           foreach($whatsnewAssets as $whatsnewAsset){
-            $wnassets[] = $whatsnewAsset->nid;
+            //$wnassets[] = $whatsnewAsset->nid;
+              print(_get_whatsnew_nid($whatsnewAsset->nid));
           }
-          $wnassets = implode("+", $wnassets);
-          print views_embed_view('whats_new_front_page', 'block', $wnassets);
+          //$wnassets = implode("+", $wnassets);
+          //print views_embed_view('whats_new_front_page', 'block', $wnassets);
         }
 
       ?>
@@ -199,3 +200,5 @@ if(!empty($alertNode)){
 
 <!-- end content container -->
 </main>
+
+
