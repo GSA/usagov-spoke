@@ -367,18 +367,17 @@ $databases = ['default'=>['default'=>[
     'prefix'   => getenv('CMP_DRUPAL_DB_PREFIX')
 ],],];
 if (!empty(getenv('CMP_DRUPAL_DB_SSL_KEY'))  &&
-     !empty(getenv('CMP_DRUPAL_DB_SSL_CERT')) &&
-     !empty(getenv('CMP_DRUPAL_DB_SSL_CA')) ) {
+     !empty(getenv('CMP_DRUPAL_DB_SSL_CERT')) ) {
     $databases['default']['default']['pdo'] = array(
         PDO::MYSQL_ATTR_SSL_KEY  => getenv('CMP_DRUPAL_DB_SSL_KEY'),
-        PDO::MYSQL_ATTR_SSL_CERT => getenv('CMP_DRUPAL_DB_SSL_CERT'),
-        PDO::MYSQL_ATTR_SSL_CA   => getenv('CMP_DRUPAL_DB_SSL_CA')
+        PDO::MYSQL_ATTR_SSL_CERT => getenv('CMP_DRUPAL_DB_SSL_CERT')
     );
+    if (!empty(getenv('CMP_DRUPAL_DB_SSL_CA'))) {
+         // && strtolower(getenv('CMP_DRUPAL_ENVIRONMENT_NAME'))!=='local') {
+        $databases['default']['default']['pdo'][PDO::MYSQL_ATTR_SSL_CA] = getenv('CMP_DRUPAL_DB_SSL_CA');
+    }
 }
-/// fake certs dont match hostname in docker, so skip this check
-if (strtolower(getenv('CMP_DRUPAL_ENVIRONMENT_NAME'))==='local') {
-    $databases['default']['default']['pdo'][PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
-}
+
 
 // $databases['default']['default']['init_commands']['isolation'] = "SET SESSION tx_isolation='READ-COMMITTED'";
 

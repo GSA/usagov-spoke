@@ -40,6 +40,12 @@ function fedbizopps_menu() {
     return $items;
 }
 
+function fedbizopps_init()
+{
+    global $conf;
+    $conf['fbo_elasticsearch_server'] = _fbo_elasticsearch_server();
+}
+
 function _fedbizopp_config_form() {
 
     $form['fedbizopp_es'] = array(
@@ -84,24 +90,26 @@ function _tttest(){
     return _userinput_report();
 }
 function _userinput_report(){
-    $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
-    $param = '"query": {
-        "match_all": {}
-    }';
-    $header = array(
-        "CONTENT-TYPE: application/json; charset=utf-8"
-    );
+    // $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
+    // $param = '"query": {
+    //     "match_all": {}
+    // }';
+    // $header = array(
+    //     "CONTENT-TYPE: application/json; charset=utf-8"
+    // );
 
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, $elasticsearch_server."/opportunityuserinputs/_search?size=0&from=5&pretty");
-    curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-    curl_setopt($curl, CURLOPT_POSTFIELDS, $param);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    // $curl = curl_init();
+    // curl_setopt($curl, CURLOPT_URL, $elasticsearch_server."/opportunityuserinputs/_search?size=0&from=5&pretty");
+    // curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+    // curl_setopt($curl, CURLOPT_POSTFIELDS, $param);
+    // curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 
-    $res = curl_exec($curl);
-    curl_close($curl);
-    $r = json_decode($res);
-    dsm( $r);
+    // $res = curl_exec($curl);
+    // curl_close($curl);
+    // $r = json_decode($res);
+    // dsm($r);
+    $response = _fbo_elasticsearch_request('/opportunityuserinputs/_search?size=0&from=5&pretty',['data'=>'{"query": {"match_all": {}}']);
+    $r = json_decode($responste->data);
     $datas = array();
     $ret = '';
     if(isset($r->hits->hits)){
@@ -122,18 +130,21 @@ function _userinput_report(){
     return $ret;
 }
 function _index_userinfo($p){
-    $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
-    $resource = curl_init();
-    curl_setopt($resource, CURLOPT_URL, $elasticsearch_server.'/opportunityuserinputs/userinput/'.time());
-    curl_setopt($resource, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($resource, CURLOPT_POST, 1);
-    curl_setopt($resource, CURLOPT_POSTFIELDS, json_encode($p));
-    curl_setopt($resource, CURLOPT_HTTPHEADER, ['CONTENT-TYPE: application/json; charset=utf-8']);
-    $result = curl_exec($resource);
-    curl_close($resource);
+    // $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
+    // $resource = curl_init();
+    // curl_setopt($resource, CURLOPT_URL, $elasticsearch_server.'/opportunityuserinputs/userinput/'.time());
+    // curl_setopt($resource, CURLOPT_RETURNTRANSFER, 1);
+    // curl_setopt($resource, CURLOPT_POST, 1);
+    // curl_setopt($resource, CURLOPT_POSTFIELDS, json_encode($p));
+    // curl_setopt($resource, CURLOPT_HTTPHEADER, ['CONTENT-TYPE: application/json; charset=utf-8']);
+    // $result = curl_exec($resource);
+    // curl_close($resource);
 
-    if ($result) {
-        $r = json_decode($result);
+    // if ($result) {
+    //     $r = json_decode($result);
+    $response = _fbo_elasticsearch_request('/opportunityuserinputs/userinput/'.time(),['data'=>json_encode($p)]);
+    if ($response->code == 200) {
+        $r = json_decode($response->data);
         if (!empty($r->errors)) {
             $errors = [];
             foreach ($r->items as $i) {
@@ -199,26 +210,39 @@ function _returnFBODataResult(){
     }
 
     drupal_json_output([
-        'opps'=>$ret['opps'],'total'=>$ret['total'],'size'=>$size, 'paramm'=>$ret['paramm'], 'elasticsearch'=>$ret['elasticsearch'], 'param'=>$params, 'do'=>$params['setaside'], 's'=>$_POST['setaside']
+        'opps'=>$ret['opps'],
+        'total'=>$ret['total'],
+        'size'=>$size, 
+        'paramm'=>$ret['paramm'], 
+        'elasticsearch'=>$ret['elasticsearch'], 
+        'param'=>$params, 
+        'do'=>isset($params['setaside'])?$params['setaside']:'', 
+        's'=>isset($_POST['setaside'])?$_POST['setaside']:''
     ]);
 }
 
 function _setupES(){
-    $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
+    // $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
 
-    $resource = curl_init();
-    curl_setopt($resource, CURLOPT_URL, $elasticsearch_server.'/opportunityuserinputs');
-    curl_setopt($resource, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($resource, CURLOPT_CUSTOMREQUEST, "HEAD");
-    curl_setopt($resource, CURLOPT_HEADER, true);
-    curl_setopt($resource, CURLOPT_NOBODY, true);
-    curl_setopt($resource, CURLOPT_HTTPHEADER, ['CONTENT-TYPE: application/json; charset=utf-8']);
-    $httpcode = curl_getinfo($resource, CURLINFO_HTTP_CODE);
-    curl_close($resource);
-    if ($httpcode == '200') {
-        echo "Index already exist\n";
+    // $resource = curl_init();
+    // curl_setopt($resource, CURLOPT_URL, $elasticsearch_server.'/opportunityuserinputs');
+    // curl_setopt($resource, CURLOPT_RETURNTRANSFER, 1);
+    // curl_setopt($resource, CURLOPT_CUSTOMREQUEST, "HEAD");
+    // curl_setopt($resource, CURLOPT_HEADER, true);
+    // curl_setopt($resource, CURLOPT_NOBODY, true);
+    // curl_setopt($resource, CURLOPT_HTTPHEADER, ['CONTENT-TYPE: application/json; charset=utf-8']);
+    // $httpcode = curl_getinfo($resource, CURLINFO_HTTP_CODE);
+    // curl_close($resource);
+    // if ($httpcode == '200') {
+    //     echo "Index already exist\n";
+    //     return true;
+    // }
+
+    $response = _fbo_elasticsearch_request('/opportunityuserinputs/',['method'=>'HEAD']);
+    if ($response->code == 200) {
         return true;
     }
+
     $data = '{
           "settings" : {
                "index" : {
@@ -278,16 +302,25 @@ function _setupES(){
           }
         }';
 
-    $resource = curl_init();
-    curl_setopt($resource, CURLOPT_URL, $elasticsearch_server.'/opportunityuserinputs');
-    curl_setopt($resource, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($resource, CURLOPT_CUSTOMREQUEST, "PUT");
-    curl_setopt($resource, CURLOPT_POSTFIELDS, $data);
-    curl_setopt($resource, CURLOPT_HTTPHEADER, ['CONTENT-TYPE: application/json; charset=utf-8']);
-    $result = curl_exec($resource);
-    curl_close($resource);
-    if ($result) {
-        if ( !empty($result->error) ) {
+    // $resource = curl_init();
+    // curl_setopt($resource, CURLOPT_URL, $elasticsearch_server.'/opportunityuserinputs');
+    // curl_setopt($resource, CURLOPT_RETURNTRANSFER, 1);
+    // curl_setopt($resource, CURLOPT_CUSTOMREQUEST, "PUT");
+    // curl_setopt($resource, CURLOPT_POSTFIELDS, $data);
+    // curl_setopt($resource, CURLOPT_HTTPHEADER, ['CONTENT-TYPE: application/json; charset=utf-8']);
+    // $result = curl_exec($resource);
+    // curl_close($resource);
+    // if ($result) {
+    //     if ( !empty($result->error) ) {
+    //         return false;
+    //     } else {
+    //         return true;
+    //     }
+    // }
+
+    $response = _fbo_elasticsearch_request('/opportunityuserinputs/',['method'=>'PUT','data'=>$data]);
+    if ($response) {
+        if ( !empty($response->data->error) ) {
             return false;
         } else {
             return true;
@@ -298,7 +331,7 @@ function _setupES(){
 
 function _do_es_search($from, $size, $params){
 
-    $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
+    // $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
 
     $kp = '';
     if (isset($params['keyword'])) {
@@ -389,7 +422,11 @@ function _do_es_search($from, $size, $params){
     }
 
     try{
-        $sort = '"sort" : [{"closedate" : {"order" : "asc"}},{"postdate" : {"order" : "desc"}}, {"subject" : {"order" : "asc"} }]';
+        $sort =  '"sort" : ['
+                .'  {"closedate" : {"order" : "asc",  "missing" : "_last", "unmapped_type": "date"}},'
+                .'  {"postdate"  : {"order" : "desc", "missing" : "_last", "unmapped_type": "date"}},' 
+                .'  {"subject"   : {"order" : "asc",  "missing" : "_last", "unmapped_type": "keyword"}}'
+                .']';
         $param = '{
             "query": {';
         if($kp=='' && $st == '' && $cd=='' && $sta!=''){ // state only
@@ -435,34 +472,37 @@ function _do_es_search($from, $size, $params){
         $param .='}, '.$sort.'}';
         //$param .='}}';
 
-        $header = array(
-            "CONTENT-TYPE: application/json; charset=utf-8"
-        );
+        // $header = array(
+        //     "CONTENT-TYPE: application/json; charset=utf-8"
+        // );
 
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $elasticsearch_server."/opportunities/opportunity/_search?size=".$size."&from=".$from."&pretty");
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $param);
-        //dsm($param);
+        // $curl = curl_init();
+        // curl_setopt($curl, CURLOPT_URL, $elasticsearch_server."/opportunities/opportunity/_search?size=".$size."&from=".$from."&pretty");
+        // curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        // curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        // curl_setopt($curl, CURLOPT_POSTFIELDS, $param);
+        // //dsm($param);
 
-        $res = curl_exec($curl);
-        curl_close($curl);
-        $r = json_decode($res);
+        // $res = curl_exec($curl);
+        // curl_close($curl);
+        // $r = json_decode($res);
 
+        $response = _fbo_elasticsearch_request("/opportunities/opportunity/_search?size=".$size."&from=".$from."&pretty",['data'=>$param]);
+        $r = json_decode($response->data);
+print_r(["/opportunities/opportunity/_search?size=".$size."&from=".$from."&pretty",$param]);flush();die;
         if(isset($r->hits->hits)){
             $sols = _get_array_of_obj($r->hits->hits);
             $ret['opps'] = $sols;
             $ret['total'] = $r->hits->total;
             $ret['paramm']= $param;
-            $ret['elasticsearch'] =$elasticsearch_server."/opportunities/opportunity/_search?size=".$size."&from=".$from."&pretty";
+            $ret['elasticsearch'] =variable_get('fbo_elasticsearch_server')."/opportunities/opportunity/_search?size=".$size."&from=".$from."&pretty";
             return $ret;
         }
         else {
             $ret['opps'] = array();
-            $ret['total'] = $r->hits->total;
+            $ret['total'] = isset($r->hits->total) ? $r->hits->total : 0;
             $ret['paramm']= $param;
-            $ret['elasticsearch'] =$elasticsearch_server."/opportunities/opportunity/_search?size=".$size."&from=".$from."&pretty";
+            $ret['elasticsearch'] =variable_get('fbo_elasticsearch_server')."/opportunities/opportunity/_search?size=".$size."&from=".$from."&pretty";
             return $ret;
         }
 
@@ -753,7 +793,7 @@ function _get_array_of_obj($obj){
 
 function _search_opportunity($options=''){
 
-    $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
+    // $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
     //$ret = array();
     try{
 
@@ -765,18 +805,21 @@ function _search_opportunity($options=''){
                 "agency_count" : { "terms" : { "field" : "agency.raw" } }
             }
         }';
-        $header = array(
-            "CONTENT-TYPE: application/json; charset=utf-8"
-        );
+        // $header = array(
+        //     "CONTENT-TYPE: application/json; charset=utf-8"
+        // );
 
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $elasticsearch_server."/opportunities/_search?size=0&pretty");
-        curl_setopt($curl,CURLOPT_HTTPHEADER, $header);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $param);
-        $res = curl_exec($curl);
-        curl_close($curl);
-        $r = json_decode($res);
+        // $curl = curl_init();
+        // curl_setopt($curl, CURLOPT_URL, $elasticsearch_server."/opportunities/_search?size=0&pretty");
+        // curl_setopt($curl,CURLOPT_HTTPHEADER, $header);
+        // curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        // curl_setopt($curl, CURLOPT_POSTFIELDS, $param);
+        // $res = curl_exec($curl);
+        // curl_close($curl);
+        // $r = json_decode($res);
+
+        $response = _fbo_elasticsearch_request("/opportunities/_search?size=0&pretty",['data'=>$param]);
+        $r = json_decode($response->data);
 
         if (is_object($r)) {
             dsm($r);
@@ -789,7 +832,7 @@ function _search_opportunity($options=''){
 }
 
 function _get_facets_info(){
-    $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
+    // $elasticsearch_server = 'http://' . variable_get('elasticsearch_server', 'elasticsearch_server'). ':' . variable_get('elasticsearch_port', 9200);
     $ret = array();
     try{
 
@@ -801,18 +844,21 @@ function _get_facets_info(){
                 "agency_count" : { "terms" : { "field" : "agency.raw" } }
             }
         }';
-        $header = array(
-            "CONTENT-TYPE: application/json; charset=utf-8"
-        );
+        // $header = array(
+        //     "CONTENT-TYPE: application/json; charset=utf-8"
+        // );
 
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $elasticsearch_server."/opportunities/_search?size=0&pretty");
-        curl_setopt($curl,CURLOPT_HTTPHEADER, $header);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $param);
-        $res = curl_exec($curl);
-        curl_close($curl);
-        $r = json_decode($res);
+        // $curl = curl_init();
+        // curl_setopt($curl, CURLOPT_URL, $elasticsearch_server."/opportunities/_search?size=0&pretty");
+        // curl_setopt($curl,CURLOPT_HTTPHEADER, $header);
+        // curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        // curl_setopt($curl, CURLOPT_POSTFIELDS, $param);
+        // $res = curl_exec($curl);
+        // curl_close($curl);
+        // $r = json_decode($res);
+
+        $response = _fbo_elasticsearch_request("/opportunities/_search?size=0&pretty",['method'=>'POST','data'=>$param]);
+        $r = json_decode($response->data);
 
         if (is_object($r)) {
             if (isset($r->aggregations)) {
@@ -844,5 +890,69 @@ function _load_data(){
         $daily = new FBODailyFile($filename);
         $daily->processFile();
     }
+}
+
+
+function _fbo_elasticsearch_server()
+{
+    $host = variable_get('elasticsearch_server');
+    $port = variable_get('elasticsearch_port');
+    $ssl  = variable_get('elasticsearch_ssl', false);
+    if ( boolval($ssl)===false || ( is_string($ssl) && strlen($ssl)>0 && in_array(strtolower($ssl{0}),['n','f']) ) ) {
+        $ssl = false;
+    } else {
+        $ssl = true;
+    }
+    $scheme = ( stripos($port,'443')!==false || $ssl ) ? 'https' : 'http';
+    return $scheme .'://'. $host . ':'. $port;
+}
+
+function _fbo_elasticsearch_request($path='/',$options=[])
+{
+    // print_r($options);
+    $uri = variable_get('fbo_elasticsearch_server').$path;
+    $response = new stdClass();
+    $response->code = null;
+    $response->data = '';
+    try {
+        $method  = !empty($options['method'])  ? $options['method'] : 'GET';
+        $data    = !empty($options['data'])    ? $options['data']   : '';
+        $timeout = !empty($options['timeout']) ? intval($options['timeout']) : null;
+        
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $uri);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+        if ( $method=='HEAD') {
+            curl_setopt($curl, CURLOPT_HEADER, true);
+            curl_setopt($curl, CURLOPT_NOBODY, true);
+        }
+
+        // if ( is_int($timeout) ) {
+        //     curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);            
+        // }
+        curl_setopt($curl, CURLOPT_HTTPHEADER,
+            ['CONTENT-TYPE: application/json; charset=utf-8']);
+
+        if ( !empty($data) ) {
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        }
+
+        // curl_setopt($curl, CURLOPT_VERBOSE, 1);
+        // curl_setopt($curl, CURLOPT_FAILONERROR, TRUE);
+        
+        // if ( local AND ssl )
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+        
+        $response->data = curl_exec($curl);
+        $response->code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        curl_close($curl);
+        return $response;
+    } catch (Exception $e) {
+        /// pass
+    }
+    return $response;
 }
 
