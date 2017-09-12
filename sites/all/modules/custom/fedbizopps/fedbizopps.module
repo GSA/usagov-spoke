@@ -351,8 +351,8 @@ function _do_es_search($from, $size, $params){
                 $kpts["classvalue"][] = '{"wildcard" : {"classvalue": "*'.$ww.'*"}}';
                 $kpts["classcode"][] = '{"wildcard" : {"classcode": "*'.$ww.'*"}}';
                 $kpts["zip"][] = '{"wildcard" : {"zip": "*'.$ww.'*"}}';
-                $kpts["subject"][] = '{"wildcard" : {"subject.keyword": "*'.$ww.'*"}}';
-                $kpts["desc"][] = '{"wildcard" : {"desc.keyword": "*'.$ww.'*"}}';
+                $kpts["subject"][] = '{"wildcard" : {"subject": "*'.$ww.'*"}}';
+                $kpts["desc"][] = '{"wildcard" : {"desc": "*'.$ww.'*"}}';
                 $kpts["agency"][] = '{"wildcard" : {"agency": "*'.$ww.'*"}}';
                 $kpts["office"][] = '{"wildcard" : {"office": "*'.$ww.'*"}}';
                 $kpts["state"][] = '{"wildcard" : {"state": "*'.$ww.'*"}}';
@@ -367,8 +367,8 @@ function _do_es_search($from, $size, $params){
         else {
             $params['keyword'] = str_replace('"', '', $params['keyword']);
             // and
-            $kpt[] = '{"match_phrase": {"subject.keyword": "' . $params['keyword'] . '"}}';
-            $kpt[] = '{"match_phrase": {"desc.keyword": "' . $params['keyword'] . '"}}';
+            $kpt[] = '{"match_phrase": {"subject": "' . $params['keyword'] . '"}}';
+            $kpt[] = '{"match_phrase": {"desc": "' . $params['keyword'] . '"}}';
             $kpt[] = '{"match_phrase": {"agency": "' . $params['keyword'] . '"}}';
             $kpt[] = '{"match_phrase": {"office": "' . $params['keyword'] . '"}}';
             $kpt[] = '{"match_phrase": {"zip": "' . $params['keyword'] . '"}}';
@@ -387,8 +387,8 @@ function _do_es_search($from, $size, $params){
             $kpt[] = '{"wildcard" : {"classvalue": "*'.$params['keyword'].'*"}}';
             $kpt[] = '{"wildcard" : {"classcode": "*'.$params['keyword'].'*"}}';
             $kpt[] = '{"wildcard" : {"zip": "*'.$params['keyword'].'*"}}';
-            $kpt[] = '{"wildcard" : {"subject.keyword": "*'.$params['keyword'].'*"}}';
-            $kpt[] = '{"wildcard" : {"desc.keyword": "*'.$params['keyword'].'*"}}';
+            $kpt[] = '{"wildcard" : {"subject": "*'.$params['keyword'].'*"}}';
+            $kpt[] = '{"wildcard" : {"desc": "*'.$params['keyword'].'*"}}';
             $kpt[] = '{"wildcard" : {"agency": "*'.$params['keyword'].'*"}}';
             $kpt[] = '{"wildcard" : {"office": "*'.$params['keyword'].'*"}}';
             $kpt[] = '{"wildcard" : {"state": "*'.$params['keyword'].'*"}}';
@@ -425,7 +425,7 @@ function _do_es_search($from, $size, $params){
         $sort =  '"sort" : ['
                 .'  {"closedate" : {"order" : "asc",  "missing" : "_last", "unmapped_type": "date"}},'
                 .'  {"postdate"  : {"order" : "desc", "missing" : "_last", "unmapped_type": "date"}},' 
-                .'  {"subject.keyword"   : {"order" : "asc",  "missing" : "_last", "unmapped_type": "keyword"}}'
+                .'  {"subject"   : {"order" : "asc",  "missing" : "_last", "unmapped_type": "keyword"}}'
                 .']';
         $param = '{
             "query": {';
