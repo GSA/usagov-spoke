@@ -351,8 +351,8 @@ function _do_es_search($from, $size, $params){
                 $kpts["classvalue"][] = '{"wildcard" : {"classvalue": "*'.$ww.'*"}}';
                 $kpts["classcode"][] = '{"wildcard" : {"classcode": "*'.$ww.'*"}}';
                 $kpts["zip"][] = '{"wildcard" : {"zip": "*'.$ww.'*"}}';
-                $kpts["subject"][] = '{"wildcard" : {"subject": "*'.$ww.'*"}}';
-                $kpts["desc"][] = '{"wildcard" : {"desc": "*'.$ww.'*"}}';
+                $kpts["subject"][] = '{"wildcard" : {"subject.keyword": "*'.$ww.'*"}}';
+                $kpts["desc"][] = '{"wildcard" : {"desc.keyword": "*'.$ww.'*"}}';
                 $kpts["agency"][] = '{"wildcard" : {"agency": "*'.$ww.'*"}}';
                 $kpts["office"][] = '{"wildcard" : {"office": "*'.$ww.'*"}}';
                 $kpts["state"][] = '{"wildcard" : {"state": "*'.$ww.'*"}}';
@@ -367,8 +367,8 @@ function _do_es_search($from, $size, $params){
         else {
             $params['keyword'] = str_replace('"', '', $params['keyword']);
             // and
-            $kpt[] = '{"match_phrase": {"subject": "' . $params['keyword'] . '"}}';
-            $kpt[] = '{"match_phrase": {"desc": "' . $params['keyword'] . '"}}';
+            $kpt[] = '{"match_phrase": {"subject.keyword": "' . $params['keyword'] . '"}}';
+            $kpt[] = '{"match_phrase": {"desc.keyword": "' . $params['keyword'] . '"}}';
             $kpt[] = '{"match_phrase": {"agency": "' . $params['keyword'] . '"}}';
             $kpt[] = '{"match_phrase": {"office": "' . $params['keyword'] . '"}}';
             $kpt[] = '{"match_phrase": {"zip": "' . $params['keyword'] . '"}}';
@@ -387,8 +387,8 @@ function _do_es_search($from, $size, $params){
             $kpt[] = '{"wildcard" : {"classvalue": "*'.$params['keyword'].'*"}}';
             $kpt[] = '{"wildcard" : {"classcode": "*'.$params['keyword'].'*"}}';
             $kpt[] = '{"wildcard" : {"zip": "*'.$params['keyword'].'*"}}';
-            $kpt[] = '{"wildcard" : {"subject": "*'.$params['keyword'].'*"}}';
-            $kpt[] = '{"wildcard" : {"desc": "*'.$params['keyword'].'*"}}';
+            $kpt[] = '{"wildcard" : {"subject.keyword": "*'.$params['keyword'].'*"}}';
+            $kpt[] = '{"wildcard" : {"desc.keyword": "*'.$params['keyword'].'*"}}';
             $kpt[] = '{"wildcard" : {"agency": "*'.$params['keyword'].'*"}}';
             $kpt[] = '{"wildcard" : {"office": "*'.$params['keyword'].'*"}}';
             $kpt[] = '{"wildcard" : {"state": "*'.$params['keyword'].'*"}}';
@@ -425,7 +425,7 @@ function _do_es_search($from, $size, $params){
         $sort =  '"sort" : ['
                 .'  {"closedate" : {"order" : "asc",  "missing" : "_last", "unmapped_type": "date"}},'
                 .'  {"postdate"  : {"order" : "desc", "missing" : "_last", "unmapped_type": "date"}},' 
-                .'  {"subject"   : {"order" : "asc",  "missing" : "_last", "unmapped_type": "keyword"}}'
+                .'  {"subject.keyword"   : {"order" : "asc",  "missing" : "_last", "unmapped_type": "keyword"}}'
                 .']';
         $param = '{
             "query": {';
@@ -489,7 +489,7 @@ function _do_es_search($from, $size, $params){
 
         $response = _fbo_elasticsearch_request("/opportunities/opportunity/_search?size=".$size."&from=".$from."&pretty",['data'=>$param]);
         $r = json_decode($response->data);
-print_r(["/opportunities/opportunity/_search?size=".$size."&from=".$from."&pretty",$param]);flush();die;
+// print_r(["/opportunities/opportunity/_search?size=".$size."&from=".$from."&pretty",$param]);flush();die;
         if(isset($r->hits->hits)){
             $sols = _get_array_of_obj($r->hits->hits);
             $ret['opps'] = $sols;
@@ -539,7 +539,7 @@ function _list_fbobizopp_data(){
     }
     $year .='</select>';
 
-    $ret .= '<article><div id="facetedsearch"><div class="clearfix"><div class="term-listing-heading">';
+    $ret = '<article><div id="facetedsearch"><div class="clearfix"><div class="term-listing-heading">';
     $ret .= '<header><h1>Find Opportunities to Contract with the Federal Government (Beta)</h1></header>';
     $ret .= ' <p>The Contracting Opportunity Finder (Beta) <span class="tooltip-left" role="tooltip" tabindex="0">'
         .' <img class="tooltip-icon-beta" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="tooltip" aria-hidden="true">'
@@ -766,25 +766,26 @@ function _get_array_of_obj($obj){
     $r = array();
 
     foreach($obj as $o){
-        $r[] = array('type'=> $o->_source->type,
-            'agency'=> $o->_source->agency,
-            'office'=> $o->_source->office,
-            'location'=> $o->_source->location,
-            'classcod'=> $o->_source->classcod,
-            'naics'=> $o->_source->naics,
-            'subject'=> $o->_source->subject,
-            'solnbr'=> $o->_source->solnbr,
-            'desc'=> $o->_source->desc,
-            'setaside'=> $o->_source->setaside,
-            'popcountry'=> $o->_source->popcountry,
-            'popzip'=> $o->_source->popzip,
-            'link'=> $o->_source->link,
-            'source'=> $o->_source->source,
-            'contact'=> $o->_source->contact,
-            'postdate'=> $o->_source->postdate,
-            'closedate'=> $o->_source->closedate,
-            'state'=> $o->_source->state,
-            'zip'=> $o->_source->zip,
+        $r[] = array(
+            'type'=> ( isset($o->_source->type) ) ? $o->_source->type : null,
+            'agency'=> ( isset($o->_source->agency) ) ?  $o->_source->agency : null,
+            'office'=> ( isset($o->_source->office) ) ?  $o->_source->office : null,
+            'location'=> ( isset($o->_source->location) ) ?  $o->_source->location : null,
+            'classcod'=> ( isset($o->_source->classcod) ) ?  $o->_source->classcod : null,
+            'naics'=> ( isset($o->_source->naics) ) ?  $o->_source->naics : null,
+            'subject'=> ( isset($o->_source->subject) ) ?  $o->_source->subject : null,
+            'solnbr'=> ( isset($o->_source->solnbr) ) ?  $o->_source->solnbr : null,
+            'desc'=> ( isset($o->_source->desc) ) ?  $o->_source->desc : null,
+            'setaside'=> ( isset($o->_source->setaside) ) ?  $o->_source->setaside : null,
+            'popcountry'=> ( isset($o->_source->popcountry) ) ?  $o->_source->popcountry : null,
+            'popzip'=> ( isset($o->_source->popzip) ) ?  $o->_source->popzip : null,
+            'link'=> ( isset($o->_source->link) ) ?  $o->_source->link : null,
+            'source'=> ( isset($o->_source->source) ) ?  $o->_source->source : null,
+            'contact'=> ( isset($o->_source->contact) ) ?  $o->_source->contact : null,
+            'postdate'=> ( isset($o->_source->postdate) ) ?  $o->_source->postdate : null,
+            'closedate'=> ( isset($o->_source->closedate) ) ?  $o->_source->closedate : null,
+            'state'=> ( isset($o->_source->state) ) ?  $o->_source->state : null,
+            'zip'=> ( isset($o->_source->zip) ) ?  $o->_source->zip : null,
         );
     }
 
