@@ -71,7 +71,8 @@ $envToDrupalMap = array(
         /* Drupal variables, strings, used by Drupal-core */
         'site_name' => 'CMP_DRUPAL_SITE_NAME',
         'site_mail' => 'CMP_DRUPAL_SITE_MAIL', /* "E-mail address" in /admin/config/system/site-information */
-
+        'cropn_key' => 'CMP_DRUPAL_CRON_KEY',
+        
         /* Drupal variables, strings, used by the all_childsite_misc module */
         'use_by' => 'CMP_DRUPAL_USE_BY',
 
