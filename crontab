@@ -1,3 +1,5 @@
 # USAGov Spoke
 # min   hour    day     month   weekday command
-*       *       *       *       *       echo "wget --no-check-certificate -O - -q -t 1 --timeout=120 https://cmp.usa.dev/cron.php?cron_key=$CRON_KEY" &2>1 >> /proc/self/fd/2
+*       *       *       *       *       wget --no-check-certificate -O - -q -t 1 --timeout=120 https://$HOST_WWW/cron.php?cron_key=$CRON_KEY
+*       *       *       *       *       wget --no-check-certificate -O - -q -t 1 --timeout=120 https://$HOST_BLOG/cron.php?cron_key=$CRON_KEY
+*       *       *       *       *       wget --no-check-certificate -O - -q -t 1 --timeout=120 https://$HOST_GOB/cron.php?cron_key=$CRON_KEY
