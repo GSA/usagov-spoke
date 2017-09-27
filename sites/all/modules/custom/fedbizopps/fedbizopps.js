@@ -355,7 +355,6 @@ function validateForm(form, event, scroll){
             }
         });
 
-
         if(scroll){
             goToByScroll("#secondpara");
             jQuery('#errorList').focus();
@@ -364,12 +363,17 @@ function validateForm(form, event, scroll){
         if (jQuery('form[name="facetedSearchForm"]').hasClass('form-validated')){
             jQuery('form[name="facetedSearchForm"]').removeClass('form-validated');
         }
+        dataLayer.push({'event' : 'formSubmitInvalid'});
+    }
+    else{
+        dataLayer.push({'event' : 'formSubmitted'});
     }
 
     if (jQuery('form[name="facetedSearchForm"]').hasClass('form-validated') && inFocus){
         jQuery('#cind').val(1);
         jQuery('#storeuserinput').val(1);
         var pagination_default = 0;
+
         _sendajaxreq(pagination_default,1, 0, 0);
     }
     return false;
@@ -582,9 +586,9 @@ function _sendajaxreq(p, scrolll, paginated, init) {
                     html_list += '<div class="result-details">';
                     html_list += '<div class="result-details-column"> <span><strong><a target="_blank" href="'+data.opps[opp].link+'" >'+data.opps[opp].subject+'</a></strong><br>'+data.opps[opp].solnbr+'</span> </div>';
                     html_list += '<div class="result-details-column"> <span><strong>Opportunity Type:</strong><br>'+data.opps[opp].type;
-                    html_list += '<span class="tooltip" role="tooltip" tabindex="0"> <img class="tooltip-icon2" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="tooltip" aria-hidden="true" ><span class="tooltiptext">'+opptypetooltip+'</span><span aria-label="Tooltip - This is a notice about a future contract. It may ask interested businesses for information."></span></span> </span>';
-                    html_list += '<div><strong>Set-Aside Type:</strong><br>'+data.opps[opp].setaside +'<span class="tooltip" role="tooltip" tabindex="0"> <img class="tooltip-icon2" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="tooltip" aria-hidden="true" ><span class="tooltiptext">'+setasidetypetooltip+'</span><span aria-label="Tooltip - Tooltip text goes here."></span></span> </div>';
-                    html_list += '<div><strong>Posted:</strong><br>'+ ddate +'<span class="tooltip" role="tooltip" tabindex="0"> <img class="tooltip-icon2" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="tooltip" aria-hidden="true" ><span class="tooltiptext">The date range an opportunity is open. Some do not have closing dates.</span><span aria-label="Tooltip - Tooltip text goes here."></span></span> </div>';
+                    html_list += '<span class="tooltip" role="tooltip" tabindex="0"> <img class="tooltip-icon2" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="tooltip" aria-hidden="true" ><span class="tooltiptext">'+opptypetooltip+'</span><span aria-label="Tooltip - '+opptypetooltip+'"></span></span> </span>';
+                    html_list += '<div><strong>Set-Aside Type:</strong><br>'+data.opps[opp].setaside +'<span class="tooltip" role="tooltip" tabindex="0"> <img class="tooltip-icon2" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="tooltip" aria-hidden="true" ><span class="tooltiptext">'+setasidetypetooltip+'</span><span aria-label="Tooltip - '+setasidetypetooltip+'"></span></span> </div>';
+                    html_list += '<div><strong>Posted:</strong><br>'+ ddate +'<span class="tooltip" role="tooltip" tabindex="0"> <img class="tooltip-icon2" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="tooltip" aria-hidden="true" ><span class="tooltiptext">The date range an opportunity is open. Some do not have closing dates.</span><span aria-label="Tooltip - The date range an opportunity is open. Some do not have closing dates."></span></span> </div>';
                     html_list += '</div>'; //result-details-column close
 
                     html_list += '<div class="result-details-column"><address><strong>Agency:</strong><br>'+data.opps[opp].agency+'<br>';
