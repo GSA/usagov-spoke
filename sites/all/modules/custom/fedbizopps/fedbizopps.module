@@ -142,7 +142,7 @@ function _index_userinfo($p){
 
     // if ($result) {
     //     $r = json_decode($result);
-    $response = _fbo_elasticsearch_request('/opportunityuserinputs/userinput/'.time(),['data'=>json_encode($p)]);
+    $response = _fbo_elasticsearch_request('/opportunityuserinputs/userinput/'.time(),['method'=>'PUT','data'=>json_encode($p)]);
     if ($response->code == 200) {
         $r = json_decode($response->data);
         if (!empty($r->errors)) {
@@ -255,28 +255,28 @@ function _setupES(){
               "properties": {
 
                 "setaside" : {
-                  "type": "string",
+                  "type": "keyword",
                   "fields": {
                     "raw" : {
-                      "type": "string",
+                      "type": "keyword",
                       "index": "not_analyzed"
                     }
                   }
                 },
                 "keyword" : {
-                  "type": "string",
+                  "type": "keyword",
                   "fields": {
                     "raw" : {
-                      "type": "string",
+                      "type": "keyword",
                       "index": "not_analyzed"
                     }
                   }
                 },
                 "location" : {
-                  "type": "string",
+                  "type": "keyword",
                   "fields": {
                     "raw" : {
-                      "type": "string",
+                      "type": "keyword",
                       "index": "not_analyzed"
                     }
                   }
@@ -289,10 +289,10 @@ function _setupES(){
                   "format": "yyyy-MM-dd"
                 },
                 "show_na_setaside" : {
-                  "type": "string",
+                  "type": "keyword",
                   "fields": {
                     "raw" : {
-                      "type": "string",
+                      "type": "keyword",
                       "index": "not_analyzed"
                     }
                   }
