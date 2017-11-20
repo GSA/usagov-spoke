@@ -18,8 +18,27 @@ if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
     $siteIsUSA = true;
 }
 
+$usagovURL="//www.usa.gov/";
+$gobgovURL="//gobierno.usa.gov/";
+
+// whether to it is dev or local
+if (strpos($_SERVER["HTTP_HOST"],'usa.dev') !== false){
+    $gobgovURL="//gobierno.usa.dev/";
+    $usagovURL="//www.usa.dev/";
+}
+
+if (strpos($_SERVER["HTTP_HOST"],'test-') !== false){
+    $gobgovURL="//test-gobiernogov.ctacdev.com/";
+    $usagovURL="//test-usagov.ctacdev.com/";
+}
+
+if (strpos($_SERVER["HTTP_HOST"],'stage-') !== false){
+    $gobgovURL="//stage-gobiernogov.ctacdev.com/";
+    $usagovURL="//stage-usagov.ctacdev.com/";
+}
+
 if ( strpos($_SERVER['HTTP_HOST'], 'gobierno') === false ) {
-    $toggleURL = "https://gobierno.usa.gov/agencias-federales/a";
+    $toggleURL = $gobgovURL."agencias-federales/a";
     $GLOBALS['toggleHTML'] = "
       <li class=\"engtoggle\">
         <a href=\"{$toggleURL}\" lang=\"es\" xml:lang=\"es\">
@@ -28,7 +47,7 @@ if ( strpos($_SERVER['HTTP_HOST'], 'gobierno') === false ) {
       </li>
     ";
 } else {
-    $toggleURL = "https://www.usa.gov/federal-agencies/a";
+    $toggleURL = $usagovURL."federal-agencies/a";
     $GLOBALS['toggleHTML'] = "
       <li class=\"engtoggle\">
         <a href=\"{$toggleURL}\" lang=\"en\" xml:lang=\"en\">
@@ -209,5 +228,7 @@ if ( strpos($_SERVER['HTTP_HOST'], 'gobierno') === false ) {
             }
             ?>
         </ul>
-    <?php } ?>
+    <?php }
+    print _print_social_media();
+    ?>
 </div>

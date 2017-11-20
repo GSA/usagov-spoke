@@ -127,13 +127,15 @@ jQuery(document).ready(function() {
 
     jQuery(".kpdd").on('keydown',function(event){
         if(event.keyCode == 13) {
+
             validateForm();
-            event.preventDefault();
-            if (jQuery('form[name="facetedSearchForm"]').hasClass('form-validated') ){
+
+            if (jQuery('form[name="facetedSearchForm"]').hasClass('form-validated')) {
                 jQuery('#cind').val(1);
                 var pagination_default = 0;
-                _sendajaxreq(pagination_default,1, 0, 0);
+                _sendajaxreq(pagination_default, 1, 0, 0);
             }
+            event.preventDefault();
         }
     });
     jQuery('#filter4 input[type="checkbox"]').on('keydown',function(event){
@@ -312,7 +314,7 @@ function validateForm(form, event, scroll){
         jQuery('form[name="facetedSearchForm"]').removeClass('form-validated');
         //no setasides are selected, show error message
         jQuery('#filter4').removeClass('no-error');
-        errorList+="<li><a href=\"#8a\">Attention. At least one Special Business Label (Set-Aside Type) box must be checked in order to possibly get results.</li>";
+        errorList+="<li><a href=\"#8a\">At least one Special Business Label (Set-Aside Type) box must be checked in order to possibly get results.</li>";
         jQuery('#filter4 input[type="checkbox"]').attr("aria-describedby", "setaside-error-message");
 
         jQuery('#filter4 input[type="checkbox"]').change(function() {
@@ -404,6 +406,18 @@ function _sendajaxreq(p, scrolll, paginated, init) {
             val[k] = 'Partial Small Business';
             k++;
         }
+        else if (jQuery(this).val()=="womensmbiz"){
+            val[k] = 'Woman Owned Small Business';
+            k++;
+            val[k] = 'Economically Disadvantaged Women-Owned Small Business';
+            k++;
+        }
+        else if (jQuery(this).val()=="indianeco"){
+            val[k] = 'Indian Economic Enterprises';
+            k++;
+            val[k] = 'Indian Small Business Economic Enterprises';
+            k++;
+        }
         else {
             val[k] = jQuery(this).val();
             k++;
@@ -428,8 +442,8 @@ function _sendajaxreq(p, scrolll, paginated, init) {
         dataType: 'json',
         type: 'POST',
         success: function (data) {
-            //console.log(data.paramm);
-            //console.log(data.s);
+            console.log(data.paramm);
+            console.log(data.s);
 
             if (data.total > 0) {
                 var html_list = '';
@@ -547,7 +561,7 @@ function _sendajaxreq(p, scrolll, paginated, init) {
                         setasidetypetooltip ='For small businesses owned by service-disabled veterans. Must be verified through VA.';
                     }
                     else if (data.opps[opp].setaside == 'Woman Owned Small Business'){
-                        setasidetypetooltip ='For small businesses owned by women. Must be verified through SBA.';
+                        setasidetypetooltip ='For small businesses owned by women. Must be certified through SBA.';
                     }
                     else if (data.opps[opp].setaside == 'Veteran-Owned Small Business'){
                         setasidetypetooltip ='For small businesses owned by veterans. Must be verified through VA.';
@@ -600,7 +614,7 @@ function _sendajaxreq(p, scrolll, paginated, init) {
                     html_list += '<button class="usa-accordion-button ttt" aria-expanded="false" aria-controls="result'+opp+'"><span class="element-invisible">'+data.opps[opp].subject+'</span>Description of Opportunity</button>';
                     html_list += '<div id="result'+opp+'" class="usa-accordion-content" aria-hidden="true">';
                     html_list += '<p>' + data.opps[opp].desc + '</p>';
-                    html_list += '<p><strong><a target="_blank" href="'+data.opps[opp].link+'"><span class="element-invisible">The view contact and bid information for opportunity will open in a new window.</span>View attachments (if any), contact information, and bidding requirements for the opportunity <span class="element-invisible">'+data.opps[opp].subject+'</span></a></strong></p>';
+                    html_list += '<p><strong><a target="_blank" href="'+data.opps[opp].link+'"><span class="element-invisible">The view contact and bid information for opportunity will open in a new window.</span>View any uploaded documents, contact information, and bidding requirements <span class="element-invisible">'+data.opps[opp].subject+'</span></a></strong></p>';
                     html_list += '</div></div></div></div></div>';
 
                     html_list += '</div>';
@@ -660,7 +674,14 @@ function _sendajaxreq(p, scrolll, paginated, init) {
 
             }
             else {
-                maincontainer.html("<section><div class='usa-grid' ><div><header id='searchresultheader'><h2 class='searchresulttitle'>Search Results</h2></header><div class='usa-input-error'><span class='usa-input-error-message'>Attention: We cannot find any opportunities that match your selections. Try using fewer filters or entering different keywords.</span></div></div></div></section>");
+                maincontainer.html("<section><div class='usa-grid' ><div><header id='searchresultheader'><h2 class='searchresulttitle'>Search Results</h2></header><div class='usa-input-error'>"
+                +"<span class='usa-input-error-message'>Attention: We cannot find any opportunities that match your search. Try any of these options and search again:</span>"
+                +"<ul><li>If you used the Keyword Search, enter a different keyword or phrase. Tip: Try entering a keyword or phrase that is shorter or less specific. </li>"
+                +"<li>Select an earlier Posted Date</li>"
+                +"<li>Try different Set-Aside Type selections</li>"
+                +"<li>Use fewer filters or a different combination of filters</li></ul>"
+                +"</div></div></div></section>");
+                dataLayer.push({'event' : 'FBOzeroResults'});
                 maincontainer.removeClass('loading');
                 jQuery("#searchresultheader").attr('tabindex', -1);
                 jQuery('#searchresultheader').focus();

@@ -31,30 +31,31 @@ $siteName = variable_get('site_name', 'UNKNOWN');
 
 ?>
 
-  <?php if ($rows): ?>
-        <div id="featurelist">
-          <h2><?php print t('You might also like'); ?>&nbsp;…</h2>
-    <?php print "<ul>" . $rows . "</ul>"; ?>
-        </div>
-        <div class="row">
-          <div class="col-md-4 col-md-offset-8 col-sm-6 col-sm-offset-6 col-xs-8 col-xs-offset-4"> 
+<?php if ($rows): ?>
+    <div id="featurelist">
+        <h2><?php print t('You might also like'); ?>&nbsp;…</h2>
+        <?php print "<ul>" . $rows . "</ul>"; ?>
+    </div>
+    <div class="row">
+        <div class="col-md-4 col-md-offset-8 col-sm-6 col-sm-offset-6 col-xs-8 col-xs-offset-4">
             <?php if ( stripos($siteName, 'gobi') !== false ): ?>
-              <a href="/novedades" class="featuremore">
-                Ver más novedades<span></span>
-              </a>
+                <a href="/novedades" class="featuremore">
+                    Ver más novedades<span></span>
+                </a>
             <?php else: ?>
-              <a href="/features" class="featuremore">
-                See More Features<span></span>
-              </a>
+                <a href="/features" class="featuremore">
+                    See More Features<span></span>
+                </a>
             <?php endif; ?>
-          </div>
         </div>
-        <p class="volver clearfix">
-          <a href="#skiptarget">
+    </div>
+    <?php print _print_social_media(); ?>
+    <p class="volver clearfix">
+        <a href="#skiptarget">
             <span class="icon-backtotop-dwnlvl">
               <?php print t('Back to Top'); ?>
             </span>
-          </a>
-        </p>
-  <?php endif; ?>
+        </a>
+    </p>
+<?php endif; ?>
 

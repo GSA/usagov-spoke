@@ -76,64 +76,16 @@
 
 <!-- [Error] Messages (including DSM statements) will only show to the admin  -->
 <?php if($is_admin): ?>
-  <?php print $messages; ?>
+    <?php print $messages; ?>
 <?php endif; ?>
 
 <?php global $isAtoZ; ?>
 <?php if( isset($isAtoZ) || strpos(request_uri(), 'site-index') !== FALSE): ?>
-  <main id="content" class="az-page" role="main">
-<?php else: ?>
-  <main id="content" role="main">
-<?php endif; ?>
-    <div class="container clearfix">
-      <?php print render($page['content']); ?>
-    </div>
-<aside class="sclmedia">
-  <div class="container clearfix">
-    <?php if(!empty($term->field_govdelivery_id['und']) && FALSE ): // TURN EMAIL FORM OFF TEMPORARILY?>
-    <section class="col-md-6 col-xs-12">
+<main id="content" class="az-page" role="main">
     <?php else: ?>
-    <section class="col-md-6 col-xs-12 noemllft">
-    <?php endif; ?>
-      <div class="nodvdr">
-        <header>
-        <h2><?php print t('Share This Page'); ?>:</h2>
-        </header>
-        <ul>
-          <li class="col-md-3 col-xs-6"><a href="http://www.facebook.com/sharer/sharer.php?u=<?php print $encodedURL; ?>&v=3" class="sclfcbk" style="display:inline-block;"><span>Facebook</span></a></li>
-          <li class="col-md-3 col-xs-6"><a href="http://twitter.com/intent/tweet?source=webclient&text=<?php print $encodedTitleURL; ?>" class="scltwttr" style="display:inline-block;"><span>Twitter</span></a></li>
-          <li class="col-md-3 col-xs-6"><a href="https://plus.google.com/share?url=<?php print $encodedURL; ?>" class="sclggle" style="display:inline-block;"><span>Google+</span></a></li>
-          <li class="col-md-3 col-xs-6">
-            <a href="mailto:?subject=<?php print $title; ?>&amp;body=<?php print "https://".$_SERVER['HTTP_HOST'].htmlentities(rtrim(request_uri(),'/'), ENT_QUOTES, "UTF-8"); ?>" class="scleml"><span>Email</span></a>
-          </li>
-        </ul>
-      </div>
-    </section>
-    <!--
-    <?php if(!empty($term->field_govdelivery_id['und'])): ?>
-      <section class="col-md-6 col-xs-12 dvdr">
-    <?php else: ?>
-      <section class="col-md-6 col-xs-12 dvdr noeml">
-    <?php endif; ?>
-
-      <div>
-        <header>
-          <h2><label for="email-input"><?php print t('Get Email Updates on This Topic'); ?>:</label></h2>
-        </header>
-        <div class="nowrp">
-          <form method="POST" action="<?php print $email_action_path; ?>">
-            <p class="txtbx">
-              <?php if(@!empty($term->field_govdelivery_id['und'][0]['value'])): ?>
-                <input id="topic_id" name="topic_id" type="hidden" value="<?php print $term->field_govdelivery_id['und'][0]['value']; ?>" />
-              <?php endif; ?>
-              <input id="email-input" class="text" size="38" name="email" type="email">
-              <input class="submit" value="<?php print t('Subscribe'); ?>" id="emailSubmit" type="submit">
-            </p>
-          </form>
+    <main id="content" role="main">
+        <?php endif; ?>
+        <div class="container clearfix">
+            <?php print render($page['content']); ?>
         </div>
-    </div>
-    </section>
-    -->
-  </div>
-</aside>
-  </main>
+    </main>

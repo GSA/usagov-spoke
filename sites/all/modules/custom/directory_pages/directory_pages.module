@@ -380,6 +380,25 @@ function directory_pages_goToCorrectPath() {
 
 function directory_pages_menuCallbackRouter($doOverrideRuri = 'MenuCallBackSetsThisToString', $overrideRuri = false) {
 
+    $usagovURL="//www.usa.gov/";
+    $gobgovURL="//gobierno.usa.gov/";
+
+    // whether to it is dev or local
+    if (strpos($_SERVER["HTTP_HOST"],'usa.dev') !== false){
+        $gobgovURL="//gobierno.usa.dev/";
+        $usagovURL="//www.usa.dev/";
+    }
+
+    if (strpos($_SERVER["HTTP_HOST"],'test-') !== false){
+        $gobgovURL="//test-gobiernogov.ctacdev.com/";
+        $usagovURL="//test-usagov.ctacdev.com/";
+    }
+
+    if (strpos($_SERVER["HTTP_HOST"],'stage-') !== false){
+        $gobgovURL="//stage-gobiernogov.ctacdev.com/";
+        $usagovURL="//stage-usagov.ctacdev.com/";
+    }
+
     // Get the request path
     $ruri = ( $doOverrideRuri === true ? $overrideRuri : urldecode(request_uri_path()) );
 
@@ -477,24 +496,6 @@ function directory_pages_menuCallbackRouter($doOverrideRuri = 'MenuCallBackSetsT
             $allnids[$nid]=$nid;
         }
 
-        $usagovURL="//www.usa.gov/";
-        $gobgovURL="//gobierno.usa.gov/";
-
-        // whether to it is dev or local
-        if (strpos($_SERVER["HTTP_HOST"],'usa.dev') !== false){
-            $gobgovURL="//gobierno.usa.dev/";
-            $usagovURL="//www.usa.dev/";
-        }
-
-        if (strpos($_SERVER["HTTP_HOST"],'test-') !== false){
-            $gobgovURL="//test-gobiernogov.ctacdev.com/";
-            $usagovURL="//test-usagov.ctacdev.com/";
-        }
-
-        if (strpos($_SERVER["HTTP_HOST"],'stage-') !== false){
-            $gobgovURL="//stage-gobiernogov.ctacdev.com/";
-            $usagovURL="//stage-usagov.ctacdev.com/";
-        }
 
         // Determine the toggle markup
         if ( $siteIsUSA ) {
@@ -651,7 +652,7 @@ function directory_pages_menuCallbackRouter($doOverrideRuri = 'MenuCallBackSetsT
 
             global $toggleHTML;
             $toggleLink = ( empty($_SERVER['HTTPS']) ? 'http://' : 'https://' );
-            $toggleLink .= 'gobierno.usa.gov/organizaciones-consumidor/';
+            $toggleLink .= $gobgovURL.'organizaciones-consumidor/';
             $toggleLink .= str_replace(' ', '-', strtolower(_sanitzie_path( directory_pages_getSpanishStateName($state) ))); // _sanitzie_path() strips accents/etc
             $toggleHTML = "
                 <li class=\"engtoggle\">
@@ -664,7 +665,7 @@ function directory_pages_menuCallbackRouter($doOverrideRuri = 'MenuCallBackSetsT
 
             global $toggleHTML;
             $toggleLink = ( empty($_SERVER['HTTPS']) ? 'http://' : 'https://' );
-            $toggleLink .= 'www.usa.gov/state-consumer/';
+            $toggleLink .= $usagovURL.'state-consumer/';
             $toggleLink .= str_replace(' ', '-', strtolower(directory_pages_acronymToStateName($state))); // Note: directory_pages_acronymToStateName() returns ENGLISH strings
             $toggleHTML = "
                 <li class=\"engtoggle\">
@@ -690,7 +691,7 @@ function directory_pages_menuCallbackRouter($doOverrideRuri = 'MenuCallBackSetsT
 
     // Directory-Records by title
     $records = array();
-    $records = array_merge($records, directory_pages_pathIsFedAgencyTitle($ruri));
+    $records = array_merge($records, directory_pages_pathIsFedAgencyTitle($ruri, $siteIsUSA,$siteIsGobierno));
     // Directory-Records by alpha-name (precedence to highest-level federal agencies)
     // if ( empty($records) ) { $records = array_merge($records, directory_pages_pathIsAlphaName($ruri)); }
     if ( count($records) > 0 ) {
@@ -712,7 +713,7 @@ function directory_pages_menuCallbackRouter($doOverrideRuri = 'MenuCallBackSetsT
                         }
                     }
                 }
-                $spanToggleURL = '//gobierno.usa.gov/'.ltrim($spanToggleURL, '/');
+                $spanToggleURL = $gobgovURL.ltrim($spanToggleURL, '/');
             }
 
             if ( !empty($spanToggleURL) ) {
@@ -739,7 +740,7 @@ function directory_pages_menuCallbackRouter($doOverrideRuri = 'MenuCallBackSetsT
                         }
                     }
                 }
-                $engToggleURL = '//usa.gov/'.ltrim($engToggleURL, '/');
+                $engToggleURL = $usagovURL.ltrim($engToggleURL, '/');
             }
 
             if ( !empty($engToggleURL) ) {
@@ -896,7 +897,7 @@ function directory_pages_pathIsAlphaName($path) {
  * If it is not, an empty array is returned, if it is, then the
  * directory-record(s) are returned in an array.
  */
-function directory_pages_pathIsFedAgencyTitle($path) {
+function directory_pages_pathIsFedAgencyTitle($path, $isUSA, $isGobierno) {
 
     if ( strpos($path, 'federal-agencies') === false && strpos($path, 'agencias-federales') === false ) {
         return array();
@@ -917,11 +918,18 @@ function directory_pages_pathIsFedAgencyTitle($path) {
     // Default to returning false, when nothing is found
     $nids = array();
 
+    if ($isUSA){
+        $lang = 'English';
+    }
+    if ($isGobierno){
+        $lang = 'Spanish';
+    }
     $records = db_query("
         SELECT n.nid AS 'nid', title
         FROM node n
-        WHERE LCASE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(title, ' ', ''), '-', ''), '.', ''), ',', ''),'\'',''),'(',''),')','')) = :testDirRecordTitle
-    ",array(':testDirRecordTitle'=>$testDirRecordTitle));
+        INNER JOIN field_data_field_language l ON l.entity_id = n.nid
+        WHERE LCASE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(title, ' ', ''), '-', ''), '.', ''), ',', ''),'\'',''),'(',''),')','')) = :testDirRecordTitle AND field_language_value LIKE :lang
+    ",array(':testDirRecordTitle'=>$testDirRecordTitle, ':lang'=>$lang));
 
     /*$records = db_query("
         SELECT n.nid AS 'nid', n.title
@@ -1333,4 +1341,27 @@ function directory_pages_getSpanishStateName($englishStateName) {
         error_log('Error in '.__FUNCTION__.'(), could not access '.$transFilePath);
         return $englishStateName;
     }
+}
+
+function get_tones($inp)
+{
+    $orig = $inp;
+    $from = 'abcdefghijklmnopqrstuvwxyz';
+    $to = '222333444555666777788899990';
+    //|(1?-?\d{3}-[a-zA-Z0-9]{7}
+
+    preg_match_all("/(1?-?\d{3}-\d{3}-\d{4})/x", $orig, $brs);
+    //dsm($brs);
+
+    if (isset($brs[0])) {
+        foreach ($brs[0] as $ph) {
+            $nph = $ph;
+            // convert the input to lower case
+            $nph = strtolower($nph);
+            $nph = preg_replace('@\([^\)]*\)$@', '', $nph);
+            $nph = strtr($nph, $from, $to);
+            $orig = str_replace($ph, '<a href="tel:' . str_replace('-', '', $nph) . '">' . $ph . '</a>', $orig);
+        }
+    }
+    return $orig;
 }

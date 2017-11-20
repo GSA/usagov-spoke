@@ -27,113 +27,114 @@
  * @ingroup views_templates
  */
 
-  $siteName = variable_get('site_name', 'UNKNOWN');
+$siteName = variable_get('site_name', 'UNKNOWN');
 
-  // Determin what language to use with the left-sidebar's title
-  if ( stripos($siteName, 'Gobi') !== false ) {
+// Determin what language to use with the left-sidebar's title
+if ( stripos($siteName, 'Gobi') !== false ) {
     $sidebarTitleText = 'Medios y colaboradores';
     $sidebarTitleLink = '/medios';
-  } else {
+} else {
     $sidebarTitleText = 'For Media and Partners';
     $sidebarTitleLink = '/media';
-  }
+}
 
-  // Determin what language to use with the left-sidebar's first item
-  if ( stripos($siteName, 'Gobi') !== false ) {
+// Determin what language to use with the left-sidebar's first item
+if ( stripos($siteName, 'Gobi') !== false ) {
     $sidebarItem1Text = 'Colabore con nosotros';
     $sidebarItem1Link = '/colabore-con-nosotros';
-  } else {
+} else {
     $sidebarItem1Text = 'Features';
     $sidebarItem1Link = '/features';
-  }
+}
 
-  // Determin what language to use with the left-sidebar's second item
-  if ( stripos($siteName, 'Gobi') !== false ) {
+// Determin what language to use with the left-sidebar's second item
+if ( stripos($siteName, 'Gobi') !== false ) {
     $sidebarItem2Text = 'Novedades';
     $sidebarItem2Link = '/novedades';
-  } else {
+} else {
     $sidebarItem2Text = 'Work With Us';
     $sidebarItem2Link = '/work-with-us';
-  }
+}
 
 ?>
 <div class="term-listing-heading">
-  <nav aria-label="Topic" class="col-md-3 leftnav">
-    <section>
-                      <div class="mrtp clearfix">
-                      <button id="leftnav-toggle" type="button">
-                      <div class="bttn">
+    <nav aria-label="Topic" class="col-md-3 leftnav">
+        <section>
+            <div class="mrtp clearfix">
+                <button id="leftnav-toggle" type="button">
+                    <div class="bttn">
                         <header>
-                          <h2 id=""><?php print t('More Topics in this Section'); ?></h2>
-                        </header>  
-                      </div>
+                            <h2 id=""><?php print t('More Topics in this Section'); ?></h2>
+                        </header>
+                    </div>
                     <div class="mrtpc"></div>
-                      </button>
-                  </div>
+                </button>
+            </div>
 
 
-          <div class="shade dwn" aria-expanded="false">
-        <header>
-          <h2 itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
-            <a itemprop="url" href="<?php print $sidebarTitleLink; ?>"><span itemprop="title">
+            <div class="shade dwn" aria-expanded="false">
+                <header>
+                    <h2 itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                        <a itemprop="url" href="<?php print $sidebarTitleLink; ?>"><span itemprop="title">
               <?php print $sidebarTitleText; ?>
             </span></a>
-          </h2>
-        </header>
-        <ul>
-        <?php if ( stripos($siteName, 'Gobi') !== false ) : ?>
-          <li >
-        <a href="<?php print $sidebarItem1Link; ?>">
-                <?php print $sidebarItem1Text; ?>
-        </a>
-        <?php else: ?>
-          <li itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb" class="slctd">
-              <a href="<?php print $sidebarItem1Link; ?>">
+                    </h2>
+                </header>
+                <ul>
+                    <?php if ( stripos($siteName, 'Gobi') !== false ) : ?>
+                <li >
+                <a href="<?php print $sidebarItem1Link; ?>">
+                    <?php print $sidebarItem1Text; ?>
+                </a>
+                <?php else: ?>
+                    <li itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb" class="slctd">
+                        <a href="<?php print $sidebarItem1Link; ?>">
               <span itemprop="title">
                 <?php print $sidebarItem1Text; ?>
               </span>
-              </a>
-        <?php endif ?>
-          </li>
+                        </a>
+                        <?php endif ?>
+                    </li>
 
-        <?php if ( stripos($siteName, 'Gobi') !== false ) : ?>
-          <li itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb" class="slctd">
-              <a href="<?php print $sidebarItem2Link; ?>">
+                    <?php if ( stripos($siteName, 'Gobi') !== false ) : ?>
+                    <li itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb" class="slctd">
+                        <a href="<?php print $sidebarItem2Link; ?>">
               <span itemprop="title">
                 <?php print $sidebarItem2Text; ?>
               </span>
-              </a>
-        <?php else: ?>
-          <li >
-                <a href="<?php print $sidebarItem2Link; ?>">
-                    <?php print $sidebarItem2Text; ?>
-                </a>
-        <?php endif ?>
-          </li>
+                        </a>
+                        <?php else: ?>
+                    <li >
+                        <a href="<?php print $sidebarItem2Link; ?>">
+                            <?php print $sidebarItem2Text; ?>
+                        </a>
+                        <?php endif ?>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </nav>
+    <!---right container-->
+    <div class="col-md-9 col-sm-12 rightnav">
+        <header>
+            <h1><?php print t('Features'); ?></h1>
+        </header>
+        <p><?php print t('You\'re invited to read and use our bilingual articles covering trusted, timely, and valuable government information.'); ?></p>
+        <ul id="features-landing">
+            <?php if ($rows): ?>
+                <?php print $rows; ?>
+            <?php endif; ?>
         </ul>
-      </div>
-    </section>
-  </nav>
-  <!---right container-->
-  <div class="col-md-9 col-sm-12 rightnav">
-    <header>
-      <h1><?php print t('Features'); ?></h1>
-    </header>
-    <p><?php print t('You\'re invited to read and use our bilingual articles covering trusted, timely, and valuable government information.'); ?></p>
-    <ul id="features-landing">
-      <?php if ($rows): ?>
-          <?php print $rows; ?>
-      <?php endif; ?>
-    </ul>
 
 
-      <?php if ($pager): ?>
-        <?php print $pager; ?>
-      <?php endif; ?>
+        <?php if ($pager): ?>
+            <?php print $pager; ?>
+        <?php endif; ?>
 
-
-    <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
-  </div>
+        <p class="volver clearfix"></p>
+        <?php print _print_social_media(); ?>
+        <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
+    </div>
 </div>
 
 

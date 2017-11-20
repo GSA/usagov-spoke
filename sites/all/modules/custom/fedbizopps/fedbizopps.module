@@ -180,7 +180,15 @@ function _returnFBODataResult(){
         $params['postdate'] = $_POST['postdate'];
     }
     if (isset($_POST['state']) && $_POST['state'] !='') {
-        $params['state'] =$_POST['state'];
+        if ($_POST['state'] == "GU") {
+            $params['state'] = array("GU", 2);
+        }
+        elseif ($_POST['state'] == "OU") {
+            $params['state'] = array("AP", "AE",NULL);
+        }
+        else {
+            $params['state'] =array($_POST['state']);
+        }
     }
     if (isset($_POST['setaside'])) {
         $params['setaside'] = $_POST['setaside'];
@@ -201,7 +209,7 @@ function _returnFBODataResult(){
             $p = array('keyword' => $_POST['keyword'],
                 'postdate' => ($_POST['postdate'] != '--' ? $_POST['postdate'] : null),
                 'submitteddate' => time(),
-                'location' => (isset($_POST['state']) && $_POST['state'] != '') ? $states[$_POST['state']] : '',
+                'location' => (isset($_POST['state']) && $_POST['state'] != '') ? join(',',$params['state']) : '',
                 'setaside' => join(',', $sa),
                 'show_na_setaside' => (isset($_POST['setaside']) && in_array('N/A', $_POST['setaside'])) ? 1 : 0);
 
@@ -418,7 +426,13 @@ function _do_es_search($from, $size, $params){
 
     $sta = '';
     if (isset($params['state'])){
-        $sta = '"term" : {"state" : "'.strtolower($params['state']).'"}';;
+        $sta_tmp = array();
+        foreach($params['state'] as $pst) {
+            $sta_tmp[] = '{"term" : {"state" : "' . strtolower($pst) . '"}}';
+        }
+        if (count($sta_tmp) > 0){
+            $sta = '"should" : ['.join(',',$sta_tmp).']';
+        }
     }
 
     try{
@@ -430,7 +444,9 @@ function _do_es_search($from, $size, $params){
         $param = '{
             "query": {';
         if($kp=='' && $st == '' && $cd=='' && $sta!=''){ // state only
-            $param .= '"constant_score" : {"filter" : { '.$sta.' }}';;
+            $param .= '"constant_score" : {';
+            $param .= '"filter" : { "bool" : { ' . $sta . ' }}';
+            $param .= '}';
         }
         elseif($kp=='' && $st == '' && $cd!='' && $sta=='') { // postadate only
             $param .= '"constant_score" : {"filter" : { '.$cd.' }}';
@@ -456,8 +472,8 @@ function _do_es_search($from, $size, $params){
             if ($cd != ''){
                 $tmp_param[] = '{'.$cd.'}';
             }
-            if ($sta != ''){
-                $tmp_param[] = '{'.$sta.'}';
+            foreach($params['state'] as $pst) {
+                $tmp_param[] = '{"bool": { ' . $sta . ' }}';
             }
             if (count($tmp_param) > 0){
                 $param .= '"bool" : { "must" :';
@@ -539,23 +555,23 @@ function _list_fbobizopp_data(){
     }
     $year .='</select>';
 
-    $ret = '<article><div id="facetedsearch"><div class="clearfix"><div class="term-listing-heading">';
+    $ret .= '<article><div id="facetedsearch"><div class="clearfix"><div class="term-listing-heading">';
     $ret .= '<header><h1>Find Opportunities to Contract with the Federal Government (Beta)</h1></header>';
     $ret .= ' <p>The Contracting Opportunity Finder (Beta) <span class="tooltip-left" role="tooltip" tabindex="0">'
         .' <img class="tooltip-icon-beta" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="tooltip" aria-hidden="true">'
         .'<span class="tooltip-left-text">Beta means we’re still developing the tool, so it will likely change.</span></span>  can help your small and/or disadvantaged business learn about opportunities to contract with federal agencies.'
-        .' This tool searches for opportunities that are currently open or may be open soon. It’s geared to businesses new to federal contracting.</p>'
-        .'<ul class="introlist">'
-        .'<li><a href="/understand-contracting-terms">Visit the glossary page</a> to learn about common terms and to see if your company qualifies as a small and/or disadvantaged business. </li>'
-        .'<li>Explore the <a href="/government-contracting-for-beginners">Introduction to Federal Government Contracting</a>.</li></ul>';
+        .' This tool searches for opportunities that are currently open or may be open soon. It’s geared to businesses new to federal contracting. You can also <a href="/understand-contracting-terms">visit the glossary page</a> '
+        .' or explore the <a href="/government-contracting-for-beginners">Introduction to Federal Government Contracting</a> to learn more about bidding on opportunities.</p>';
 
     $ret .= "<header>
               <h2>How to Start Searching for Opportunities</h2>
             </header>";
+
+
     $ret .= '<p id="secondpara">On this page, you’ll find four different filters you can use to search for contracting opportunities that are right for your business.'
-            .' You can choose to use some or all of the filters, but you must leave at least one box checked in the “Filter by Special Business Label” section. '
-            .'Once you’ve chosen your filters and entered your information, select the “Apply Selected Filters” button to display your results. '
-            .'When you find an opportunity that interests you, select “Description of Opportunity” in the result. Then, follow the link to read the agency’s solicitation on <a href="https://www.fbo.gov/">FedBizOpps</a>. </p>';
+        .' You can use some or all of them, but you must leave at least one box checked in the “Filter by Special Business Label” section.'
+        .' Once you’ve made your selections, use the “Apply Selected Filters” button to display your results.'
+        .' Then, follow the link to read the agency’s solicitation on FedBizOpps, the federal government’s main contracting website. </p>';
 
     $ret .= " <p>*A field with an asterisk (*) before it is a required field.</p>";
 
@@ -634,7 +650,8 @@ function _list_fbobizopp_data(){
                           <li class="filter-box">
                             <button class="usa-accordion-button setaside" aria-controls="filter4" aria-expanded="false" type="button">Filter by Special Business Label (Set-Aside Type)</button>
                             <div id="filter4" class="usa-accordion-content tltp usa-input-error no-error" aria-hidden="true">
-                              <p>Check any special label (set-aside type) that describes your business. This will search for open opportunities that are “set aside” for businesses that qualify for these special labels.</p>
+                              <p>Check special labels (Set-Aside Types) that describe your business. Uncheck labels that do not apply. This will allow you to search for opportunities that are currently “set aside” for certain businesses.
+                              (Tip: To find opportunities that agencies are considering setting aside in the future, manually enter Set-Aside Types into the Keyword box and make sure the “Opportunities with no Set-Aside Types” box is checked.)</p>
                               <fieldset class="usa-fieldset-inputs usa-sans">
                                 <legend class="lgd">*Select at least one Set-Aside Type</legend>
                                 <ul class="usa-unstyled-list dwnlvl">
@@ -645,13 +662,6 @@ function _list_fbobizopp_data(){
                                     <span aria-label="tooltip - For small socially and economically disadvantaged businesses. Must apply through SBA."></span>
                                     <span class="tooltiptext">For small socially and economically disadvantaged businesses. Must apply through SBA.</span></span>
                                    </li>
-                                  <li class="ttli usa-width-one-half">
-                                    <input id="ecosmbiz" type="checkbox" checked name="ecosmbiz" class="kpd" value="Economically Disadvantaged Women-Owned Small Business" aria-describedby="setaside-error-message">
-                                    <label for="ecosmbiz"> Economically Disadvantaged Woman Owned Small Business</label>
-                                    <span class="tooltip" role="tooltip" tabindex="0"><img class="tooltip-icon" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="Help for Economically Disadvantaged Women-Owned Small Business" aria-hidden="true">
-                                    <span aria-label="tooltip - For small businesses owned by economically disadvantaged women. Must be certified through SBA."></span>
-                                    <span class="tooltiptext">For small businesses owned by economically disadvantaged women. Must be certified through SBA.</span></span>
-                                  </li>
                                   <li class="ttli usa-width-one-half">
                                     <input id="emergingbiz" type="checkbox" checked name="emergingbiz" class="kpd" value="Emerging Small Business" aria-describedby="setaside-error-message">
                                     <label for="emergingbiz"> Emerging Small Business</label>
@@ -675,21 +685,14 @@ function _list_fbobizopp_data(){
 
                                   </li>
                                   <li class="ttli usa-width-one-half">
-                                    <input id="indianeco" type="checkbox" checked name="indianeco" class="kpd" value="Indian Economic Enterprises" aria-describedby="setaside-error-message">
-                                    <label for="indianeco"> Indian Economic Enterprises</label>
+                                    <input id="indianeco" type="checkbox" checked name="indianeco" class="kpd" value="indianeco" aria-describedby="setaside-error-message">
+                                    <label for="indianeco"> Indian Economic Enterprise and/or Small Business</label>
                                     <span class="tooltip" role="tooltip" tabindex="0"><img class="tooltip-icon" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="Help for Indian Economic Enterprises" aria-hidden="true">
                                     <span aria-label="Tooltip - For small businesses owned by American Indians. Must be member of federally recognized tribe or Native village."></span>
                                     <span class="tooltiptext">For businesses owned by American Indians. Must be member of federally recognized tribe or Native village.</span></span>
                                   </li>
                                 </ul>
                                 <ul class="usa-unstyled-list dwnlvl">
-                                  <li class="ttli usa-width-one-half">
-                                    <input id="indiansmbiz" type="checkbox" checked name="indiansmbiz" class="kpd" value="Indian Small Business Economic Enterprises" aria-describedby="setaside-error-message">
-                                    <label for="indiansmbiz"> Indian Small Business Economic Enterprises</label>
-                                    <span class="tooltip" role="tooltip" tabindex="0"><img class="tooltip-icon" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="Help for Indian Small Business Economic Enterprises" aria-hidden="true" >
-                                    <span aria-label="Tooltip - For businesses owned by American Indians. Must be member of federally recognized tribe or Native village."></span>
-                                    <span class="tooltiptext">For small businesses owned by American Indians. Must be member of federally recognized tribe or Native village.</span></span>
-                                  </li>
                                   <li class="ttli usa-width-one-half">
                                     <input id="sdvosmbiz" type="checkbox" checked name="sdvosmbiz" class="kpd" value="Service-Disabled Veteran-Owned Small Business" aria-describedby="setaside-error-message">
                                     <label for="sdvosmbiz"> Service-Disabled Veteran-Owned Small Business</label>
@@ -712,11 +715,11 @@ function _list_fbobizopp_data(){
                                     <span class="tooltiptext">For small businesses owned by veterans. Must be verified through VA.</span></span>
                                   </li>
                                   <li class="ttli usa-width-one-half">
-                                    <input id="womensmbiz" type="checkbox" checked name="setaside_count[]" class="kpd" value="Woman Owned Small Business" aria-describedby="setaside-error-message">
-                                    <label for="womensmbiz"> Woman Owned Small Business</label>
+                                    <input id="womensmbiz" type="checkbox" checked name="setaside_count[]" class="kpd" value="womensmbiz" aria-describedby="setaside-error-message">
+                                    <label for="womensmbiz"> Woman Owned Small and/or Economically Disadvantaged Business</label>
                                     <span class="tooltip" role="tooltip" tabindex="0"><img class="tooltip-icon" src="/sites/all/themes/usa/images/Icon_Tooltip.png" alt="Help for Women-Owned Small Business" aria-hidden="true" >
                                     <span aria-label="Tooltip - For small businesses owned by women. Must be verified through SBA."></span>
-                                    <span class="tooltiptext">For small businesses owned by women. Must be verified through SBA.</span></span>
+                                    <span class="tooltiptext">For small businesses owned by women. Must be certified through SBA.</span></span>
                                   </li>
                                   <li class="ttli  usa-width-one-half">
                                     <input id="addition" type="checkbox" checked name="setaside_count[]" class="kpd" value="N/A" aria-describedby="setaside-error-message">
@@ -736,7 +739,7 @@ function _list_fbobizopp_data(){
                 <div class="button_wrapper">
                       <input type="hidden" id="storeuserinput" value="0"/>
                       <button class="usa-button-primary-alt" id="apply-selected-filter" name="apply_selected_filters" type="submit" value="submit">Apply Selected Filters</button>
-                      <button id="FacetedSearchReset" class="usa-button-outline" type="reset" value="reset" aria-controls=""> Clear Selected Filters</button>
+                      <button id="FacetedSearchReset" class="usa-button-outline" type="reset" value="reset" aria-controls=""> Clear All Filters</button>
                   <div class="usa-full"></div>
                 </div>
               </div>';
@@ -784,7 +787,7 @@ function _get_array_of_obj($obj){
             'contact'=> ( isset($o->_source->contact) ) ?  $o->_source->contact : null,
             'postdate'=> ( isset($o->_source->postdate) ) ?  $o->_source->postdate : null,
             'closedate'=> ( isset($o->_source->closedate) ) ?  $o->_source->closedate : null,
-            'state'=> ( isset($o->_source->state) ) ?  $o->_source->state : null,
+            'state'=> ($o->_source->state =='AE' || $o->_source->state=='AP' || empty($o->_source->state))? 'Outside U.S.':$o->_source->state,
             'zip'=> ( isset($o->_source->zip) ) ?  $o->_source->zip : null,
         );
     }

@@ -74,22 +74,22 @@
 ?>
 
 
-  <?php
+<?php
 
-    // Get the site name
-    $siteName = variable_get('site_name', '');
+// Get the site name
+$siteName = variable_get('site_name', '');
 
-    // Determin which site we are running
-    $siteIsUSA = false;
-    $siteIsGobierno = false;
-    if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
-      $siteIsGobierno = true;
-    } else {
-      $siteIsUSA = true;
-    }
+// Determin which site we are running
+$siteIsUSA = false;
+$siteIsGobierno = false;
+if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
+    $siteIsGobierno = true;
+} else {
+    $siteIsUSA = true;
+}
 
 
-  ?>
+?>
 
 <!-- Begin Emergency -->
 <?php
@@ -118,87 +118,87 @@ if(!empty($alertNode)){
 <!-- end Emergency -->
 
 <?php if($is_admin): ?>
-  <?php print $messages; ?>
+    <?php print $messages; ?>
 <?php endif; ?>
 
 
- <main id="main-content">
+<main id="main-content">
 
 
-       <section class="how-do-i">
+    <section class="how-do-i">
         <div class="usa-grid">
-          <div>
-            <h1><?php print t('How Do I ...'); ?></h1>
-          </div>
+            <div>
+                <h1><?php print t('How Do I ...'); ?></h1>
+            </div>
         </div>
-      </section>
+    </section>
 
-      <section class="usa-hero">
+    <section class="usa-hero">
         <div class="usa-grid">
-          <?php
+            <?php
             $howdoiCount = 0;
             if(!empty($howdoiAssets)){
-              foreach($howdoiAssets as $howdoiAsset){
+                foreach($howdoiAssets as $howdoiAsset){
 
-                  if($howdoiCount == 0){
-                    print '<div class="floating-box-1">';
-                    print  $howdoiAsset->body['und']['0']['value'];
-                    print '</div>';
-                  }
-                  if($howdoiCount == 1){
-                    print '<div class="floating-box-2 usa-width-one-third">';
-                    print  $howdoiAsset->body['und']['0']['value'];
-                    print '</div>';
-                    break;
-                  }
-                  $howdoiCount++;
-              }
+                    if($howdoiCount == 0){
+                        print '<div class="floating-box-1">';
+                        print  $howdoiAsset->body['und']['0']['value'];
+                        print '</div>';
+                    }
+                    if($howdoiCount == 1){
+                        print '<div class="floating-box-2 usa-width-one-third">';
+                        print  $howdoiAsset->body['und']['0']['value'];
+                        print '</div>';
+                        break;
+                    }
+                    $howdoiCount++;
+                }
             }
-          ?>
+            ?>
         </div>
-      </section>
+    </section>
 
-      <div class="usa-grid usa-footer-return-to-top">
-      </div>
+    <div class="usa-grid usa-footer-return-to-top">
+    </div>
 
-       <section>
+    <section>
         <div class="usa-grid">
-          <div>
-            <h1><?php print t("What's New"); ?></h1>
-          </div>
+            <div>
+                <h1><?php print t("What's New"); ?></h1>
+            </div>
         </div>
-      </section>
+    </section>
 
 
-      <?php 
-        if(!empty($whatsnewAssets)){
+    <?php
+    if(!empty($whatsnewAssets)){
 
-          foreach($whatsnewAssets as $whatsnewAsset){
+        foreach($whatsnewAssets as $whatsnewAsset){
             //$wnassets[] = $whatsnewAsset->nid;
-              print(_get_whatsnew_nid($whatsnewAsset->nid));
-          }
-          //$wnassets = implode("+", $wnassets);
-          //print views_embed_view('whats_new_front_page', 'block', $wnassets);
+            print(_get_whatsnew_nid($whatsnewAsset->nid));
         }
+        //$wnassets = implode("+", $wnassets);
+        //print views_embed_view('whats_new_front_page', 'block', $wnassets);
+    }
 
-      ?>
+    ?>
 
-     <div class="usa-grid usa-whats-new"><p>
-             <?php
-             $feature_listing_url = 'features';
-             if ($siteIsGobierno) $feature_listing_url = 'novedades';
+    <div class="usa-grid usa-whats-new"><p>
+            <?php
+            $feature_listing_url = 'features';
+            if ($siteIsGobierno) $feature_listing_url = 'novedades';
 
-             print '<a href="/'.$feature_listing_url.'">'.t('View More Featured Articles').'</a>';
-             ?></p>
-     </div>
+            print '<a href="/'.$feature_listing_url.'">'.t('View More Featured Articles').'</a>';
+            ?></p>
+    </div>
 
-     <div class="usa-grid usa-footer-return-to-top">
+    <div class="usa-grid usa-footer-return-to-top">
         <a href="#"><span class="icon-backtotopHP"><?php print t('Back to Top'); ?></span></a>
-      </div>
+    </div>
 
 
 
-<!-- end content container -->
+    <!-- end content container -->
 </main>
 
 

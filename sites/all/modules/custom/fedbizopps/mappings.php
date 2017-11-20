@@ -2,6 +2,7 @@
 
 /// https://www.usps.com/business/web-tools-apis/welcome.htm
 $states = [
+    "OU"=>"Outside U.S.",
     "AK"=>"Alaska",
     "4"=>"American Samoa",
     "AZ"=>"Arizona",
@@ -13,7 +14,6 @@ $states = [
     "DC"=>"District of Columbia",
     "FL"=>"Florida",
     "GA"=>"Georgia",
-    "2"=>"Guam",
     "GU"=>"Guam",
     "HI"=>"Hawaii",
     "ID"=>"Idaho",
@@ -37,7 +37,6 @@ $states = [
     "NJ"=>"New Jersey",
     "NM"=>"New Mexico",
     "NY"=>"New York",
-    "1"=>"Non-U.S.",
     "NC"=>"North Carolina",
     "ND"=>"North Dakota",
     "5"=>"Northern Mariana Islands",
