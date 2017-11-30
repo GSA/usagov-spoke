@@ -159,17 +159,18 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
             </header>
 
 
-                    <?php
-                        $arg = '';
-                        if(!empty($term->field_government_branch['und'][0]['value'])){
-                            $arg = $term->field_government_branch['und'][0]['value'];
-                        }
-                        print views_embed_view('federal_government_by_organization', 'block', $arg);
-                    ?>
+            <?php
+            $arg = '';
+            if(!empty($term->field_government_branch['und'][0]['value'])){
+                $arg = $term->field_government_branch['und'][0]['value'];
+            }
+            print views_embed_view('federal_government_by_organization', 'block', $arg);
+            ?>
 
 
         </article>
     </div>
+    <?php print _print_social_media(); ?>
     <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
 <?php endif; ?>
 
@@ -213,9 +214,10 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
                 ?>
             </ul>
         </section>
+        <?php print _print_social_media(); ?>
         <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
     </article>
-    
+
 <?php endif; ?>
 
 
@@ -293,7 +295,7 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
             </section>
         </nav>
         <div class="col-md-9 col-sm-12 rightnav">
-           <article>
+            <article>
                 <header>
                     <?php
                     if(!empty($term->field_page_title['und'][0]['safe_value'])){
@@ -324,13 +326,14 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
                         ?>
                     </ul>
                 </section>
+                <?php print _print_social_media(); ?>
                 <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
             </article>
         </div>
 
     <?php } else { ?>
         <article>
-           <header>
+            <header>
                 <?php
                 if (!empty($term->field_page_title['und'][0]['safe_value'])) {
                     print '<h1>' . $term->field_page_title['und'][0]['safe_value'] . '</h1>';
@@ -394,7 +397,7 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
                     ?>
                 </ul>
             </section>
-           <?php
+            <?php
             if ($use_new_nav){
                 $url = 'topics';
                 $siteName = variable_get('site_name', '');
@@ -405,14 +408,14 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
                 print "<a href='/".$url."'>".t('Explore All Topics and Services on USA.gov')."</a>";
                 print '</p></div>';
             }
-
+            print _print_social_media();
             ?>
             <p class="volver clearfix"><a href="#skiptarget"><span
                         class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
         </article>
 
     <?php
-   }
+    }
 }
 ?>
 
@@ -572,12 +575,12 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
                     print views_embed_view('general_content_page_single_item', 'block', implode('+',$assetNids));
 
                 }
-
             }
         }
         ?>
 
         <?php
+        //print _print_social_media();
         $timestamp = get_term_lastReviewedDate($term->tid);
         if (isset($timestamp) && !empty($timestamp)) {
             // print last reviewed date
@@ -589,6 +592,7 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
                 print survey_on_pages();
           }
         */
+
         if(strtolower($term->field_friendly_url['und'][0]['value']) != '/unclaimed-money' ) {
             print do_you_need_help();
             print survey_on_pages();
@@ -827,6 +831,7 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
             }
             ?>
         </ul>
+        <?php print _print_social_media(); ?>
         <p class="statebacktotop clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl">Back to Top</span></a></p>
     </div>
 <?php endif; ?>
@@ -935,7 +940,5 @@ function subval_sort($a,$subkey) {
     }
     return $c;
 }
-
-
 
 ?>

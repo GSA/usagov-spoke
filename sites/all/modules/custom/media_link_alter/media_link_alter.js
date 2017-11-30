@@ -9,7 +9,7 @@ function alterMediaLinks(linkTemplates) {
         jQuery('#content a[href*=".'+key+'"]').not('.lnk-media-altered').each( function () {
             var jqThis = jQuery(this);
 
-            if (jqThis.prop('href').toLowerCase().search("."+key+".") == -1){
+            if (jqThis.prop('href').toLowerCase().search("\."+key+"([#?]|$)") != null){
 
                 linkUniqId++;
 

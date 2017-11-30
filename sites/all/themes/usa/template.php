@@ -461,16 +461,47 @@ function _usa_preprocess_html_toggles( &$variables, $entity )
     if (strpos($_SERVER["HTTP_HOST"],'usa.dev') !== false){
         $gobgovURL="//gobierno.usa.dev/";
         $usagovURL="//www.usa.dev/";
+        drupal_add_html_head(
+            array(
+                '#tag' => 'meta',
+                '#attributes' => array(
+                    'name' => 'robots',
+                    'content' => 'noindex,nofollow',
+                )
+            ),
+            'usa_custom_meta_tag_descriptionforhome'
+        );
     }
 
     if (strpos($_SERVER["HTTP_HOST"],'test-') !== false){
         $gobgovURL="//test-gobiernogov.ctacdev.com/";
         $usagovURL="//test-usagov.ctacdev.com/";
+        drupal_add_html_head(
+            array(
+                '#tag' => 'meta',
+                '#attributes' => array(
+                    'name' => 'robots',
+                    'content' => 'noindex,nofollow',
+                )
+            ),
+            'usa_custom_meta_tag_descriptionforhome'
+        );
     }
 
     if (strpos($_SERVER["HTTP_HOST"],'stage-') !== false){
         $gobgovURL="//stage-gobiernogov.ctacdev.com/";
         $usagovURL="//stage-usagov.ctacdev.com/";
+        drupal_add_html_head(
+            array(
+                '#tag' => 'meta',
+                '#attributes' => array(
+                    'name' => 'robots',
+                    'content' => 'noindex,nofollow',
+                )
+            ),
+            'usa_custom_meta_tag_descriptionforhome'
+        );
+
     }
 
     if ( !empty($entity->field_gobiernousa_gov_toggle_url['und'][0]['value']) && $variables['siteID']==='usa' )
@@ -615,53 +646,29 @@ function _usa_preprocess_html_toggles( &$variables, $entity )
     $path = explode("/", request_path());
     if ( in_array($path[0], array('federal-agencies', 'agencias-federales')) )
     {
-        unset($variables['toggleHTML']);
-        if ( $variables['siteID']==='usa' )
-        {
-            $link = $gobgovURL.'agencias-federales/a';
-            $variables['toggleHTML'] .= "
-    				<li class=\"engtoggle\">
-    					<a href=\"{$link}\" lang=\"es\" xml:lang=\"es\">
-    						Espa&ntilde;ol
-    					</a>
-    				</li>
-    			";
-        } else if ( $variables['siteID']==='gobierno' ) {
-            $link = $usagovURL.'federal-agencies/a';
-            $variables['toggleHTML'] .= "
-    				<li class=\"engtoggle\">
-    					<a href=\"{$link}\" lang=\"en\" xml:lang=\"en\">
-    						English
-    					</a>
-    				</li>
-    			";
-        }
+        /*  unset($variables['toggleHTML']);
+          if ( $variables['siteID']==='usa' )
+          {
+              $link = $gobgovURL.'agencias-federales/a';
+              $variables['toggleHTML'] .= "
+                      <li class=\"engtoggle\">
+                          <a href=\"{$link}\" lang=\"es\" xml:lang=\"es\">
+                              Espa&ntilde;ol
+                          </a>
+                      </li>
+                  ";
+          } else if ( $variables['siteID']==='gobierno' ) {
+              $link = $usagovURL.'federal-agencies/a';
+              $variables['toggleHTML'] .= "
+                      <li class=\"engtoggle\">
+                          <a href=\"{$link}\" lang=\"en\" xml:lang=\"en\">
+                              English
+                          </a>
+                      </li>
+                  ";
+          }*/
     }
-    $path = explode("/", request_path());
-    if ( in_array($path[0], array('federal-agencies', 'agencias-federales')) )
-    {
-        unset($variables['toggleHTML']);
-        if ( $variables['siteID']==='usa' )
-        {
-            $link = $gobgovURL.'agencias-federales/a';
-            $variables['toggleHTML'] .= "
-    				<li class=\"engtoggle\">
-    					<a href=\"{$link}\" lang=\"es\" xml:lang=\"es\">
-    						Espa&ntilde;ol
-    					</a>
-    				</li>
-    			";
-        } else if ( $variables['siteID']==='gobierno' ) {
-            $link = $usagovURL.'federal-agencies/a';
-            $variables['toggleHTML'] .= "
-    				<li class=\"engtoggle\">
-    					<a href=\"{$link}\" lang=\"en\" xml:lang=\"en\">
-    						English
-    					</a>
-    				</li>
-    			";
-        }
-    }
+
 }
 function _usa_preprocess_html_javascript( &$variables )
 {
@@ -1150,7 +1157,44 @@ function _get_whatsnew_nid($nid) {
         <a href="'.$aliasPath.'"><ul id="features-landing"><li>'.(($imgSrc)?('<img src="'.$imgSrc.'" class="rel-img" alt="">') :'').'<header>
         <h2>'.$n->title.'</h2></header>'.
         (!empty($n->field_description['und'][0]['value'])?
-         $n->field_description['und'][0]['value']:'').'</li></ul></a></section>';
+            $n->field_description['und'][0]['value']:'').'</li></ul></a></section>';
 
     return $ret;
 }
+
+function _print_social_media(){
+
+    $encodedURL = urlencode( $_SERVER['HTTP_HOST'] . request_uri());
+    if ( substr($_SERVER['HTTP_HOST'],0,4) !== 'http' )
+    {
+        $encodedURL = 'https://'. $encodedURL;
+    }
+
+    $args = arg();
+
+    if ($args[0] == 'taxonomy'){
+        $term = taxonomy_term_load($args[2]);
+        $title = $term->field_page_title['und'][0]['safe_value'];
+        $encodedTitleURL = urlencode($title . " ") . $encodedURL;
+    }
+    elseif ($args[0] == 'node') {
+        $node = node_load($args[1]);
+        $title =$node->title;
+        $encodedTitleURL = urlencode($title . " ") . $encodedURL;
+    }
+    elseif(request_uri() === '/features') {
+        $title = 'Features';
+        $encodedTitleURL =  urlencode('Features' . " ") . $encodedURL;
+    }
+    else {
+        $encodedTitleURL =  urlencode($encodedURL . " ") . $encodedURL;
+    }
+
+
+    $html = '<div id="sm-share"><span>'.t('Share This Page').':</span>
+    <a href="http://www.facebook.com/sharer/sharer.php?u='.$encodedURL.'&v=3"><img src="/sites/all/themes/usa/images/Icon_Connect_Facebook.png" alt="Facebook"></a>
+    <a href="http://twitter.com/intent/tweet?source=webclient&amp;text='.$encodedTitleURL.'"><img src="/sites/all/themes/usa/images/Icon_Connect_Twitter.png" alt="Twitter"></a>
+    <a href="mailto:?subject='.$title.'&body='.$encodedURL.'"><img src="/sites/all/themes/usa/images/Icon_Connect_Email.png" alt="Email"></a></div>';
+    return $html;
+}
+

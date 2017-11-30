@@ -174,7 +174,7 @@ if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
 <?php if(@!empty($dirRecords[0]->field_email['und'][0]['value'])): ?>
     <section itemscope="" itemtype="http://microformats.org/wiki/hCard" class="<?php echo (($agencyCounter++) % 2 == 0) ? 'otlnrw' : 'otln' ?>">
         <header>
-          <h3  class="org"><?php print t('Email:'); ?></h3>
+            <h3  class="org"><?php print t('Email:'); ?></h3>
         </header>
         <?php
 
@@ -194,7 +194,7 @@ if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
         </header>
         <?php
         foreach($dirRecords[0]->field_phone_number['und'] as $dphone) {
-            print "<p>".$dphone['value']."</p>";
+            print '<p>'.get_tones($dphone['value']).'</p>';
         }
         ?>
     </section>
@@ -206,7 +206,7 @@ if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
         </header>
         <?php
         foreach($dirRecords[0]->field_toll_free_number['und'] as $dphone) {
-            print "<p>".$dphone['value']."</p>";
+            print '<p>'.get_tones($dphone['value']).'</p>';
         }
         ?>
     </section>
@@ -218,7 +218,7 @@ if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
         </header>
         <?php
         foreach($dirRecords[0]->field_tty_number['und'] as $dphone) {
-            print "<p>".$dphone['value']."</p>";
+            print '<p>'.get_tones($dphone['value']).'</p>';
         }
         ?>
     </section>
@@ -230,17 +230,17 @@ if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
         </header>
         <p><?php print $dirRecords[0]->field_sms_services['und'][0]['value']; ?></p>
     </section>
-    <?php endif; ?>
-    <?php if(@!empty($dirRecords[0]->field_link_form_links['und'][0]['url'])): ?>
-      <section itemscope="" itemtype="http://microformats.org/wiki/hCard" class="<?php echo (($agencyCounter++) % 2 == 0) ? 'otlnrw' : 'otln' ?>">
+<?php endif; ?>
+<?php if(@!empty($dirRecords[0]->field_link_form_links['und'][0]['url'])): ?>
+    <section itemscope="" itemtype="http://microformats.org/wiki/hCard" class="<?php echo (($agencyCounter++) % 2 == 0) ? 'otlnrw' : 'otln' ?>">
         <header>
             <h3  itemprop="name"><?php print t('Forms:'); ?></h3>
         </header>
         <?php print '<p>'.l($dirRecords[0]->field_link_form_links['und'][0]['title'],$dirRecords[0]->field_link_form_links['und'][0]['url']).'</p>'; ?>
-      </section>
-    <?php endif; ?>
-    <?php if(@!empty($dirRecords[0]->field_government_branch['und'][0]['value']) && $siteIsUSA == true): ?>
-      <section itemscope="" itemtype="http://microformats.org/wiki/hCard" class="<?php echo (($agencyCounter++) % 2 == 0) ? 'otlnrw' : 'otln' ?>">
+    </section>
+<?php endif; ?>
+<?php if(@!empty($dirRecords[0]->field_government_branch['und'][0]['value']) && $siteIsUSA == true): ?>
+    <section itemscope="" itemtype="http://microformats.org/wiki/hCard" class="<?php echo (($agencyCounter++) % 2 == 0) ? 'otlnrw' : 'otln' ?>">
         <header>
             <h3  class="org">Government branch:</h3>
         </header>
@@ -322,6 +322,10 @@ if (isset($timestamp) && !empty($timestamp)) {
     print "<p class='last'>".t('Last Updated').": " . t(date("F", $timestamp)) . " " .date("d, Y", $timestamp) . '</p>';
 }
 ?>
+<?php
+print _print_social_media();
+?>
+<p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl">Back to Top</span></a></p>
 <?php print survey_on_pages(); ?>
 <?php
 

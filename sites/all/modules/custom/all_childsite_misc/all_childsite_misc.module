@@ -35,6 +35,28 @@ function all_childsite_misc_init()
     }
 
     // }
+
+    global $user;
+    $currentUrl = $_SERVER["REQUEST_URI"];
+    if(strstr($currentUrl, 'node') && $user->uid != 1){
+
+        if (substr($currentUrl, 0, 1) === '/') {
+            $currentUrl = substr($currentUrl, 1);
+            $urlArray = explode('/', $currentUrl);
+            $nid = $urlArray[1];
+            if(is_numeric($nid)){
+                $friendlyUrl = db_query('SELECT alias FROM {url_alias} WHERE source=:source',
+                    array(':source'=>'node/'.$nid) )->fetchColumn();
+
+                if($friendlyUrl){
+                    drupal_goto($friendlyUrl);
+                }else{
+                    drupal_not_found();
+                }
+            }
+        }
+    }
+
 }
 
 function all_childsite_misc_menu() {
@@ -521,14 +543,14 @@ function _all_childsite_misc_alter_url_alias( &$term )
             array(':source'=>'taxonomy/term/'.$term->tid) );
     }
     if ( empty($term->field_friendly_url) ||
-         empty($term->field_friendly_url['und']) ||
-         empty($term->field_friendly_url['und'][0]) ||
-         empty($term->field_friendly_url['und'][0]['value']) ||
-         empty($term->field_generate_page) ||
-         empty($term->field_generate_page['und']) ||
-         empty($term->field_generate_page['und'][0]) ||
-         empty($term->field_generate_page['und'][0]['value']) ||
-         $term->field_generate_page['und'][0]['value'] != 'yes' )
+        empty($term->field_friendly_url['und']) ||
+        empty($term->field_friendly_url['und'][0]) ||
+        empty($term->field_friendly_url['und'][0]['value']) ||
+        empty($term->field_generate_page) ||
+        empty($term->field_generate_page['und']) ||
+        empty($term->field_generate_page['und'][0]) ||
+        empty($term->field_generate_page['und'][0]['value']) ||
+        $term->field_generate_page['und'][0]['value'] != 'yes' )
     {
         return;
     }
@@ -887,7 +909,7 @@ function all_childsite_misc_form_alter(&$form, &$form_state, $form_id) {
     if ( $form_id === 'user_login' || $form_id === 'user_login_block' ) {
 
         // Disable the user log-in form, unless the correct security key is provided
-        if ( strpos($_SERVER['REQUEST_URI'], getenv('CMP_DRUPAL_AUTH_NONCE')) === false && getenv('CMP_DRUPAL_ENVIRONMENT_NAME')!=='Local' ) {
+        if ( strpos($_SERVER['REQUEST_URI'], 'Q8RWOD4HQ4') === false ) {
             while ( @ob_get_length() ) { @ob_end_clean(); }
             exit('Access denied');
         }

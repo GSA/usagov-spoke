@@ -74,8 +74,14 @@ if ( request_uri() !== '/' ) {
     <!--[if lt IE 9]>
     <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
-    <link rel="canonical" href="https://<?php print strtolower($_SERVER['HTTP_HOST'] . base_path() . htmlspecialchars(rtrim(request_path(),'/'), ENT_QUOTES, "UTF-8")); ?>" />
+    <?php
+    $domain = "www.usa.gov";
+    if ($variables['siteID'] == 'gobierno')
+    {
+        $domain = "gobierno.usa.gov";
+    }
+    ?>
+    <link rel="canonical" href="https://<?php print strtolower($domain . base_path() . htmlspecialchars(rtrim(request_path(),'/'), ENT_QUOTES, "UTF-8")); ?>" />
 
 
     <?php
@@ -270,20 +276,20 @@ if ( request_uri() !== '/' ) {
 <?php //print $searchTheWebSite; ?>
 <!-- end skip link target for main content -->
 <!-- begin toggle -->
-    <div id="#skiptarget" class="hptoggles clearfix">
-        <div class="container usa-grid">
-            <ul>
-<?php
-if (isset($toggleHTML)) {
-    ?>
+<div id="#skiptarget" class="hptoggles clearfix">
+    <div class="container usa-grid">
+        <ul>
+            <?php
+            if (isset($toggleHTML)) {
+                ?>
 
                 <?php print $toggleHTML; ?>
 
-<?php }
-?>
-            </ul>
-        </div>
+            <?php }
+            ?>
+        </ul>
     </div>
+</div>
 <!-- end toggle -->
 
 <?php print $page; ?>
