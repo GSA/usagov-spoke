@@ -1,5 +1,5 @@
 # USAGov Spoke
 # min   hour    day     month   weekday command
-*       *       *       *       *       wget --no-check-certificate -O - -q -t 1 --timeout=120 https://$HOST_WWW/cron.php?cron_key=$CRON_KEY
-*       *       *       *       *       wget --no-check-certificate -O - -q -t 1 --timeout=120 https://$HOST_BLOG/cron.php?cron_key=$CRON_KEY
-*       *       *       *       *       wget --no-check-certificate -O - -q -t 1 --timeout=120 https://$HOST_GOB/cron.php?cron_key=$CRON_KEY
+*       *       *       *       *       wget --no-check-certificate -O - -q -t 1 --timeout=120 --max-redirect 0 https://$HOST_WWW/cron.php?cron_key=$CRON_KEY
+*       *       *       *       *       wget --no-check-certificate -O - -q -t 1 --timeout=120 --max-redirect 0 https://$HOST_BLOG/cron.php?cron_key=$CRON_KEY
+*       *       *       *       *       wget --no-check-certificate -O - -q -t 1 --timeout=120 --max-redirect 0 https://$HOST_GOB/cron.php?cron_key=$CRON_KEY
