@@ -270,7 +270,7 @@ if($siteIsGobierno){
         <p class="spk tel"><?php print get_tones($dirRecords['SGA'][0]->field_tty_number['und'][0]['value']); ?></p>
     </section>
 <?php endif; ?>
-<p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl">Back to Top</span></a></p>
+<p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
 
 
 
@@ -366,7 +366,7 @@ if($siteIsGobierno){
             <p class="spk tel"><?php print get_tones($dirRecords['DMV'][0]->field_tty_number['und'][0]['value']); ?></p>
         </section>
     <?php endif; ?>
-    <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl">Back to Top</span></a></p>
+    <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
 <?php endif; ?>
 
 
@@ -411,7 +411,7 @@ if($siteIsGobierno){
 
         </ul>
     </section>
-    <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl">Back to Top</span></a></p>
+    <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
 <?php endif; ?>
 
 
@@ -425,8 +425,6 @@ if (isset($timestamp) && !empty($timestamp)) {
 }
 ?>
 <?php print _print_social_media(); ?>
-<p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl">Back to Top</span></a></p>
 <?php print survey_on_pages(); ?>
-
 </div>
 

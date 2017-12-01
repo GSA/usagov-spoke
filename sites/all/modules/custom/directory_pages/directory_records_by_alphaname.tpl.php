@@ -325,7 +325,7 @@ if (isset($timestamp) && !empty($timestamp)) {
 <?php
 print _print_social_media();
 ?>
-<p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl">Back to Top</span></a></p>
+<p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php t('Back to Top'); ?></span></a></p>
 <?php print survey_on_pages(); ?>
 <?php
 
@@ -334,5 +334,4 @@ if(@!empty($dirRecords[0]->field_dir_end_html['und'][0]['value'])){
 }
 
 ?>
-
 </div>

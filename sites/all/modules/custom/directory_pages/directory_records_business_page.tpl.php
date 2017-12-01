@@ -109,7 +109,7 @@ if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
             <header><h2 id="opening"><?php print t('Open a Business'); ?></h2></header>
             <p>Learn what it takes to start a business in <?php if ($stateRecords['state_name']!="") : echo ucwords($stateRecords['state_name']); endif; ?>.</p>
             <?php echo $stateRecords['opening_biz_links'];?>
-            <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl">Back to Top</span></a></p>
+            <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
         </article>
     <?php
     }
@@ -123,7 +123,7 @@ if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
             <header><h2 id="financing"><?php print t('Access Financing'); ?></h2></header>
             <p>Find government-backed loans and other financing programs to start or grow a business in <?php if ($stateRecords['state_name']!="") : echo ucwords($stateRecords['state_name']); endif; ?>.</p>
             <?php echo $stateRecords['financing_biz_links'];?>
-            <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl">Back to Top</span></a></p>
+            <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
         </article>
     <?php
     }
@@ -137,7 +137,7 @@ if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
             <header><h2 id="stateopps"><?php print t('Contracting Opportunities'); ?></h2></header>
             <p>Learn how to sell to your state or local government.</p>
             <?php echo $stateRecords['opportunity_biz_links'];?>
-            <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl">Back to Top</span></a></p>
+            <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
         </article>
     <?php
     }
@@ -150,7 +150,7 @@ if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
         <article>
             <header><h2 id="export"><?php print t('Export your Products'); ?></h2></header>
             <?php echo $stateRecords['export_biz_links'];?>
-            <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl">Back to Top</span></a></p>
+            <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
         </article>
     <?php
     }

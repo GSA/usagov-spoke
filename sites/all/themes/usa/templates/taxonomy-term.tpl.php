@@ -581,12 +581,7 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
 
         <?php
         //print _print_social_media();
-        $timestamp = get_term_lastReviewedDate($term->tid);
-        if (isset($timestamp) && !empty($timestamp)) {
-            // print last reviewed date
-            print "<p class='last'>".t('Last Updated').": " . t(date("F", $timestamp)) . " " .date("d, Y", $timestamp) . '</p>';
 
-        }
         /*
             if($term->field_usefulness_survey['und'][0]['value'] == 1){
                 print survey_on_pages();
@@ -597,7 +592,12 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
             print do_you_need_help();
             print survey_on_pages();
         }
+        $timestamp = get_term_lastReviewedDate($term->tid);
+        if (isset($timestamp) && !empty($timestamp)) {
+            // print last reviewed date
+            print "<p class='last'>".t('Last Updated').": " . t(date("F", $timestamp)) . " " .date("d, Y", $timestamp) . '</p>';
 
+        }
         ?>
 
     </div>
@@ -832,7 +832,7 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
             ?>
         </ul>
         <?php print _print_social_media(); ?>
-        <p class="statebacktotop clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl">Back to Top</span></a></p>
+        <p class="statebacktotop clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
     </div>
 <?php endif; ?>
 

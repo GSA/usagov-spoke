@@ -276,16 +276,13 @@ if($siteIsGobierno){
     </article>
 
     <?php
-
+    print _print_social_media();
+    print survey_on_pages();
     if (isset($timestamp) && !empty($timestamp)) {
         // print last reviewed date
         print "<p class='last'>".t('Last Updated').": " . t(date("F", $timestamp)) . " " .date("d, Y", $timestamp) . '</p>';
     }
     ?>
-
-    <?php print survey_on_pages(); ?>
-
-
 
 
 </div>
@@ -381,9 +378,9 @@ function buildTables($arr){
     <?php
 
     }
-    print _print_social_media();
     print '<p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl">' . t('Back to Top') . '</span></a></p>';
 }
+
 ?>
 
 
