@@ -7714,34 +7714,34 @@ section.feature-hvr h2:hover {
     background-color: #02bfe7;
     color: #000000;
     margin: 0 0 20px; }
-.modal .close:hover {
-    background-color: #00a6d2; }
-.modal .close.top {
-    position: absolute;
-    right: 0;
-    top: -40px;
-    height: 40px;
-    margin: 0;
-    background: white;
-    border-radius: 0;
-    color: #154285;
-    padding-right: 40px;
-    background-image: url("../images/close-red.svg");
-    background-position: 90% 50%;
-    background-repeat: no-repeat;
-    background-size: 20px; }
-.modal .close.top:hover {
-    background-color: #d9d9d9; }
-.modal .icon {
+    .modal .close:hover {
+      background-color: #00a6d2; }
+    .modal .close.top {
+      position: absolute;
+      right: 0;
+      top: -40px;
+      height: 40px;
+      margin: 0;
+      background-color: white;
+      border-radius: 0;
+      color: #154285;
+      padding-right: 40px;
+      background-image: url("../images/close-red.svg");
+      background-position: 90% 50%;
+      background-repeat: no-repeat;
+      background-size: 20px; }
+      .modal .close.top:hover {
+        background-color: #d9d9d9; }
+  .modal .icon {
     height: 100px;
-    background: #11385B;
+    background-color: #11385B;
     background-image: url("../images/BUSA_lightbox_icon.png");
     background-position: center center;
     background-repeat: no-repeat;
     background-size: auto 70px; }
 .modal .logo {
     height: 100px;
-    background: #d9d9d9;
+    background-color: #d9d9d9;
     background-image: url("../images/Logo_USA_Final.png");
     background-position: center center;
     background-repeat: no-repeat;
@@ -7756,8 +7756,8 @@ section.feature-hvr h2:hover {
         background-size: contain; } }
 
 #emergency .icon {
-    background: #c61f0c;
-    background-image: url("../images/warning-white.svg"); }
+  background-color: #c61f0c;
+  background-image: url("../images/warning-white.svg"); }
 
 body, html {
     overflow-x: hidden; }
