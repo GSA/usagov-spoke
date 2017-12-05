@@ -98,7 +98,7 @@ if(!empty($alertNode)){
     <div id="emergency" data-id="201705040949" class="active">
 
         <div class="usa-grid">
-            <div>
+            <div class="modal">
                 <button class="close top" onclick="closeEmergencyPopup()">
                     <?php print ($siteIsUSA)? "Close" : "Cerrar"; ?>
                 </button>
