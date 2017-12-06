@@ -100,7 +100,7 @@ if(!empty($alertNode)){
         <div class="usa-grid">
             <div>
                 <button class="close top" onclick="closeEmergencyPopup()">
-                    <?php print ($siteIsUSA)? "Close" : "Cerrar"; ?>
+                    <?php print ($siteIsUSA)? "Close":"Cerrar"; ?>
                 </button>
                 <div class="icon">
 
