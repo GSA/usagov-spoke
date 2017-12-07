@@ -230,5 +230,6 @@ if ( strpos($_SERVER['HTTP_HOST'], 'gobierno') === false ) {
     <?php
     print _print_social_media();
     ?>
+    <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
 </div>
 
