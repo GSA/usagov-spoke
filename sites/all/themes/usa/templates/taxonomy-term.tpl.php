@@ -85,9 +85,6 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
 
     ?>
 
-
-
-
     <nav aria-label="Topic" class="col-md-3 leftnav">
         <section>
             <div class="mrtp clearfix">
@@ -167,10 +164,11 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
             print views_embed_view('federal_government_by_organization', 'block', $arg);
             ?>
 
-
+            <?php print _print_social_media(); ?>
         </article>
+
     </div>
-    <?php print _print_social_media(); ?>
+
     <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
 <?php endif; ?>
 
