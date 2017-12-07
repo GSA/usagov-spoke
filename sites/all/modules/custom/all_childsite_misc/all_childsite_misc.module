@@ -38,8 +38,9 @@ function all_childsite_misc_init()
 
     global $user;
     $currentUrl = $_SERVER["REQUEST_URI"];
-    if(strstr($currentUrl, 'node') && $user->uid != 1){
+    $pos = strpos($currentUrl, 'features');
 
+    if(strstr($currentUrl, 'node')  || $pos ){
         if (substr($currentUrl, 0, 1) === '/') {
             $currentUrl = substr($currentUrl, 1);
             $urlArray = explode('/', $currentUrl);
