@@ -305,7 +305,9 @@ if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
         </header>
         <ul>
             <?php foreach($relatedChildNode as $row){?>
+                <?php if (!empty($row->title)) { ?>
                 <li><a href="<?php print _sanitzie_path($row->title); ?>"><?php print $row->title; ?></a></li>
+                <?php } ?>
             <?php } ?>
         </ul>
     </section>
@@ -325,7 +327,7 @@ if (isset($timestamp) && !empty($timestamp)) {
 <?php
 print _print_social_media();
 ?>
-<p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php t('Back to Top'); ?></span></a></p>
+<p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
 <?php print survey_on_pages(); ?>
 <?php
 
