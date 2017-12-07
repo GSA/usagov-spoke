@@ -25,7 +25,7 @@ function eraseCookie(name) {
   createCookie(name,"",-1);
 }
 
-function closeModal(el) {
+function closeEmergencyPopup(el) {
   //User has clicked close. Hide the Modal.
   //Create a cookie so we remember that this modal has been closed.
   var modal=jQuery(el).parents(".modal");
@@ -187,13 +187,13 @@ function showModal(id, title, content, button) {
       "<div id=\""+id+"-modal\" class=\"modal active\" >",
       "  <div class=\"usa-grid\">",
       "    <div>",
-      "      <button class=\"close top\" onclick=\"closeModal(this)\">",
+      "      <button class=\"close top\" onclick=\"closeEmergencyPopup(this)\">",
       "        Close",
       "      </button>",
       "      <div class=\"icon\"></div>",
       "      <h2>"+title+"</h2>",
       content,
-      "      <button class=\"close\"  onclick=\"closeModal(this)\">",
+      "      <button class=\"close\"  onclick=\"closeEmergencyPopup(this)\">",
       button,
       "      </button>",
       "      <div class=\"logo\"></div>",
