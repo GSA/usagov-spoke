@@ -1414,6 +1414,28 @@ header h3 span.arrowDwn {
 .speaker {
     font-weight: bold; }
 
+/* css for new transcript code */
+.usa-accordion-bordered .usa-accordion-content {
+  border-bottom: 3px solid #ebe6de;
+  border-left: 3px solid #ebe6de;
+  border-right: 3px solid #ebe6de; }
+
+ul li.transcript_img {
+  padding-top: 0;
+  padding-bottom: 0; }
+
+ul li.transcript_img::before {
+  content: url(../images/Icon_Video_Transcript.png);
+  padding: 12px 0 0 5px; }
+
+ul li.transcript_img button.usa-accordion-button, ul li.transcript_img button.usa-accordion-button:hover {
+  color: #154285;
+  background-color: #ebe6de; }
+
+ul li.transcript_img button.usa-accordion-button:hover {
+  text-decoration: underline; }
+
+/* css for new transcript code */
 .volver a {
     padding: 0 0 4px 0; }
 
@@ -7688,16 +7710,17 @@ section.feature-hvr h2:hover {
         /* background-position: 200%; */ } }
 
 .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 9000;
-    text-align: center; }
-.modal.active {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9000;
+  text-align: center;
+  overflow: auto; }
+  .modal.active {
     display: block; }
 .modal > div > div {
     background: white;
@@ -7741,6 +7764,7 @@ section.feature-hvr h2:hover {
     background-size: auto 70px; }
 .modal .logo {
     height: 100px;
+    margin-bottom: 50px;
     background-color: #d9d9d9;
     background-image: url("../images/Logo_USA_Final.png");
     background-position: center center;
@@ -7758,6 +7782,9 @@ section.feature-hvr h2:hover {
 #emergency .icon {
   background-color: #c61f0c;
   background-image: url("../images/warning-white.svg"); }
+
+html.modal-open {
+  overflow-y: hidden; }
 
 body, html {
     overflow-x: hidden; }

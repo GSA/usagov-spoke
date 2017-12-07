@@ -32,6 +32,7 @@ function closeModal(el) {
   modal.removeClass('active');
   createCookie(modal.attr('id'),0,7);
   jQuery('.modal .close').unbind("keydown");
+  jQuery('html').removeClass('modal-open');
   //$( "#foo").unbind( "click" );
 }
 
@@ -110,11 +111,13 @@ jQuery(function(){
         //The IDs do not match. Show the modal.
         jQuery('#emergency').addClass('active');
         jQuery('#emergency .close').first().focus();
+        jQuery('html').addClass('modal-open');
       }
     }else{
       //The cookie does not exist. Show the modal.
       jQuery('#emergency').addClass('active');
       jQuery('#emergency .close').first().focus();
+      jQuery('html').addClass('modal-open');
     }
   }else{
     //Emergency Modal is not present. Check for other modals
@@ -215,12 +218,14 @@ function showModal(id, title, content, button) {
       if(cookieID!=dataID){
         //The IDs do not match. Show the Modal.
         modal.addClass('active');
+        jQuery('html').addClass('modal-open');
         
         modal.find('.close').first().focus();
       }
     }else{
       //The cookie does not exist. Show the Modal.
       modal.addClass('active');
+      jQuery('html').addClass('modal-open');
       
       modal.find('.close').first().focus();
     }
