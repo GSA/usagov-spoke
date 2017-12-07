@@ -164,7 +164,12 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
             print views_embed_view('federal_government_by_organization', 'block', $arg);
             ?>
 
-            <?php print _print_social_media(); ?>
+            <?php
+                print _print_social_media();
+                print do_you_need_help();
+                print survey_on_pages();
+            ?>
+
         </article>
 
     </div>
