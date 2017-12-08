@@ -63,7 +63,7 @@ function all_childsite_misc_init()
                 $friendlyUrl = db_query('SELECT source FROM {url_alias} WHERE alias=:source',
                     array(':source'=>$currentUrl) )->fetchColumn();
                 if(empty($friendlyUrl)){
-                    drupal_not_found();
+                    drupal_goto('/features');
                 }
             }
         }
