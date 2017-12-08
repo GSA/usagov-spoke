@@ -40,8 +40,9 @@ function all_childsite_misc_init()
     $currentUrl = $_SERVER["REQUEST_URI"];
     $pos = strpos($currentUrl, 'features');
     $pos1 = strpos($currentUrl, 'node') ;
+    $pos2 = strpos($currentUrl, 'novedades');
 
-    if($pos1 || $pos ){
+    if($pos1 || $pos || $pos2 ){
         if (substr($currentUrl, 0, 1) === '/') {
             $currentUrl = substr($currentUrl, 1);
             $urlArray = explode('/', $currentUrl);
@@ -64,6 +65,15 @@ function all_childsite_misc_init()
                     array(':source'=>$currentUrl) )->fetchColumn();
                 if(empty($friendlyUrl)){
                     drupal_goto('/features');
+                }
+            }
+            elseif($pos2 && count($urlArray) > 0 && !empty($urlArray[1])) {
+
+                // assume it has feature
+                $friendlyUrl = db_query('SELECT source FROM {url_alias} WHERE alias=:source',
+                    array(':source'=>$currentUrl) )->fetchColumn();
+                if(empty($friendlyUrl)){
+                    drupal_goto('/novedades');
                 }
             }
         }
