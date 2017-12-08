@@ -39,13 +39,14 @@ function all_childsite_misc_init()
     global $user;
     $currentUrl = $_SERVER["REQUEST_URI"];
     $pos = strpos($currentUrl, 'features');
+    $pos1 = strpos($currentUrl, 'node') ;
 
-    if(strstr($currentUrl, 'node')  || $pos ){
+    if($pos1 || $pos ){
         if (substr($currentUrl, 0, 1) === '/') {
             $currentUrl = substr($currentUrl, 1);
             $urlArray = explode('/', $currentUrl);
             $nid = $urlArray[1];
-            if(is_numeric($nid)){
+            if(is_numeric($nid) && $pos1){
                 $friendlyUrl = db_query('SELECT alias FROM {url_alias} WHERE source=:source',
                     array(':source'=>'node/'.$nid) )->fetchColumn();
 
@@ -55,9 +56,18 @@ function all_childsite_misc_init()
                     drupal_not_found();
                 }
             }
+            elseif($pos) {
+                // assume it has feature
+                $friendlyUrl = db_query('SELECT alias FROM {url_alias} WHERE source=:source',
+                    array(':source'=>$currentUrl) )->fetchColumn();
+                if($friendlyUrl){
+                    drupal_goto($friendlyUrl);
+                }else{
+                    drupal_not_found();
+                }
+            }
         }
     }
-
 }
 
 function all_childsite_misc_menu() {
