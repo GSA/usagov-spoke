@@ -55,7 +55,9 @@ function all_childsite_misc_init()
                 if($friendlyUrl){
                     drupal_goto($friendlyUrl);
                 }else{
-                    drupal_not_found();
+                    if ($user->uid != 1){
+                        drupal_not_found();
+                    }
                 }
             }
             elseif($pos && count($urlArray) > 0 && !empty($urlArray[1])) {
