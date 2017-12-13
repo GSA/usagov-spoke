@@ -22,12 +22,12 @@
 }
 
 #pagesurvey-ombnum {
-    margin: 0 0 20px 0;
-    padding: 0 0 20px 0;
-    background: #d0e1cf;
-    text-align: center;
-    max-width: 855px;
-    font-size: 90%;
+	margin: 0 auto 20px auto;
+	padding: 0 0 20px 0;
+	background: #d0e1cf;
+	text-align: center;
+	max-width: 855px;
+	font-size: 90%;
 }
 
 #pagesurvey-trgt a:focus,
@@ -316,14 +316,14 @@ a.surveyNav:hover, a.surveyNav:active,
 }
 
 @media (max-width: 480px) {
-    #pagesurvey-trgt legend {
-        margin: 0 0 0 0;
-        float: none;
+	#pagesurvey-trgt legend {
+    margin: 0 0 0 0;
+    float: none;
     }
 
-    span.vocradio {
-        display: table;
-        padding: 0 0 0 10px;
-        float: left;
-    }
+	span.vocradio {
+		display: table;
+		padding: 0 0 0 10px;
+		float: left;
+	}
 }

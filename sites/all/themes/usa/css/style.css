@@ -1424,9 +1424,17 @@ ul li.transcript_img {
   padding-top: 0;
   padding-bottom: 0; }
 
+@media (max-width: 991px) {
+  #content ul li.transcript_img {
+    padding-top: 0;
+    padding-bottom: 0; } }
+
 ul li.transcript_img::before {
   content: url(../images/Icon_Video_Transcript.png);
   padding: 12px 0 0 5px; }
+
+ul li.transcript_img button.usa-accordion-button {
+  padding-left: 4rem; }
 
 ul li.transcript_img button.usa-accordion-button, ul li.transcript_img button.usa-accordion-button:hover {
   color: #154285;
@@ -7708,6 +7716,11 @@ section.feature-hvr h2:hover {
 @media screen and (max-width: 320px) {
     .usa-hero button {
         /* background-position: 200%; */ } }
+
+.usa-accordion-bordered .usa-accordion-content {
+  border-bottom: 3px solid #ebe6de;
+  border-left: 3px solid #ebe6de;
+  border-right: 3px solid #ebe6de; }
 
 .modal {
   display: none;
