@@ -7722,6 +7722,14 @@ section.feature-hvr h2:hover {
   border-left: 3px solid #ebe6de;
   border-right: 3px solid #ebe6de; }
 
+.usa-accordion-button[aria-expanded=false] {
+  background-image: url(../images/transcript_plus.png);
+  background-image: url(../images/transcript_plus.svg); }
+
+.usa-accordion-button {
+  background-image: url(../images/transcript_minus.png);
+  background-image: url(../images/transcript_minus.svg); }
+
 .modal {
   display: none;
   position: fixed;
