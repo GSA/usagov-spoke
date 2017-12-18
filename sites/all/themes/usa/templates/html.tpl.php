@@ -75,14 +75,20 @@ if ( request_uri() !== '/' ) {
     <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <?php
-    $domain = "www.usa.gov";
+        $domain = "www.usa.gov";
+        $fb_img='USAGOV.png';
     if ($variables['siteID'] == 'gobierno')
     {
         $domain = "gobierno.usa.gov";
+        $fb_img = 'Logo_Gobierno_Final.png';
     }
     ?>
     <link rel="canonical" href="https://<?php print strtolower($domain . base_path() . htmlspecialchars(rtrim(request_path(),'/'), ENT_QUOTES, "UTF-8")); ?>" />
-
+    <meta property="og:url"           content="https://<?php print strtolower($domain . base_path() . htmlspecialchars(rtrim(request_path(),'/'), ENT_QUOTES, "UTF-8")); ?>" />
+    <meta property="og:type"          content="article" />
+    <meta property="og:title"         content="<?php print $page_title; ?>" />
+    <meta property="og:description"   content="<?php print $page_title; ?>" />
+    <meta property="og:image"         content="/sites/all/themes/usa/images/<?php print $fb_img; ?>" />
 
     <?php
     // Print the "Head-HTML" field of this S.S.-taxonomy-term
