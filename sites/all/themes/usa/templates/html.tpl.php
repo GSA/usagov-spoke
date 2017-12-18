@@ -85,11 +85,11 @@ if ( request_uri() !== '/' ) {
     ?>
     <link rel="canonical" href="https://<?php print strtolower($domain . base_path() . htmlspecialchars(rtrim(request_path(),'/'), ENT_QUOTES, "UTF-8")); ?>" />
     <meta property="og:url"           content="https://<?php print strtolower($domain . base_path() . htmlspecialchars(rtrim(request_path(),'/'), ENT_QUOTES, "UTF-8")); ?>" />
-    <meta property="og:type"          content="article" />
+    <meta property="og:type"          content="website" />
     <meta property="og:title"         content="<?php print $page_title; ?>" />
-    <meta property="og:description"   content="<?php print $page_title; ?>" />
     <meta property="og:image"         content="/sites/all/themes/usa/images/<?php print $fb_img; ?>" />
-
+    <meta property="og:image:width"         content="950" />
+    <meta property="og:image:height"         content="1024" />
     <?php
     // Print the "Head-HTML" field of this S.S.-taxonomy-term
     if ( !empty($term->field_head_html['und'][0]['value']) ) {

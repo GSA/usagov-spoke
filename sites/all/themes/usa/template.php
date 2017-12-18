@@ -336,6 +336,16 @@ function _usa_preprocess_html_home_term( &$variables )
             ),
             'usa_custom_meta_tag_descriptionforhome'
         );
+        drupal_add_html_head(
+            array(
+                '#tag' => 'meta',
+                '#attributes' => array(
+                    'name' => 'og:description',
+                    'content' =>  $variables['term']->field_meta_description['und'][0]['value'],
+                )
+            ),
+            'usa_custom_meta_tag_descriptionforhome'
+        );
     }
 }
 
@@ -600,12 +610,33 @@ function _usa_preprocess_html_toggles( &$variables, $entity )
                 ),
                 'usa_custom_meta_tag_descriptionforhome'
             );
+            //og:description
+            drupal_add_html_head(
+                array(
+                    '#tag' => 'meta',
+                    '#attributes' => array(
+                        'name' => 'og:description',
+                        'content' => 'Site index of the USA.gov website.',
+                    )
+                ),
+                'usa_custom_meta_tag_descriptionforhome'
+            );
         } else if ( $variables['siteID']==='gobierno' ) {
             drupal_add_html_head(
                 array(
                     '#tag' => 'meta',
                     '#attributes' => array(
                         'name' => 'description',
+                        'content' =>  'Índice del sitio web Gobierno.USA.gov',
+                    )
+                ),
+                'usa_custom_meta_tag_descriptionforhome'
+            );
+            drupal_add_html_head(
+                array(
+                    '#tag' => 'meta',
+                    '#attributes' => array(
+                        'name' => 'og:description',
                         'content' =>  'Índice del sitio web Gobierno.USA.gov',
                     )
                 ),
@@ -779,6 +810,16 @@ function _usa_preprocess_html_title( &$variables )
             ),
             'usa_custom_meta_tag_descriptionforhome'
         );
+        drupal_add_html_head(
+            array(
+                '#tag' => 'meta',
+                '#attributes' => array(
+                    'name' => 'og:description',
+                    'content' =>  'Federal Government Forms, by Agency: '.$l,
+                )
+            ),
+            'usa_custom_meta_tag_descriptionforhome'
+        );
     }
     elseif (!empty($variables['gov-contracts'])){
 
@@ -791,6 +832,16 @@ function _usa_preprocess_html_title( &$variables )
                 '#tag' => 'meta',
                 '#attributes' => array(
                     'name' => 'description',
+                    'content' =>  'The Contracting Opportunity Finder can help your small and/or disadvantaged business discover contract opportunities with federal agencies to bid on.',
+                )
+            ),
+            'usa_custom_meta_tag_descriptionforhome'
+        );
+        drupal_add_html_head(
+            array(
+                '#tag' => 'meta',
+                '#attributes' => array(
+                    'name' => 'og:description',
                     'content' =>  'The Contracting Opportunity Finder can help your small and/or disadvantaged business discover contract opportunities with federal agencies to bid on.',
                 )
             ),
