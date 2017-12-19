@@ -91,8 +91,6 @@ if ( request_uri() !== '/' ) {
     <meta property="og:type"          content="website" />
     <meta property="og:title"         content="<?php print $page_title; ?>" />
     <meta property="og:image"         content="https://<?php print strtolower($domain . base_path()); ?>sites/all/themes/usa/images/<?php print $fb_img; ?>" />
-    <meta property="og:image:width"         content="600" />
-    <meta property="og:image:height"         content="315" />
     <?php
     // Print the "Head-HTML" field of this S.S.-taxonomy-term
     if ( !empty($term->field_head_html['und'][0]['value']) ) {
