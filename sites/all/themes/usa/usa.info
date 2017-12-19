@@ -26,4 +26,3 @@ scripts[] = /js/menu.js
 scripts[] = js/states.js
 scripts[] = /js/standardsModifications.js
 scripts[] = /js/emergency-popup.js
-scripts[] = /js/uswds.js
