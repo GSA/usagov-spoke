@@ -111,12 +111,12 @@ function cmp_data_sync_client_init()
 //     }
 // }
 /// we want to trigger an akamai cache flush no matter who made a node/term change
-function cmp_data_sync_client_node_save($node)            { variable_set('cdsc_content_changed',true); }
-function cmp_data_sync_client_node_update($node)          { variable_set('cdsc_content_changed',true); }
-function cmp_data_sync_client_node_delete($node)          { variable_set('cdsc_content_changed',true); }
-function cmp_data_sync_client_taxonomy_term_save($term)   { variable_set('cdsc_content_changed',true); }
-function cmp_data_sync_client_taxonomy_term_update($term) { variable_set('cdsc_content_changed',true); }
-function cmp_data_sync_client_taxonomy_term_delete($term) { variable_set('cdsc_content_changed',true); }
+// function cmp_data_sync_client_node_save($node)            { variable_set('cdsc_content_changed',true); }
+// function cmp_data_sync_client_node_update($node)          { variable_set('cdsc_content_changed',true); }
+// function cmp_data_sync_client_node_delete($node)          { variable_set('cdsc_content_changed',true); }
+// function cmp_data_sync_client_taxonomy_term_save($term)   { variable_set('cdsc_content_changed',true); }
+// function cmp_data_sync_client_taxonomy_term_update($term) { variable_set('cdsc_content_changed',true); }
+// function cmp_data_sync_client_taxonomy_term_delete($term) { variable_set('cdsc_content_changed',true); }
 
 function cmp_data_sync_client_cron_queue_info()
 {
@@ -135,19 +135,20 @@ function cmp_data_sync_client_cron()
     /// let cron_queue_info do the processing
 }
 
-function cmp_data_sync_client_cronapi($op, $job = NULL)
-{
+// function cmp_data_sync_client_cronapi($op, $job = NULL)
+// {
 
-    $items['cmp_data_sync_client_clean_akamai'] = array(
-        'description' => 'Clear akamai cache after sync queue is processed',
-        'rule' => '* * * * *',
-        'callback' => '_cmp_data_sync_client_clear_akamai_cache',
-    );
+//     $items['cmp_data_sync_client_clean_akamai'] = array(
+//         'description' => 'Clear akamai cache after sync queue is processed',
+//         'rule' => '* * * * *',
+//         'callback' => '_cmp_data_sync_client_clear_akamai_cache',
+//     );
 
-    return $items;
-}
+//     return $items;
+// }
 function _cmp_data_sync_client_clear_akamai_cache()
 {
+    return;
     if ( variable_get('cdsc_content_changed',false) )
     {
         $queue = DrupalQueue::get('cmp_data_sync');
@@ -267,14 +268,14 @@ function _cdsc_setup_drupal_vars()
     {
         variable_set('cdsc_schema_data',null);
     }
-    if ( variable_get('cdsc_cdn_last_q_count')===null )
-    {
-        variable_set('cdsc_cdn_last_q_count',null);
-    }
-    if ( variable_get('cdsc_cdn_same_count')===null )
-    {
-        variable_set('cdsc_cdn_same_count',null);
-    }
+    // if ( variable_get('cdsc_cdn_last_q_count')===null )
+    // {
+    //     variable_set('cdsc_cdn_last_q_count',null);
+    // }
+    // if ( variable_get('cdsc_cdn_same_count')===null )
+    // {
+    //     variable_set('cdsc_cdn_same_count',null);
+    // }
     // if ( variable_get('cdsc_node_bundles')===null )
     // {
     //     variable_set('cdsc_node_bundles',array());
@@ -294,8 +295,8 @@ function _cdsc_teardown_drupal_vars()
     variable_del('cdsc_schema_term_sha1');
     variable_del('cdsc_schema_node_sha1');
     variable_del('cdsc_schema_relation_sha1');
-    variable_del('cdsc_cdn_last_q_count');
-    variable_del('cdsc_cdn_same_count');
+    // variable_del('cdsc_cdn_last_q_count');
+    // variable_del('cdsc_cdn_same_count');
     // variable_del('cdsc_node_bundles');
     // variable_del('cdsc_term_bundles');
 }
@@ -477,6 +478,7 @@ function _cdsc_update_schema( $force=false )
 }
 function _cdsc_clear_cdn_cache()
 {
+    return;
     /// cache_clear_all('theme_registry', 'cache', TRUE); # not sure if we need this ???
     if ( function_exists('akamai_clear_site') )
     {
