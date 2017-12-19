@@ -83,7 +83,7 @@ if ( request_uri() !== '/' ) {
         $fb_img = 'Logo_Gobierno_Final.png';
     }
     ?>
-    <link rel="canonical" href="https://<?php print strtolower($domain . base_path() . htmlspecialchars(rtrim(request_path(),'/'), ENT_QUOTES, "UTF-8")); ?>" />
+    <!--<link rel="canonical" href="https://<?php print strtolower($domain . base_path() . htmlspecialchars(rtrim(request_path(),'/'), ENT_QUOTES, "UTF-8")); ?>" /> -->
     <meta property="og:url"           content="https://<?php print strtolower($domain . base_path() . htmlspecialchars(rtrim(request_path(),'/'), ENT_QUOTES, "UTF-8")); ?>" />
     <meta property="og:type"          content="website" />
     <meta property="og:title"         content="<?php print $page_title; ?>" />
