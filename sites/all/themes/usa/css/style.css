@@ -1031,7 +1031,10 @@ html:lang(es) #vocModal:before {
     top: auto; }
 
 #vocModal input.top-right {
-    display: none; }
+  color: #11385B;
+  background: #00a6d2;
+  border: 1px #00a6d2 solid;
+  font-size: 100%; }
 
 .content {
     margin: 25px 15px 25px 15px; }
