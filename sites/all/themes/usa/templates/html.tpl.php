@@ -335,6 +335,6 @@ if(@!empty($dirEndHtml)){
 </script>
 <!-- End of Async HubSpot Analytics Code -->
 
-<script type="text/javascript" src="/sites/all/themes/usa/js/uswds.min.js"></script>
+<script type="text/javascript" src="/sites/all/themes/usa/js/uswds.js"></script>
 </body>
 </html>
