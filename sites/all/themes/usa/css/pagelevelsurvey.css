@@ -197,6 +197,7 @@ li.outter {
    Survey page navigation */
 
 div.surveyNav {
+<<<<<<< HEAD
     color: rgba(0,0,0,0);
     text-decoration: none;
     font-weight: bold;
@@ -204,6 +205,15 @@ div.surveyNav {
     margin: 10px 0px 10px;
     padding: 0px;
     text-align: center;
+=======
+	color: rgba(0,0,0,0);
+	text-decoration: none;
+	font-weight: bold;
+	font-size: 1em;
+	margin: auto;
+	padding: 18px;
+	text-align: center;
+>>>>>>> 43e655d0... Russell Repo Sync
 }
 
 span.surveyNavPrev {
@@ -306,13 +316,10 @@ a.surveyNav:hover, a.surveyNav:active,
         font-size: 120%;
     }
 
-
-    span.voccheckbox {
-        display: inline-table;
-        padding: 10px 0 0 0;
-    }
-
-
+span.voccheckbox {
+		display: inline-table;
+		padding: 10px 0 0 0;
+	}
 }
 
 @media (max-width: 480px) {
@@ -322,8 +329,8 @@ a.surveyNav:hover, a.surveyNav:active,
     }
 
 	span.vocradio {
-		display: table;
-		padding: 0 0 0 10px;
-		float: left;
-	}
+			display: table;
+			padding: 0 0 0 10px;
+			float: left;
+		}
 }

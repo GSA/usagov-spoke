@@ -1510,24 +1510,24 @@ div #sm-share a {
 /***********************
 5. downlevel-topics
 ***********************/
-.infobytpc ul.dwnlvl {
-    width: 100%;
-    padding: 0 0 0 15px;
-    background: #fff;
-    margin: 0 0 0 0; }
+.infobytpc ul.dwnlvl, .infobytpc ul.topics {
+  width: 100%;
+  padding: 0 0 0 15px;
+  background: #fff;
+  margin: 0 0 0 0; }
 
-.infobytpc ul.dwnlvl li {
-    padding-right: 15px; }
+.infobytpc ul.dwnlvl li, .infobytpc ul.topics li {
+  padding-right: 15px; }
 
-.infobytpc ul.dwnlvl a {
-    display: inline-block;
-    text-decoration: none;
-    font-size: 110%;
-    font-weight: bold;
-    margin: 0 0 0 0;
-    border: 1px solid #fff;
-    border-left: 5px solid #fff;
-    padding: 10px 20px 10px 10px; }
+.infobytpc ul.dwnlvl a, .infobytpc ul.topics a {
+  display: inline-block;
+  text-decoration: none;
+  font-size: 110%;
+  font-weight: bold;
+  margin: 0 0 0 0;
+  border: 1px solid #fff;
+  border-left: 5px solid #fff;
+  padding: 10px 20px 10px 10px; }
 
 .infobytpc ul li a:hover, .infobytpc ul li a:focus, .infobytpc ul li a:active {
     border: 1px solid #02bfe7;
@@ -1540,21 +1540,21 @@ div #sm-share a {
     padding: 2px 0 0 0;
     color: #000; }
 
-.infobytpc ul.dwnlvl li p {
-    padding: 0 60px 0 0;
-    line-height: 18px;
-    padding: 0 0 0 0;
-    font-weight: normal;
-    font-size: 1.7rem; }
+.infobytpc ul.dwnlvl li p, .infobytpc ul.topics li p {
+  padding: 0 60px 0 0;
+  line-height: 18px;
+  padding: 0 0 0 0;
+  font-weight: normal;
+  font-size: 1.7rem; }
 
-.infobytpc ul.dwnlvl li p a {
-    padding: 0 0 0 0;
-    text-decoration: none;
-    margin: 0 0 0 0;
-    display: inline-block;
-    font-size: 100%;
-    font-weight: normal;
-    text-decoration: underline; }
+.infobytpc ul.dwnlvl li p a, .infobytpc ul.topics li p a {
+  padding: 0 0 0 0;
+  text-decoration: none;
+  margin: 0 0 0 0;
+  display: inline-block;
+  font-size: 100%;
+  font-weight: normal;
+  text-decoration: underline; }
 
 .infobytpc ul li {
     list-style-type: none;
@@ -7234,28 +7234,31 @@ usa-alert-success {
         cursor: pointer; } }
 
 @media screen and (max-width: 600px) {
-    .cntrlogo:lang(es) img, .usa-logo:lang(es) img {
-        max-width: 190px; }
-    .usa-link-snapchat {
-        margin: 2.5rem 1rem 1.5rem 0;
-        left: .1rem; }
-    ul.usa-footer-primary-content {
-        border-top: 1px solid #fff; }
-    .usa-footer-big ul:last-child {
-        border-bottom: 1px solid #fff; }
-    .usa-footer-big ul.noline {
-        border-bottom: 1px solid transparent; }
-    .usa-footer-big ul.hidden .usa-footer-primary-link {
-        background-image: url(../images/arrow-Right.png);
-        background-image: url(../images/arrow-right-white.svg); }
-    .usa-footer-big ul .usa-footer-primary-link {
-        background-image: url(../images/Arrow-Down.png);
-        background-image: url(../images/arrow-down-white.svg); } }
-
-.usa-link-email {
+  .cntrlogo:lang(es) img, .usa-logo:lang(es) img {
+    max-width: 190px; }
+  .usa-link-snapchat {
+    margin: 2.5rem 1rem 1.5rem 0;
+    left: .1rem; }
+  ul.usa-footer-primary-content {
+    border-top: 1px solid #fff; }
+  .usa-footer-big ul:last-child {
+    border-bottom: 1px solid #fff; }
+  .usa-footer-big ul.noline {
+    border-bottom: 1px solid transparent; }
+  .usa-footer-big ul.hidden .usa-footer-primary-link {
+    background-image: url(../images/arrow-Right.png);
+    background-image: url(../images/arrow-right-white.svg); }
+  .usa-footer-big ul .usa-footer-primary-link {
+    background-image: url(../images/Arrow-Down.png);
+    background-image: url(../images/arrow-down-white.svg); }
+  .usa-link-email {
     background-image: url("../images/Icon_Connect_Email.png");
     margin: 0 0 0 1rem;
-    left: 1.2rem; }
+    left: 1.2rem; } }
+
+@media screen and (min-width: 600px) {
+  .usa-footer-primary-section .usa-footer-primary-content li.long {
+    line-height: 1.3em; } }
 
 /*
 Used in footer to vertically align lists when seperating
