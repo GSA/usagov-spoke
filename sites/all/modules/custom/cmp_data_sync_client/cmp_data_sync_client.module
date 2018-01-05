@@ -596,8 +596,8 @@ function _cdsc_get_entities_from_elasticsearch($since=0)
                 if ( !empty($since) )
                 {
                     $_must = '{"range":{"changed":{"gte":'.$since.'}}}';
-                } else {
-                    $_must = '{"match_all":{}}';
+                // } else {
+                //     $_must = '{"match_all":{}}';
                 }
                 $site_name = variable_get('cdsc_site_name_filter');
                 $site_name = preg_replace("/[^\w\_\.\-]/","",$site_name);
@@ -611,10 +611,10 @@ function _cdsc_get_entities_from_elasticsearch($since=0)
                         $_should[] = '{"term":{"type":"directory_record_content_type"}}';
                     }
                 }
-                $_search = '{"query":{"bool":{'
-                            .'"must":'.$_must.','
-                            .'"should":['.join(',',$_should).']}},'
-                            .'"size":'.$es_batch_size.'}';
+                $_search  = '{"query":{"bool":{';
+                $_search .= (empty($_must))?'':'"must":'.$_must.',';
+                $_search .= '"should":['.join(',',$_should).']}},'
+                           .'"size":'.$es_batch_size.'}';
 
                 $options = array(
                     'method' => 'POST',
@@ -635,7 +635,7 @@ function _cdsc_get_entities_from_elasticsearch($since=0)
                 }
                 $scroll_id = $results_data['_scroll_id'];
             } else {
-                
+
                 $options = array(
                     'method' => 'POST',
                     'data' => '{"scroll":"1m","scroll_id":"'.$scroll_id.'"}'
@@ -1521,7 +1521,7 @@ function _cdsc_elasticsearch_request($path='/',$options=[])
         $method  = !empty($options['method'])  ? $options['method'] : 'GET';
         $data    = !empty($options['data'])    ? $options['data']   : '';
         $timeout = !empty($options['timeout']) ? intval($options['timeout']) : null;
-        
+
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $uri);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -1532,7 +1532,7 @@ function _cdsc_elasticsearch_request($path='/',$options=[])
         }
 
         // if ( is_int($timeout) ) {
-        //     curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);            
+        //     curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
         // }
         curl_setopt($curl, CURLOPT_HTTPHEADER,
             ['CONTENT-TYPE: application/json; cha rset=utf-8']);
@@ -1543,11 +1543,11 @@ function _cdsc_elasticsearch_request($path='/',$options=[])
 
         // curl_setopt($curl, CURLOPT_VERBOSE, 1);
         // curl_setopt($curl, CURLOPT_FAILONERROR, TRUE);
-        
+
         // if ( local AND ssl )
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-        
+
         $response->data = curl_exec($curl);
         $response->code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
