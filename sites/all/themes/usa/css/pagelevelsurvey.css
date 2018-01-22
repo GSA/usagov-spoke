@@ -22,12 +22,12 @@
 }
 
 #pagesurvey-ombnum {
-	margin: 0 auto 20px auto;
-	padding: 0 0 20px 0;
-	background: #d0e1cf;
-	text-align: center;
-	max-width: 855px;
-	font-size: 90%;
+    margin: 0 auto 20px auto;
+    padding: 0 0 20px 0;
+    background: #d0e1cf;
+    text-align: center;
+    max-width: 855px;
+    font-size: 90%;
 }
 
 #pagesurvey-trgt a:focus,
@@ -197,23 +197,13 @@ li.outter {
    Survey page navigation */
 
 div.surveyNav {
-<<<<<<< HEAD
     color: rgba(0,0,0,0);
     text-decoration: none;
     font-weight: bold;
     font-size: 1em;
-    margin: 10px 0px 10px;
-    padding: 0px;
+    margin: auto;
+    padding: 18px;
     text-align: center;
-=======
-	color: rgba(0,0,0,0);
-	text-decoration: none;
-	font-weight: bold;
-	font-size: 1em;
-	margin: auto;
-	padding: 18px;
-	text-align: center;
->>>>>>> 43e655d0... Russell Repo Sync
 }
 
 span.surveyNavPrev {
@@ -316,21 +306,21 @@ a.surveyNav:hover, a.surveyNav:active,
         font-size: 120%;
     }
 
-span.voccheckbox {
-		display: inline-table;
-		padding: 10px 0 0 0;
-	}
+    span.voccheckbox {
+        display: inline-table;
+        padding: 10px 0 0 0;
+    }
 }
 
 @media (max-width: 480px) {
-	#pagesurvey-trgt legend {
-    margin: 0 0 0 0;
-    float: none;
+    #pagesurvey-trgt legend {
+        margin: 0 0 0 0;
+        float: none;
     }
 
-	span.vocradio {
-			display: table;
-			padding: 0 0 0 10px;
-			float: left;
-		}
+    span.vocradio {
+        display: table;
+        padding: 0 0 0 10px;
+        float: left;
+    }
 }

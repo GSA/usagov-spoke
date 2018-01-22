@@ -965,8 +965,8 @@ div#vocModal {
     margin: auto auto auto auto;
     padding: 100px 20px 20px 20px;
     text-align: center;
-    border: thin #000 solid;
     background-color: #fff;
+    border: none;
     z-index: 10000;
     /* places the modal dialog on top of everything else */
     position: fixed;
@@ -1029,12 +1029,6 @@ html:lang(es) #vocModal:before {
     width: 1px;
     height: 1px;
     top: auto; }
-
-#vocModal input.top-right {
-  color: #11385B;
-  background: #00a6d2;
-  border: 1px #00a6d2 solid;
-  font-size: 100%; }
 
 .content {
     margin: 25px 15px 25px 15px; }
@@ -1419,32 +1413,32 @@ header h3 span.arrowDwn {
 
 /* css for new transcript code */
 .usa-accordion-bordered .usa-accordion-content {
-  border-bottom: 3px solid #ebe6de;
-  border-left: 3px solid #ebe6de;
-  border-right: 3px solid #ebe6de; }
+    border-bottom: 3px solid #ebe6de;
+    border-left: 3px solid #ebe6de;
+    border-right: 3px solid #ebe6de; }
 
 ul li.transcript_img {
-  padding-top: 0;
-  padding-bottom: 0; }
+    padding-top: 0;
+    padding-bottom: 0; }
 
 @media (max-width: 991px) {
-  #content ul li.transcript_img {
-    padding-top: 0;
-    padding-bottom: 0; } }
+    #content ul li.transcript_img {
+        padding-top: 0;
+        padding-bottom: 0; } }
 
 ul li.transcript_img::before {
-  content: url(../images/Icon_Video_Transcript.png);
-  padding: 12px 0 0 5px; }
+    content: url(../images/Icon_Video_Transcript.png);
+    padding: 12px 0 0 5px; }
 
 ul li.transcript_img button.usa-accordion-button {
-  padding-left: 4rem; }
+    padding-left: 4rem; }
 
 ul li.transcript_img button.usa-accordion-button, ul li.transcript_img button.usa-accordion-button:hover {
-  color: #154285;
-  background-color: #ebe6de; }
+    color: #154285;
+    background-color: #ebe6de; }
 
 ul li.transcript_img button.usa-accordion-button:hover {
-  text-decoration: underline; }
+    text-decoration: underline; }
 
 /* css for new transcript code */
 .volver a {
@@ -1514,23 +1508,23 @@ div #sm-share a {
 5. downlevel-topics
 ***********************/
 .infobytpc ul.dwnlvl, .infobytpc ul.topics {
-  width: 100%;
-  padding: 0 0 0 15px;
-  background: #fff;
-  margin: 0 0 0 0; }
+    width: 100%;
+    padding: 0 0 0 15px;
+    background: #fff;
+    margin: 0 0 0 0; }
 
 .infobytpc ul.dwnlvl li, .infobytpc ul.topics li {
-  padding-right: 15px; }
+    padding-right: 15px; }
 
 .infobytpc ul.dwnlvl a, .infobytpc ul.topics a {
-  display: inline-block;
-  text-decoration: none;
-  font-size: 110%;
-  font-weight: bold;
-  margin: 0 0 0 0;
-  border: 1px solid #fff;
-  border-left: 5px solid #fff;
-  padding: 10px 20px 10px 10px; }
+    display: inline-block;
+    text-decoration: none;
+    font-size: 110%;
+    font-weight: bold;
+    margin: 0 0 0 0;
+    border: 1px solid #fff;
+    border-left: 5px solid #fff;
+    padding: 10px 20px 10px 10px; }
 
 .infobytpc ul li a:hover, .infobytpc ul li a:focus, .infobytpc ul li a:active {
     border: 1px solid #02bfe7;
@@ -1544,20 +1538,20 @@ div #sm-share a {
     color: #000; }
 
 .infobytpc ul.dwnlvl li p, .infobytpc ul.topics li p {
-  padding: 0 60px 0 0;
-  line-height: 18px;
-  padding: 0 0 0 0;
-  font-weight: normal;
-  font-size: 1.7rem; }
+    padding: 0 60px 0 0;
+    line-height: 18px;
+    padding: 0 0 0 0;
+    font-weight: normal;
+    font-size: 1.7rem; }
 
 .infobytpc ul.dwnlvl li p a, .infobytpc ul.topics li p a {
-  padding: 0 0 0 0;
-  text-decoration: none;
-  margin: 0 0 0 0;
-  display: inline-block;
-  font-size: 100%;
-  font-weight: normal;
-  text-decoration: underline; }
+    padding: 0 0 0 0;
+    text-decoration: none;
+    margin: 0 0 0 0;
+    display: inline-block;
+    font-size: 100%;
+    font-weight: normal;
+    text-decoration: underline; }
 
 .infobytpc ul li {
     list-style-type: none;
@@ -6835,6 +6829,9 @@ ol {
     .usa-nav-primary button[aria-expanded=true] {
         padding-bottom: 0;
         border-bottom: 0; }
+    .usa-nav-primary > li > a {
+        padding-bottom: 0;
+        border-bottom: 0; }
     .usa-nav-primary button[aria-expanded=false] {
         background-image: url(../images/angle-arrow-down.png);
         background-image: url(../images/angle-arrow-down.svg); }
@@ -7021,8 +7018,11 @@ ul li:after, ol li:after {
 .hptoggles ul li {
     display: inline-table; }
 
-.usa-header-extended .usa-nav-primary button[aria-expanded=false] {
+.usa-header-extended .usa-nav-primary button[aria-expanded=false], .usa-nav-primary > li > a {
     background-position: 95% 40%;
+    color: #154285; }
+
+.usa-nav-primary > li > a:hover {
     color: #154285; }
 
 .usa-header-extended .usa-nav-primary button[aria-expanded=true] {
@@ -7057,12 +7057,6 @@ div.search-input-btn-container [type="submit"] {
 
 #cah-container .cah-bottom-buttons button {
     color: #fff; }
-
-.steps li button {
-    color: #000; }
-
-#cah-container .steps li button:active {
-    color: #154285; }
 
 #cah-container legend {
     font-size: 1.6rem;
@@ -7237,31 +7231,35 @@ usa-alert-success {
         cursor: pointer; } }
 
 @media screen and (max-width: 600px) {
-  .cntrlogo:lang(es) img, .usa-logo:lang(es) img {
-    max-width: 190px; }
-  .usa-link-snapchat {
-    margin: 2.5rem 1rem 1.5rem 0;
-    left: .1rem; }
-  ul.usa-footer-primary-content {
-    border-top: 1px solid #fff; }
-  .usa-footer-big ul:last-child {
-    border-bottom: 1px solid #fff; }
-  .usa-footer-big ul.noline {
-    border-bottom: 1px solid transparent; }
-  .usa-footer-big ul.hidden .usa-footer-primary-link {
-    background-image: url(../images/arrow-Right.png);
-    background-image: url(../images/arrow-right-white.svg); }
-  .usa-footer-big ul .usa-footer-primary-link {
-    background-image: url(../images/Arrow-Down.png);
-    background-image: url(../images/arrow-down-white.svg); }
-  .usa-link-email {
-    background-image: url("../images/Icon_Connect_Email.png");
-    margin: 0 0 0 1rem;
-    left: 1.2rem; } }
+    .cntrlogo:lang(es) img, .usa-logo:lang(es) img {
+        max-width: 190px; }
+    .usa-link-snapchat {
+        margin: 2.5rem 1rem 1.5rem 0;
+        left: .1rem; }
+    ul.usa-footer-primary-content {
+        border-top: 1px solid #fff; }
+    .usa-footer-big ul:last-child {
+        border-bottom: 1px solid #fff; }
+    .usa-footer-big ul.noline {
+        border-bottom: 1px solid transparent; }
+    .usa-footer-big ul.hidden .usa-footer-primary-link {
+        background-image: url(../images/arrow-Right.png);
+        background-image: url(../images/arrow-right-white.svg); }
+    .usa-footer-big ul .usa-footer-primary-link {
+        background-image: url(../images/Arrow-Down.png);
+        background-image: url(../images/arrow-down-white.svg); }
+    .usa-link-email {
+        background-image: url("../images/Icon_Connect_Email.png");
+        margin: 0 0 0 1rem;
+        left: 1.2rem; } }
 
 @media screen and (min-width: 600px) {
-  .usa-footer-primary-section .usa-footer-primary-content li.long {
-    line-height: 1.3em; } }
+    .usa-footer-primary-section .usa-footer-primary-content li {
+        margin-left: 0;
+        padding-bottom: 19px;
+        line-height: 1.3em; }
+    .usa-footer-primary-section .usa-footer-primary-content li.usa-footer-primary-link {
+        padding-bottom: 0px; } }
 
 /*
 Used in footer to vertically align lists when seperating
@@ -7365,9 +7363,6 @@ one list of links into two columns in the footer.
 
 .usa-nav-secondary-links .usa-header-search-button {
     display: none; }
-
-a.usa-nav-link {
-    display: inline-table; }
 
 @media screen and (max-width: 951px) {
     .usa-nav-secondary-links li:last-child:before {
@@ -7492,7 +7487,7 @@ section > div.usa-grid > div > h1 {
 .usa-hero {
     padding-top: 3rem;
     padding-bottom: 3rem;
-    background-image: url("../images/HP_Image.png");
+    background-image: url("../images/HP_Image.jpg");
     background-position: center;
     background-size: cover;
     min-height: 375px;
@@ -7724,30 +7719,54 @@ section.feature-hvr h2:hover {
         /* background-position: 200%; */ } }
 
 .usa-accordion-bordered .usa-accordion-content {
-  border-bottom: 3px solid #ebe6de;
-  border-left: 3px solid #ebe6de;
-  border-right: 3px solid #ebe6de; }
+    border-bottom: 3px solid #ebe6de;
+    border-left: 3px solid #ebe6de;
+    border-right: 3px solid #ebe6de; }
 
-.usa-accordion-button[aria-expanded=false] {
-  background-image: url(../images/transcript_plus.png);
-  background-image: url(../images/transcript_plus.svg); }
+.usa-banner-button[aria-expanded=false]::after {
+    background-image: url(../images/angle-arrow-down-primary.png);
+    background-image: url(../images/angle-arrow-down-primary.svg); }
 
-.usa-accordion-button {
-  background-image: url(../images/transcript_minus.png);
-  background-image: url(../images/transcript_minus.svg); }
+.usa-banner-button[aria-expanded=false]:hover::after {
+    background-image: url(../images/angle-arrow-down-primary.png);
+    background-image: url(../images/angle-arrow-down-primary.svg); }
+
+@media screen and (min-width: 481px) {
+    .usa-banner-button[aria-expanded=true]::after {
+        background-image: url(../images/angle-arrow-up-primary.png);
+        background-image: url(../images/angle-arrow-up-primary.svg); } }
+
+@media screen and (min-width: 481px) {
+    .usa-banner-button[aria-expanded=true]:hover::after {
+        background-image: url(../images/angle-arrow-up-primary.png);
+        background-image: url(../images/angle-arrow-up-primary.svg); } }
+
+article .usa-accordion-button[aria-expanded=false] {
+    background-image: url(../images/transcript_plus.png);
+    background-image: url(../images/transcript_plus.svg); }
+
+article .usa-accordion-button {
+    background-image: url(../images/transcript_minus.png);
+    background-image: url(../images/transcript_minus.svg); }
+
+[type="checkbox"]:checked + label::before {
+    background-image: url("../images/correct8.png");
+    background-image: url("../images/correct8.svg");
+    background-position: 50%;
+    background-repeat: no-repeat; }
 
 .modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 9000;
-  text-align: center;
-  overflow: auto; }
-  .modal.active {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9000;
+    text-align: center;
+    overflow: auto; }
+.modal.active {
     display: block; }
 .modal > div > div {
     background: white;
@@ -7764,25 +7783,27 @@ section.feature-hvr h2:hover {
     background-color: #02bfe7;
     color: #000000;
     margin: 0 0 20px; }
-    .modal .close:hover {
-      background-color: #00a6d2; }
-    .modal .close.top {
-      position: absolute;
-      right: 0;
-      top: -40px;
-      height: 40px;
-      margin: 0;
-      background-color: white;
-      border-radius: 0;
-      color: #154285;
-      padding-right: 40px;
-      background-image: url("../images/close-red.svg");
-      background-position: 90% 50%;
-      background-repeat: no-repeat;
-      background-size: 20px; }
-      .modal .close.top:hover {
-        background-color: #d9d9d9; }
-  .modal .icon {
+.modal .close:hover {
+    background-color: #00a6d2; }
+.modal .close.top {
+    position: absolute;
+    right: 0;
+    top: -40px;
+    height: 40px;
+    width: auto;
+    margin: 0;
+    background-color: white;
+    border-radius: 0;
+    color: #154285;
+    padding-right: 40px;
+    background-image: url("../images/close-red.svg");
+    background-position: 90% 50%;
+    background-repeat: no-repeat;
+    background-size: 20px;
+    font-size: 1.7rem; }
+.modal .close.top:hover {
+    background-color: #d9d9d9; }
+.modal .icon {
     height: 100px;
     background-color: #11385B;
     background-image: url("../images/BUSA_lightbox_icon.png");
@@ -7806,12 +7827,31 @@ section.feature-hvr h2:hover {
     .modal .logo:lang(es) {
         background-size: contain; } }
 
-#emergency .icon {
-  background-color: #c61f0c;
-  background-image: url("../images/warning-white.svg"); }
+#emergency-modal .icon {
+    background-color: #c61f0c;
+    background-image: url("../images/warning-white.svg"); }
 
 html.modal-open {
-  overflow-y: hidden; }
+    overflow-y: hidden; }
+
+#vocModal .vocCancelButton.top-right {
+    position: absolute;
+    right: 0;
+    top: -40px;
+    height: 40px;
+    width: auto;
+    margin: 0;
+    background-color: white;
+    border-radius: 0;
+    color: #154285;
+    padding-right: 40px;
+    background-image: url("../images/close-red.svg");
+    background-position: 90% 50%;
+    background-repeat: no-repeat;
+    background-size: 20px;
+    font-size: 1.7rem; }
+#vocModal .vocCancelButton.top-right:hover {
+    background-color: #d9d9d9; }
 
 body, html {
     overflow-x: hidden; }

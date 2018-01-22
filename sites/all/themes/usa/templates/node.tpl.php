@@ -83,45 +83,45 @@ $siteName = variable_get('site_name', 'UNKNOWN');
 
 // Determin what language to use with the left-sidebar's title
 if ( stripos($siteName, 'Gobi') !== false ) {
-  $sidebarTitleText = 'Medios y colaboradores';
-  $sidebarTitleLink = '/medios';
+    $sidebarTitleText = 'Medios y colaboradores';
+    $sidebarTitleLink = '/medios';
 } else {
-  $sidebarTitleText = 'For Media and Partners';
-  $sidebarTitleLink = '/media';
+    $sidebarTitleText = 'For Media and Partners';
+    $sidebarTitleLink = '/media';
 }
 
 // Determin what language to use with the left-sidebar's first item
 if ( stripos($siteName, 'Gobi') !== false ) {
-  $sidebarItem1Text = 'Colabore con nosotros';
-  $sidebarItem1Link = '/colabore-con-nosotros';
+    $sidebarItem1Text = 'Colabore con nosotros';
+    $sidebarItem1Link = '/colabore-con-nosotros';
 } else {
-  $sidebarItem1Text = 'Features';
-  $sidebarItem1Link = '/features';
+    $sidebarItem1Text = 'Features';
+    $sidebarItem1Link = '/features';
 }
 
 // Determin what language to use with the left-sidebar's second item
 if ( stripos($siteName, 'Gobi') !== false ) {
-  $sidebarItem2Text = 'Novedades';
-  $sidebarItem2Link = '/novedades';
+    $sidebarItem2Text = 'Novedades';
+    $sidebarItem2Link = '/novedades';
 } else {
-  $sidebarItem2Text = 'Work With Us';
-  $sidebarItem2Link = '/work-with-us';
+    $sidebarItem2Text = 'Partner with Us';
+    $sidebarItem2Link = '/partner-with-us';
 }
 
 //translating months to spanish
 if ( stripos($siteName, 'Gobi') !== false ) {
-  $labelText_DateValue = str_replace("January","enero",$labelText_DateValue);
-  $labelText_DateValue = str_replace("February","febrero",$labelText_DateValue);
-  $labelText_DateValue = str_replace("March","marzo",$labelText_DateValue);
-  $labelText_DateValue = str_replace("April","abril",$labelText_DateValue);
-  $labelText_DateValue = str_replace("May","mayo",$labelText_DateValue);
-  $labelText_DateValue = str_replace("June","junio",$labelText_DateValue);
-  $labelText_DateValue = str_replace("July","julio",$labelText_DateValue);
-  $labelText_DateValue = str_replace("August","agosto",$labelText_DateValue);
-  $labelText_DateValue = str_replace("September","septiembre",$labelText_DateValue);
-  $labelText_DateValue = str_replace("October","octubre",$labelText_DateValue);
-  $labelText_DateValue = str_replace("November","noviembre",$labelText_DateValue);
-  $labelText_DateValue = str_replace("December","diciembre",$labelText_DateValue);
+    $labelText_DateValue = str_replace("January","enero",$labelText_DateValue);
+    $labelText_DateValue = str_replace("February","febrero",$labelText_DateValue);
+    $labelText_DateValue = str_replace("March","marzo",$labelText_DateValue);
+    $labelText_DateValue = str_replace("April","abril",$labelText_DateValue);
+    $labelText_DateValue = str_replace("May","mayo",$labelText_DateValue);
+    $labelText_DateValue = str_replace("June","junio",$labelText_DateValue);
+    $labelText_DateValue = str_replace("July","julio",$labelText_DateValue);
+    $labelText_DateValue = str_replace("August","agosto",$labelText_DateValue);
+    $labelText_DateValue = str_replace("September","septiembre",$labelText_DateValue);
+    $labelText_DateValue = str_replace("October","octubre",$labelText_DateValue);
+    $labelText_DateValue = str_replace("November","noviembre",$labelText_DateValue);
+    $labelText_DateValue = str_replace("December","diciembre",$labelText_DateValue);
 }
 
 // check to see if node has 'Feature' in the for use by field.
@@ -136,253 +136,256 @@ function in_array_r($needle, $haystack, $strict = false) {
 }
 
 if ( ( !empty($node->field_for_use_by_text) && in_array_r('Feature', $node->field_for_use_by_text) )
-  || ( !empty($node->field_for_use_by)      && in_array_r('Feature', $node->field_for_use_by) ) ):
+    || ( !empty($node->field_for_use_by)      && in_array_r('Feature', $node->field_for_use_by) ) ):
 
     //get media associated with feature node
     $mediaImage = [];
     $mediaVideo = [];
     $mediaLink = false;
     if ( !empty($node->field_related_multimedia_two) ) {
-      foreach($node->field_related_multimedia_two['und'] as $mediaItems){
+        foreach($node->field_related_multimedia_two['und'] as $mediaItems){
 
-        $mediaItem = node_load($mediaItems['target_id']);
+            $mediaItem = node_load($mediaItems['target_id']);
 
-        //create image
-        if($mediaItem->field_media_type['und'][0]['value'] == 'Image'){
-          if(!empty($mediaItem->field_file_media_url['und'][0]['value'])){
-            $mediaImage['url'] = $mediaItem->field_file_media_url['und'][0]['value'];
-          }
-          if(!empty($mediaItem->field_alt_text['und'][0]['value'])){
-            $mediaImage['alt'] = $mediaItem->field_alt_text['und'][0]['value'];
-          }
-        }
+            //create image
+            if($mediaItem->field_media_type['und'][0]['value'] == 'Image'){
+                if(!empty($mediaItem->field_file_media_url['und'][0]['value'])){
+                    $mediaImage['url'] = $mediaItem->field_file_media_url['und'][0]['value'];
+                }
+                if(!empty($mediaItem->field_alt_text['und'][0]['value'])){
+                    $mediaImage['alt'] = $mediaItem->field_alt_text['und'][0]['value'];
+                }
+            }
 
-        //image
-        if($mediaItem->field_media_type['und'][0]['value'] == 'Image'){
-          if(!empty($mediaItem->field_file_media_url['und'][0]['value'])){
-            $mediaLink = $mediaItem->field_file_media_url['und'][0]['value'];
-          }
-        }
-
-
-        //image caption
-        if(!empty($mediaItem->field_image_caption['und'][0]['value'])){
-            $mediaCaption = '<figcaption>' . $mediaItem->field_image_caption['und'][0]['value'] . '</figcaption>';
-        } else {
-            $mediaCaption = '';
-        }
+            //image
+            if($mediaItem->field_media_type['und'][0]['value'] == 'Image'){
+                if(!empty($mediaItem->field_file_media_url['und'][0]['value'])){
+                    $mediaLink = $mediaItem->field_file_media_url['und'][0]['value'];
+                }
+            }
 
 
-
-        //create video
-        if($mediaItem->field_media_type['und'][0]['value'] == 'Video'){
-          if(!empty($mediaItem->field_embed_code['und'][0]['value'])){
-            $mediaVideo['embed_code'] = $mediaItem->field_embed_code['und'][0]['value'];
-          }
-          if(!empty($mediaItem->field_transcript['und'][0]['value'])){
-            $mediaVideo['transcript'] = $mediaItem->field_transcript['und'][0]['value'];
-          }
-        }
-      }
-    }
-
-  //get asset terms associated with feature node
-  if( !empty($node->field_asset_topic_taxonomy) ){
-    $assetTerms = array();
-    foreach($node->field_asset_topic_taxonomy['und'] as $item){
-      $assetTerms[] = $item['tid'];
-    }
-  }
-?>
+            //image caption
+            if(!empty($mediaItem->field_image_caption['und'][0]['value'])){
+                $mediaCaption = '<figcaption>' . $mediaItem->field_image_caption['und'][0]['value'] . '</figcaption>';
+            } else {
+                $mediaCaption = '';
+            }
 
 
-<div class="term-listing-heading">
-  <nav aria-label="Topic" class="col-md-3 leftnav">
-    <section>
-                      <div class="mrtp clearfix">
-                      <button id="leftnav-toggle" type="button">
-                      <div class="bttn">
-                        <header>
-                          <h2 id=""><?php print t('More Topics in this Section'); ?></h2>
-                        </header>
-                      </div>
-                    <div class="mrtpc"></div>
-                      </button>
-                  </div>
 
-
-          <div class="shade dwn" aria-expanded="false">
-        <header>
-          <h2 itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
-            <a itemprop="url" href="<?php print $sidebarTitleLink; ?>"><span itemprop="title">
-              <?php print $sidebarTitleText; ?>
-            </span></a>
-          </h2>
-        </header>
-        <ul>
-          <li >
-            <a href="<?php print $sidebarItem1Link; ?>">
-
-                <?php print $sidebarItem1Text; ?>
-
-            </a>
-          </li>
-          <li >
-            <a href="<?php print $sidebarItem2Link; ?>">
-
-                <?php print $sidebarItem2Text; ?>
-
-            </a>
-          </li>
-        </ul>
-      </div>
-    </section>
-  </nav>
-  <!---right container-->
-  <div class="col-md-9 col-sm-12 rightnav">
-    <header>
-      <?php if(!empty($node->title)): ?>
-        <h1><?php print $node->title; ?></h1>
-      <?php endif; ?>
-    </header>
-
-    <?php
-        $isForTeachers = false; 
-        if (!empty($node->field_asset_topic_taxonomy['und'])){
-            foreach($node->field_asset_topic_taxonomy['und'] as $item){
-                if(!empty($item['tid'])){
-                    
-                    $assetTerm = taxonomy_term_load($item['tid']);
-                    
-                    if($assetTerm->name == 'For Teachers Sticker'){
-                        $isForTeachers = true;
-                    }
+            //create video
+            if($mediaItem->field_media_type['und'][0]['value'] == 'Video'){
+                if(!empty($mediaItem->field_embed_code['und'][0]['value'])){
+                    $mediaVideo['embed_code'] = $mediaItem->field_embed_code['und'][0]['value'];
+                }
+                if(!empty($mediaItem->field_transcript['und'][0]['value'])){
+                    $mediaVideo['transcript'] = $mediaItem->field_transcript['und'][0]['value'];
                 }
             }
         }
-        if($isForTeachers == true){
-            print '<span><img src="/sites/all/themes/usa/images/Sticker_Teachers.png" alt="for teachers"></span>';
-        }
-    ?>  
+    }
 
-    <div id="pipe">
-      <div class="by">
-        <?php if(!empty($node->field_blog_owner['und'][0]['value'])): ?>
-          <div class="line">
+    //get asset terms associated with feature node
+    if( !empty($node->field_asset_topic_taxonomy) ){
+        $assetTerms = array();
+        foreach($node->field_asset_topic_taxonomy['und'] as $item){
+            $assetTerms[] = $item['tid'];
+        }
+    }
+    ?>
+
+
+    <div class="term-listing-heading">
+        <nav aria-label="Topic" class="col-md-3 leftnav">
+            <section>
+                <div class="mrtp clearfix">
+                    <button id="leftnav-toggle" type="button">
+                        <div class="bttn">
+                            <header>
+                                <h2 id=""><?php print t('More Topics in this Section'); ?></h2>
+                            </header>
+                        </div>
+                        <div class="mrtpc"></div>
+                    </button>
+                </div>
+
+
+                <div class="shade dwn" aria-expanded="false">
+                    <header>
+                        <h2 itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                            <a itemprop="url" href="<?php print $sidebarTitleLink; ?>"><span itemprop="title">
+              <?php print $sidebarTitleText; ?>
+            </span></a>
+                        </h2>
+                    </header>
+                    <ul>
+                        <li >
+                            <a href="<?php print $sidebarItem1Link; ?>">
+
+                                <?php print $sidebarItem1Text; ?>
+
+                            </a>
+                        </li>
+                        <li >
+                            <a href="<?php print $sidebarItem2Link; ?>">
+
+                                <?php print $sidebarItem2Text; ?>
+
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+        </nav>
+        <!---right container-->
+        <div class="col-md-9 col-sm-12 rightnav">
+            <header>
+                <?php if(!empty($node->title)): ?>
+                    <h1><?php print $node->title; ?></h1>
+                <?php endif; ?>
+            </header>
+
+            <?php
+            $isForTeachers = false;
+            if (!empty($node->field_asset_topic_taxonomy['und'])){
+                foreach($node->field_asset_topic_taxonomy['und'] as $item){
+                    if(!empty($item['tid'])){
+
+                        $assetTerm = taxonomy_term_load($item['tid']);
+
+                        if($assetTerm->name == 'For Teachers Sticker'){
+                            $isForTeachers = true;
+                        }
+                    }
+                }
+            }
+            if($isForTeachers == true){
+                print '<span><img src="/sites/all/themes/usa/images/Sticker_Teachers.png" alt="for teachers"></span>';
+            }
+            ?>
+
+            <div id="pipe">
+                <div class="by">
+                    <?php if(!empty($node->field_blog_owner['und'][0]['value'])): ?>
+                        <div class="line">
             <span class="bylinebld">
               <?php print $labelText_By; ?>
             </span>
-            <?php print $node->field_blog_owner['und'][0]['value']; ?>
-          </div>
-        <?php endif; ?>
-        <?php if(!empty($labelText_DateValue)):  ?>
-          <div class="line">
+                            <?php print $node->field_blog_owner['und'][0]['value']; ?>
+                        </div>
+                    <?php endif; ?>
+                    <?php if(!empty($labelText_DateValue)):  ?>
+                        <div class="line">
             <span class="bylinebld">
               <?php print $labelText_DateLabel; ?>
             </span>
-            <?php print $labelText_DateValue; ?>
-          </div>
-        <?php endif; ?>
-      </div>
-    </div>
-    <div>
- 
-
-      <?php if ($mediaImage): ?>
-        <?php if($mediaLink != false): ?>
-          <span class="fea-img-cont col-md-6 col-sm-12"><figure class="fea-cntntmddl-img"><a href="<?php print $mediaLink ?>"><img class="fea-img" src="<?php print $mediaImage['url']; ?>" alt="<?php print $mediaImage['alt']; ?>"><?php print $mediaCaption; ?></a></figure></span>
-        <?php else: ?>
-          <span class="fea-img-cont col-md-6 col-sm-12"><figure class="fea-cntntmddl-img"><img class="fea-img" src="<?php print $mediaImage['url']; ?>" alt="<?php print $mediaImage['alt']; ?>"><?php print $mediaCaption; ?></figure></span>
-        <?php endif; ?>
-      <?php endif; ?>
+                            <?php print $labelText_DateValue; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div>
 
 
+                <?php if ($mediaImage): ?>
+                    <?php if($mediaLink != false): ?>
+                        <span class="fea-img-cont col-md-6 col-sm-12"><figure class="fea-cntntmddl-img"><a href="<?php print $mediaLink ?>"><img class="fea-img" src="<?php print $mediaImage['url']; ?>" alt="<?php print $mediaImage['alt']; ?>"><?php print $mediaCaption; ?></a></figure></span>
+                    <?php else: ?>
+                        <span class="fea-img-cont col-md-6 col-sm-12"><figure class="fea-cntntmddl-img"><img class="fea-img" src="<?php print $mediaImage['url']; ?>" alt="<?php print $mediaImage['alt']; ?>"><?php print $mediaCaption; ?></figure></span>
+                    <?php endif; ?>
+                <?php endif; ?>
 
-      <?php if(!empty($node->body['und'][0]['value'])): ?>
-        <?php
-          $row = $node->body['und'][0]['value'];
-          $row_changed = str_ireplace("<h3>", "<header><h2>", $row);
-          $row_changed = str_ireplace("<h3 ", "<header><h2 ", $row_changed);
-          $row_changed = str_ireplace("</h3>", "</h2></header>", $row_changed);
 
-          $row_changed = str_ireplace("<h4>", "<h3>", $row_changed);
-          $row_changed = str_ireplace("<h4 ", "<h3 ", $row_changed);
-          $row_changed = str_ireplace("</h4>", "</h3>", $row_changed);
 
-          print $row_changed;
-          ?>
-      <?php endif; ?>
-      <?php if (!empty($node->field_html['und'][0]['value'])): ?>
-        <?php print $node->field_html['und'][0]['value']; ?>
-      <?php endif; ?>
+                <?php if(!empty($node->body['und'][0]['value'])): ?>
+                    <?php
+                    $row = $node->body['und'][0]['value'];
+                    $row_changed = str_ireplace("<h3>", "<header><h2>", $row);
+                    $row_changed = str_ireplace("<h3 ", "<header><h2 ", $row_changed);
+                    $row_changed = str_ireplace("</h3>", "</h2></header>", $row_changed);
 
-      <?php if ($mediaVideo['embed_code']): ?>
-        <div id="" class="embed"> <!-- video embed -->
-          <?php print $mediaVideo['embed_code']; ?>
+                    $row_changed = str_ireplace("<h4>", "<h3>", $row_changed);
+                    $row_changed = str_ireplace("<h4 ", "<h3 ", $row_changed);
+                    $row_changed = str_ireplace("</h4>", "</h3>", $row_changed);
+
+                    print $row_changed;
+                    ?>
+                <?php endif; ?>
+                <?php if (!empty($node->field_html['und'][0]['value'])): ?>
+                    <?php print $node->field_html['und'][0]['value']; ?>
+                <?php endif; ?>
+
+                <?php if ($mediaVideo['embed_code']): ?>
+                    <div id="" class="embed"> <!-- video embed -->
+                        <?php print $mediaVideo['embed_code']; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+
+            <?php if($mediaVideo['transcript']): ?>
+                <div class="clearfix">
+                    <article>
+                        <ul class="usa-accordion-bordered">
+                            <li class="transcript_img">
+                                <button class="usa-accordion-button" data-toggledtext="Hide the Video Transcript" data-initialtext="Show the Video Transcript" aria-expanded="false" aria-controls="amendment-b-1">
+                                    <?php print t('Show the Video Transcript'); ?>
+                                </button>
+                                <div id="amendment-b-1" class="usa-accordion-content" aria-hidden="true">
+                                    <?php print $mediaVideo['transcript']; ?>
+                                </div>
+                            </li>
+                        </ul>
+                    </article>
+                </div>
+            <?php endif; ?>
+
+
+
+            <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
+
+            <?php if(!empty($assetTerms)): ?>
+
+                <?php print views_embed_view('feature_related_block', 'block', implode('+',$assetTerms), $node->nid); ?>
+
+            <?php endif; ?>
+
+
+            <?php print survey_on_pages(); ?>
         </div>
-      <?php endif; ?>
     </div>
-
-
-    <?php if($mediaVideo['transcript']): ?>
-      <div class="clearfix">
-        <header>
-          <h3 id="" class="vidscrpt">
-            <button> <span class="arrowDwn"><?php print t('Show the Video Transcript'); ?></span> </button>
-          </h3>
-        </header>
-        <div class="transcript">
-          <?php print $mediaVideo['transcript']; ?>
-        </div>
-      </div>
-    <?php endif; ?>           
-
-
-
-
-    <p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
-
-      <?php if(!empty($assetTerms)): ?>
-
-            <?php print views_embed_view('feature_related_block', 'block', implode('+',$assetTerms), $node->nid); ?>
-
-      <?php endif; ?>
-
-
-    <?php print survey_on_pages(); ?>
-  </div>
-</div>
 
 <?php else: ?>
 
-<div id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix"<?php print $attributes; ?>>
+    <div id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix"<?php print $attributes; ?>>
 
-  <?php print $user_picture; ?>
+        <?php print $user_picture; ?>
 
-  <?php print render($title_prefix); ?>
-  <?php if (!$page): ?>
-    <h2<?php print $title_attributes; ?>><a href="<?php print $node_url; ?>"><?php print $title; ?></a></h2>
-  <?php endif; ?>
-  <?php print render($title_suffix); ?>
+        <?php print render($title_prefix); ?>
+        <?php if (!$page): ?>
+            <h2<?php print $title_attributes; ?>><a href="<?php print $node_url; ?>"><?php print $title; ?></a></h2>
+        <?php endif; ?>
+        <?php print render($title_suffix); ?>
 
-  <?php if ($display_submitted): ?>
-    <div class="submitted">
-      <?php print $submitted; ?>
+        <?php if ($display_submitted): ?>
+            <div class="submitted">
+                <?php print $submitted; ?>
+            </div>
+        <?php endif; ?>
+
+        <div class="content"<?php print $content_attributes; ?>>
+            <?php
+            // We hide the comments and links now so that we can render them later.
+            hide($content['comments']);
+            hide($content['links']);
+            print render($content);
+            ?>
+        </div>
+
+        <?php print render($content['links']); ?>
+
+        <?php print render($content['comments']); ?>
+
     </div>
-  <?php endif; ?>
-
-  <div class="content"<?php print $content_attributes; ?>>
-    <?php
-      // We hide the comments and links now so that we can render them later.
-      hide($content['comments']);
-      hide($content['links']);
-      print render($content);
-    ?>
-  </div>
-
-  <?php print render($content['links']); ?>
-
-  <?php print render($content['comments']); ?>
-
-</div>
 <?php endif; ?>

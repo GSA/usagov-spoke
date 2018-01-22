@@ -52,8 +52,8 @@ if ( stripos($siteName, 'Gobi') !== false ) {
     $sidebarItem2Text = 'Novedades';
     $sidebarItem2Link = '/novedades';
 } else {
-    $sidebarItem2Text = 'Work With Us';
-    $sidebarItem2Link = '/work-with-us';
+    $sidebarItem2Text = 'Partner with Us';
+    $sidebarItem2Link = '/partner-with-us';
 }
 
 ?>

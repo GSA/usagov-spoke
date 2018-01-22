@@ -10,17 +10,19 @@ $GLOBALS['include_tracking_html'] = false;
  */
 function all_childsite_misc_init()
 {
-    /// if we are not drush, not already https, and not debugging: force https
-    if ( !drupal_is_cli()
-         && ( empty($_SERVER['HTTPS']) || strtolower($_SERVER['HTTPS'])=="off" )
-         && strpos($_SERVER['REQUEST_URI'],'-DEBUG-NO-HTTPS-REDIRECT-')===false)
-    {
-        while ( @ob_get_length() ) { @ob_end_clean(); }
-        http_response_code(302);
-        header('Location: https://'.$_SERVER['HTTP_HOST'].request_uri_path());
-        // drupal_add_http_header('Location', 'https://'.$_SERVER['HTTP_HOST'].request_uri_path());
-        exit();
-    }
+    /// this is a job for nginx not drupal
+    // if ( !drupal_is_cli() ) { // this if-condition is required in order to allow drush to work
+    //     header('Strict-Transport-Security: max-age=31536000');
+    //     if ( empty($_SERVER['HTTPS']) ) {
+    //         if ( strpos($_SERVER['REQUEST_URI'], '-DEBUG-NO-HTTPS-REDIRECT-') === false ) {
+    //             while ( @ob_get_length() ) { @ob_end_clean(); }
+    //             header('Location: https://'.$_SERVER['HTTP_HOST'].request_uri_path());
+    //             http_response_code(301);
+    //             drupal_add_http_header('Location', 'https://'.$_SERVER['HTTP_HOST'].request_uri_path());
+    //             exit();
+    //         }
+    //     }
+    // }
 
     //if ( strtolower(getenv('CMP_DRUPAL_ENVIRONMENT_NAME')) !== 'prod' )
     // if ( !empty(getenv('CMP_DRUPAL_USASEARCH_DISABLED')) )
@@ -51,9 +53,14 @@ function all_childsite_misc_init()
             if(is_numeric($nid) && $pos1){
                 $friendlyUrl = db_query('SELECT alias FROM {url_alias} WHERE source=:source',
                     array(':source'=>'node/'.$nid) )->fetchColumn();
-
+                $args = arg();
                 if($friendlyUrl){
-                    drupal_goto($friendlyUrl);
+                    if (isset($args[2]) && ($args[2] == 'devel' || $args[2] == 'edit')) {
+
+                    }
+                    else {
+                        drupal_goto($friendlyUrl);
+                    }
                 }else{
                     if ($user->uid != 1){
                         drupal_not_found();

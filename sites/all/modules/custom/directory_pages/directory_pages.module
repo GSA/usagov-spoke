@@ -913,6 +913,7 @@ function directory_pages_pathIsFedAgencyTitle($path, $isUSA, $isGobierno) {
     $testDirRecordTitle = str_replace("'", '', $testDirRecordTitle);
     $testDirRecordTitle = str_replace(")", '', $testDirRecordTitle);
     $testDirRecordTitle = str_replace("(", '', $testDirRecordTitle);
+    $testDirRecordTitle = str_replace("/", '', $testDirRecordTitle);
     $testDirRecordTitle = trim($testDirRecordTitle, '/');
 
     // Default to returning false, when nothing is found
@@ -928,7 +929,7 @@ function directory_pages_pathIsFedAgencyTitle($path, $isUSA, $isGobierno) {
         SELECT n.nid AS 'nid', title
         FROM node n
         INNER JOIN field_data_field_language l ON l.entity_id = n.nid
-        WHERE LCASE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(title, ' ', ''), '-', ''), '.', ''), ',', ''),'\'',''),'(',''),')','')) = :testDirRecordTitle AND field_language_value LIKE :lang
+        WHERE LCASE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(title, ' ', ''),'/',''), '-', ''), '.', ''), ',', ''),'\'',''),'(',''),')','')) = :testDirRecordTitle AND field_language_value LIKE :lang
     ",array(':testDirRecordTitle'=>$testDirRecordTitle, ':lang'=>$lang));
 
     /*$records = db_query("

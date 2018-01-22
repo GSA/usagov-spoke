@@ -75,13 +75,12 @@ if ( request_uri() !== '/' ) {
     <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <?php
-        $domain = "www.usa.gov";
-        $fb_img='USAGOV.png';
+    $domain = "www.usa.gov";
+    $fb_img='USAGOV.png';
     if ($variables['siteID'] == 'gobierno')
     {
         $domain = "gobierno.usa.gov";
-
-        $fb_img = 'Logo_Gobierno_Final.png';
+        $fb_img = 'Logo_GobiernoUSA_fb.png';
     }
     $domain = $_SERVER['HTTP_HOST'];
 
@@ -92,8 +91,16 @@ if ( request_uri() !== '/' ) {
     <meta property="og:title"         content="<?php print $page_title; ?>" />
     <meta property="og:image"         content="https://<?php print strtolower($domain . base_path()); ?>sites/all/themes/usa/images/<?php print $fb_img; ?>" />
     <?php
+    if ($variables['siteID'] == 'gobierno')
+    {
+        ?>
+        <meta property="og:image:height"         content="630" />
+        <meta property="og:image:width"         content="1200" />
+
+    <?php
+    }
     // Print the "Head-HTML" field of this S.S.-taxonomy-term
-    if ( !empty($term->field_head_html['und'][0]['value']) ) {
+    if ( !empty($term->field_head_html['und'][0]['value']) && !drupal_is_front_page() ) {
         print $term->field_head_html['und'][0]['value'];
     }
     ?>
@@ -312,7 +319,7 @@ if ( request_uri() !== '/' ) {
 
 <?php
 // Print the "End-HTML" field of this S.S.-taxonomy-term
-if ( !empty($term->field_end_html['und'][0]['value']) ) {
+if ( !empty($term->field_end_html['und'][0]['value']) && !drupal_is_front_page() ) {
     print $term->field_end_html['und'][0]['value'];
 }
 ?>

@@ -95,19 +95,19 @@ if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
 <?php
 if(!empty($alertNode)){
     ?>
-    <div id="emergency" data-id="201705040949" class="active modal">
+    <div id="emergency-modal" data-id="201705040949" class="modal">
 
         <div class="usa-grid">
             <div>
-                <button class="close top" onclick="closeEmergencyPopup()">
-                    <?php print ($siteIsUSA)? "Close":"Cerrar"; ?>
+                <button class="close top">
+                    <?php print ($siteIsUSA)? "Close" : "Cerrar"; ?>
                 </button>
                 <div class="icon">
 
                 </div>
                 <h2><?php print $alertNode->title; ?></h2>
                 <p><?php print  $alertNode->body['und']['0']['value']; ?></p>
-                <button class="close" onclick="closeEmergencyPopup()">
+                <button class="close" >
                     <?php print ($siteIsUSA)? "Close" : "Cerrar"; ?>
                 </button>
                 <div class="logo"></div>

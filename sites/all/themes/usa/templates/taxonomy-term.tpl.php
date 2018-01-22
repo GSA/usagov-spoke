@@ -165,10 +165,10 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
             ?>
 
             <?php
-                print _print_social_media();
-                print '<p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl">'.t('Back to Top').'</span></a></p>';
-                print do_you_need_help();
-                print survey_on_pages();
+            print _print_social_media();
+            print '<p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl">'.t('Back to Top').'</span></a></p>';
+            print do_you_need_help();
+            print survey_on_pages();
             ?>
 
         </article>
