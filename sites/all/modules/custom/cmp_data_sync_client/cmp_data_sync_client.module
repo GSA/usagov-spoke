@@ -593,15 +593,21 @@ function _cdsc_get_entities_from_elasticsearch($since=0)
                 $_must   = '';
                 $_should = '';
                 $since = intval($since);
-                if ( !empty($since) )
-                {
-                    $_must = '{"range":{"changed":{"gte":'.$since.'}}}';
-                // } else {
-                //     $_must = '{"match_all":{}}';
-                }
                 $site_name = variable_get('cdsc_site_name_filter');
                 $site_name = preg_replace("/[^\w\_\.\-]/","",$site_name);
                 $site_name = json_encode($site_name);
+
+                if ( !empty($since) )
+                {
+                    if ( in_array($site_name,['"Blog.USA.gov"']) )
+                    {
+                        $_must = '[{"range":{"changed":{"gte":'.$since.'}}},{"term":{"field_for_use_by.und.value":"Blog.USA.gov"}}]';
+                    }
+                    else {
+                        $_must = '{"range":{"changed":{"gte":'.$since.'}}}';
+                    }
+                }
+
                 $_should = [ '{"term":{"deleted":"1"}}' ];
                 if ( !empty($site_name) )
                 {
