@@ -602,7 +602,7 @@ function _cdsc_get_entities_from_elasticsearch($since=0)
                     $_must = '{"range":{"changed":{"gte":'.$since.'}}}';
                 }
 
-                $_should = [ '{"term":{"deleted":"1"}}' ];
+                $_should = ['{"term":{"deleted":"1"}}'];
                 if ( !empty($site_name) )
                 {
                     $_should[] = '{"term":{"field_for_use_by.und.value":'.$site_name.'}}';
@@ -616,11 +616,6 @@ function _cdsc_get_entities_from_elasticsearch($since=0)
             "query": {';
 
                 if ($_must !='' && $_should !='') {
-                   /* $_search = '{"query":{"bool":';
-                    $_search .= '"must":' . $_must . ',';
-                    $_search .= '"should":[' . join(',', $_should) . ']';
-                    $_search .= '}},'
-                        . '"size":' . $es_batch_size . '}';*/
 
                     $_search .= '"bool" : { "must" :';
                     $_search .= '['.$_must.', { "bool" : {"should":[' . join(',', $_should) . ']}}'.']';
