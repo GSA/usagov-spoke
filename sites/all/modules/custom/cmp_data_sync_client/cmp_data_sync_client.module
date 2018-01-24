@@ -612,6 +612,8 @@ function _cdsc_get_entities_from_elasticsearch($since=0)
                     }
                 }
 
+                $_should[] ='{"bool": {"must_not": {"exists": {"field": "field_for_use_by"}}}}';
+
                 $_search = '{
             "query": {';
 
