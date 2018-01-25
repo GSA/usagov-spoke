@@ -847,6 +847,7 @@ function _cdsc_process_queue()
         }
     }
     _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' results : '.$success.'/'.$attempted.' of '.$initial_queued_item_count.' total');
+    drupal_flush_all_caches();
     return $success;
 }
 function _cdsc_process_queue_data($q_data)
