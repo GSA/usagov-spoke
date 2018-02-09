@@ -795,12 +795,17 @@ function getSiblings (el) {
 }
 
 var showPanelListener = function () {
-  var panelToShow = this.parentNode;
-  var otherPanels = getSiblings(panelToShow);
-  panelToShow.classList.remove('hidden');
-  otherPanels.forEach(function (el) {
-    el.classList.add('hidden');
-  });
+  /*
+  CHRIS WAS HERE
+  Changed this logic to fix mobile footer dropdowns
+  https://ctac.myjetbrains.com/youtrack/issue/UFE-1169
+  */
+  var panelToShow = this.parentNode.classList;
+  if(panelToShow.contains('hidden')){
+    panelToShow.remove('hidden');
+  }else{
+    panelToShow.add('hidden');
+  }
 };
 
 var events = [];

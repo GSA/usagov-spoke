@@ -90,3 +90,41 @@ function desktopNav() {
 	tabbable();
 	wasdesktop=true;
 }
+
+// Togglify is a function that can be added to any usa-accordion from the
+// US Web Design Standards. It requires the class 'usa-accordion-toggle'
+// to be added to the accordion element. It also requires a button with 
+// the class 'usa-accordion-toggle-all' and data attribute, 'data-toggledText'
+// (the text for the toggled state) to be added within the accordion.
+jQuery.fn.togglify = function() {
+	this.find('.usa-accordion-toggle-all').each(function(){
+		var toggle=jQuery(this);
+		var isToggled=toggle.attr("data-isToggled");
+		var initialText=toggle.text();
+		var toggledText=toggle.attr("data-toggledText");
+		toggle.on('click', function() {
+			var accordion=toggle.parent('.usa-accordion, .usa-accordion-bordered');
+			accordion.find('.usa-accordion-button').each(function(){
+				var accordionButton=jQuery(this);
+				if(isToggled){
+					accordionButton.attr('aria-expanded', 'true');
+					jQuery('#' + accordionButton.attr('aria-controls')).attr('aria-hidden', 'false');
+				}else{
+					accordionButton.attr('aria-expanded', 'false');
+					jQuery('#' + accordionButton.attr('aria-controls')).attr('aria-hidden', 'true');
+				}
+			});
+			if(isToggled){
+				toggle.text(toggledText);
+			}else{
+				toggle.text(initialText);
+			}
+			isToggled=!isToggled;
+	  });
+	});
+};
+
+jQuery(function(){
+	if(jQuery('.usa-accordion-toggle').length>0)
+		jQuery('.usa-accordion-toggle').togglify();
+});
