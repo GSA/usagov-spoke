@@ -1,4 +1,5 @@
 # Ignore paths that contain user-generated content.
-sites/*/files
-sites/*/private
+sites/*/files/*
+!sites/*/files/sitemap*.xml
+sites/*/private/*
 **/.DS_Store
