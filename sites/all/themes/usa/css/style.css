@@ -1,6 +1,4 @@
-
 /* Test Stage Update */
-
 * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -8437,7 +8435,8 @@ body, html {
   #facetedsearch a.surveyNav:link,
   #facetedsearch a.surveyNav:visited,
   #facetedsearch .surveyNavSub input {
-    color: #fff;
+    color: #000;
+    /*testing cmp 2.0 - changed from #fff- sg*/
     text-decoration: none;
     border: 1px #366334 solid;
     display: inline-block;
