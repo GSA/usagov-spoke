@@ -41,13 +41,12 @@ function sitmapHandeler() {
     while( @ob_end_clean() );
     header('Content-type: text/xml');
 
-    // Based on the site-name decide what to do
-    if ( strpos(strtolower($siteName), 'kids') !== false ) {
-        readfile('sites/default/files/sitemap-kids.xml');
-    } elseif ( strpos(strtolower($siteName), 'gobierno') !== false ) {
-        readfile('sites/default/files/sitemap-gobierno.xml');
+    if ( strpos(strtolower($siteName), 'gobierno') !== false ) {
+        //readfile('sites/default/files/sitemap-gobierno.xml');
+        readfile(drupal_get_path('module', 'hooks_reaction').'/sitemap-gobierno.xml');
     } elseif ( strpos(strtolower($siteName), 'usa') !== false ) {
-        readfile('sites/default/files/sitemap-usa.xml');
+        //readfile('sites/default/files/sitemap-usa.xml');
+        readfile(drupal_get_path('module', 'hooks_reaction').'/sitemap-usa.xml');
     }
 
     exit();
