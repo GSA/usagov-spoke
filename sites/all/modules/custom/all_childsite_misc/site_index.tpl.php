@@ -99,21 +99,21 @@ if (!empty($siteIsKids)) {
 
     ?>
 </header>
-<ul class="az-list group">
-    <?php
-    if (isset($A_to_Z)) {
-        foreach($A_to_Z as $letter) {
-            $cls = ((isset($_REQUEST['letter']) && strtoupper($_REQUEST['letter']) == $letter['letter']) || ($is_landing && $letter['letter'] == 'A'))? 'class="current"':'';
-            print '<li '.$cls.'>'. (($letter['page_exist'])? (((isset($_REQUEST['letter']) && strtoupper($_REQUEST['letter']) == $letter['letter'])
-                    || ($is_landing && $letter['letter'] == 'A'))? $letter['letter'] : '<a class="atoz_letter" href="/'.$path.'/'. strtolower($letter['letter']) .'">' . $letter['letter'] . '</a>') : $letter['letter']) . '</li>';
-        }
-    }
-    ?>
-</ul>
+
 
 <div class="col-md-9 col-sm-12 rightnav">
 
-
+    <ul class="az-list group">
+        <?php
+        if (isset($A_to_Z)) {
+            foreach($A_to_Z as $letter) {
+                $cls = ((isset($_REQUEST['letter']) && strtoupper($_REQUEST['letter']) == $letter['letter']) || ($is_landing && $letter['letter'] == 'A'))? 'class="current"':'';
+                print '<li '.$cls.'>'. (($letter['page_exist'])? (((isset($_REQUEST['letter']) && strtoupper($_REQUEST['letter']) == $letter['letter'])
+                        || ($is_landing && $letter['letter'] == 'A'))? $letter['letter'] : '<a class="atoz_letter" href="/'.$path.'/'. strtolower($letter['letter']) .'">' . $letter['letter'] . '</a>') : $letter['letter']) . '</li>';
+            }
+        }
+        ?>
+    </ul>
     <?php
     if (isset($page_list)) {
         foreach($page_list as $k => $v) {
