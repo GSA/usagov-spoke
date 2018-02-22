@@ -407,7 +407,9 @@ if($siteIsGobierno){
             <?php if(@!empty($dirRecords['StateDetails'][0]->field_travel_tourism['und'][0]['url']) ): ?>
                 <li><a href="<?php print $dirRecords['StateDetails'][0]->field_travel_tourism['und'][0]['url']; ?>">Travel and Tourism</a></li>
             <?php endif; ?>
-
+            <?php if(@!empty($dirRecords['StateDetails'][0]->field_social_services['und'][0]['url']) ): ?>
+                <li><a href="<?php print $dirRecords['StateDetails'][0]->field_social_services['und'][0]['url']; ?>">Social Services</a></li>
+            <?php endif; ?>
 
         </ul>
     </section>
