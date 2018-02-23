@@ -865,9 +865,6 @@ input[type="radio"] {
 .hp-srvc-agencies {
   background: url("../images/Topic_Icon_Elected_Officials.png") 5px 0 no-repeat; }
 
-.hp-srvc-business-spanish {
-  background: url("../images/Topic_Icon_Business_Spanish.png") 5px 0 no-repeat; }
-
 /***********************
 13. Footer
 ***********************/
@@ -1642,6 +1639,12 @@ color: #000;
 
 .infobytpc .topic-busa {
   background: url("../images/Topic_Icon_BUSA.png") 5px 0 no-repeat; }
+
+.infobytpc .topic-consumer {
+  background: url("../images/Topic_Icon_Consumer.png") 5px 0 no-repeat; }
+
+.infobytpc .topic-business-spanish {
+  background: url("../images/Topic_Icon_Business_Spanish.png") 5px 0 no-repeat; }
 
 @media (max-width: 991px) {
   .infobytpc ul.dwnlvl li p {
@@ -2669,6 +2672,8 @@ New Top Nav Template
       background-image: url("../images/Topic_Icon_BUSA_White.svg"); }
     .topic-nav .topic-nav-box1 .topic-nav-business-spanish {
       background-image: url("../images/Topic_Icon_Business_Spanish_White.svg"); }
+    .topic-nav .topic-nav-box1 .topic-nav-consumer {
+      background-image: url("../images/Topic_Icon_Consumer_White.svg"); }
     .topic-nav .topic-nav-box1 .topic-nav-agencies {
       background-image: url("../images/Topic_Icon_Elected_Officials_White.svg"); }
     .topic-nav .topic-nav-box1 .topic-nav-plant {
@@ -2707,6 +2712,8 @@ New Top Nav Template
       background-image: url("../images/Topic_Banner_Business.jpg"); }
     .topic-nav .topic-nav-box1 .topic-nav-photo-business-spanish {
       background-image: url("../images/Topic_Banner_Business_Spanish.jpg"); }
+    .topic-nav .topic-nav-box1 .topic-nav-photo-consumer {
+      background-image: url("../images/Topic_Banner_Consumer.jpg"); }
     .topic-nav .topic-nav-box1 .topic-nav-photo-plant {
       background-image: url("../images/Topic_Banner_Earth.jpg"); }
     .topic-nav .topic-nav-box1 .topic-nav-photo-bullhorn {
@@ -3021,6 +3028,12 @@ button.submit .icon-search {
 .topic-nav-busa {
   background-image: url("../images/Topic_Icon_BUSA_White.svg"); }
 
+.topic-nav-business-spanish {
+  background-image: url("../images/Topic_Icon_Business_Spanish_White.svg"); }
+
+.topic-nav-consumer {
+  background-image: url("../images/Topic_Icon_Consumer_White.svg"); }
+
 .topic-nav-agencies {
   background-image: url("../images/Topic_Icon_Elected_Officials_White.svg"); }
 
@@ -3072,6 +3085,12 @@ button.submit .icon-search {
 
 .topic-nav-photo-busa {
   background-image: url("../images/Topic_Banner_Business.jpg"); }
+
+.topic-nav-photo-consumer {
+  background-image: url("../images/Topic_Banner_Consumer.jpg"); }
+
+.topic-nav-photo-business-spanish {
+  background-image: url("../images/Topic_Banner_Business_Spanish.jpg"); }
 
 .topic-nav-photo-plant {
   background-image: url("../images/Topic_Banner_Earth.jpg"); }
