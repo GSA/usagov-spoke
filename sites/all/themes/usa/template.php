@@ -707,6 +707,16 @@ function _usa_preprocess_html_javascript( &$variables )
 
     if( $variables['siteID']==='usa' )
     {
+
+        /*
+                 <!-- Begin: VOC survey -->
+        <script type=\"text/javascript\" src=\"https://survey.usa.gov/widget/291/invitation.js?target_id=srvyinvt&mobile_target_id=survey-target&stylesheet=https%3A%2F%2Fwww.usa.gov/sites/all/themes/usa/css/popup-survey.css\"></script>
+        <!-- End: VOC survey -->
+
+        		<!-- Begin: VOC survey -->
+        <script type=\"text/javascript\" src=\"https://survey.usa.gov/widget/301/invitation.js?target_id=srvyinvt&mobile_target_id=survey-target&stylesheet=https%3A%2F%2Fgobierno.usa.gov/sites/all/themes/usa/css/popup-survey-gobierno.css\"></script>
+        <!-- End: VOC survey -->
+         * */
         if (current_path()!== 'find-government-contracts') {
             $variables['jsScript'] = "<script>
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -716,9 +726,6 @@ function _usa_preprocess_html_javascript( &$variables )
 			ga('create', 'UA-28227333-1', 'auto');
 			ga('send', 'pageview');
 		</script>
-        <!-- Begin: VOC survey -->
-        <script type=\"text/javascript\" src=\"https://survey.usa.gov/widget/291/invitation.js?target_id=srvyinvt&mobile_target_id=survey-target&stylesheet=https%3A%2F%2Fwww.usa.gov/sites/all/themes/usa/css/popup-survey.css\"></script>
-        <!-- End: VOC survey -->
 
 		<script type=\"text/javascript\">
 
@@ -763,9 +770,6 @@ function _usa_preprocess_html_javascript( &$variables )
 			ga('create', 'UA-28227333-1', 'auto');
 			ga('send', 'pageview');
 		</script>
-		<!-- Begin: VOC survey -->
-        <script type=\"text/javascript\" src=\"https://survey.usa.gov/widget/301/invitation.js?target_id=srvyinvt&mobile_target_id=survey-target&stylesheet=https%3A%2F%2Fgobierno.usa.gov/sites/all/themes/usa/css/popup-survey-gobierno.css\"></script>
-        <!-- End: VOC survey -->
 
 		<script type=\"text/javascript\">
 
