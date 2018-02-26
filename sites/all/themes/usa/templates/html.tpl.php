@@ -158,7 +158,7 @@ if ( request_uri() !== '/' ) {
 
     <div class="usa-navbar">
         <?php print $preMenuHTML; ?>
-        <button class="usa-menu-btn">Menu</button>
+        <button class="usa-menu-btn"><?php print t('Menu'); ?></button>
     </div>
     <nav role="navigation" class="usa-nav">
         <div class="usa-nav-inner">
