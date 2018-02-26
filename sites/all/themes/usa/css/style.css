@@ -1640,6 +1640,12 @@ color: #000;
 .infobytpc .topic-busa {
   background: url("../images/Topic_Icon_BUSA.png") 5px 0 no-repeat; }
 
+.infobytpc .topic-consumer {
+  background: url("../images/Topic_Icon_Consumer.png") 5px 0 no-repeat; }
+
+.infobytpc .topic-business-spanish {
+  background: url("../images/Topic_Icon_Business_Spanish.png") 5px 0 no-repeat; }
+
 @media (max-width: 991px) {
   .infobytpc ul.dwnlvl li p {
     line-height: 20px; }
@@ -2664,6 +2670,10 @@ New Top Nav Template
       background-image: url("../images/Topic_Icon_Benefit_White.svg"); }
     .topic-nav .topic-nav-box1 .topic-nav-busa {
       background-image: url("../images/Topic_Icon_BUSA_White.svg"); }
+    .topic-nav .topic-nav-box1 .topic-nav-business-spanish {
+      background-image: url("../images/Topic_Icon_Business_Spanish_White.svg"); }
+    .topic-nav .topic-nav-box1 .topic-nav-consumer {
+      background-image: url("../images/Topic_Icon_Consumer_White.svg"); }
     .topic-nav .topic-nav-box1 .topic-nav-agencies {
       background-image: url("../images/Topic_Icon_Elected_Officials_White.svg"); }
     .topic-nav .topic-nav-box1 .topic-nav-plant {
@@ -2700,6 +2710,10 @@ New Top Nav Template
       background-image: url("../images/Topic_Banner_Benefit.jpg"); }
     .topic-nav .topic-nav-box1 .topic-nav-photo-busa {
       background-image: url("../images/Topic_Banner_Business.jpg"); }
+    .topic-nav .topic-nav-box1 .topic-nav-photo-business-spanish {
+      background-image: url("../images/Topic_Banner_Business_Spanish.jpg"); }
+    .topic-nav .topic-nav-box1 .topic-nav-photo-consumer {
+      background-image: url("../images/Topic_Banner_Consumer.jpg"); }
     .topic-nav .topic-nav-box1 .topic-nav-photo-plant {
       background-image: url("../images/Topic_Banner_Earth.jpg"); }
     .topic-nav .topic-nav-box1 .topic-nav-photo-bullhorn {
@@ -3014,6 +3028,12 @@ button.submit .icon-search {
 .topic-nav-busa {
   background-image: url("../images/Topic_Icon_BUSA_White.svg"); }
 
+.topic-nav-business-spanish {
+  background-image: url("../images/Topic_Icon_Business_Spanish_White.svg"); }
+
+.topic-nav-consumer {
+  background-image: url("../images/Topic_Icon_Consumer_White.svg"); }
+
 .topic-nav-agencies {
   background-image: url("../images/Topic_Icon_Elected_Officials_White.svg"); }
 
@@ -3065,6 +3085,12 @@ button.submit .icon-search {
 
 .topic-nav-photo-busa {
   background-image: url("../images/Topic_Banner_Business.jpg"); }
+
+.topic-nav-photo-consumer {
+  background-image: url("../images/Topic_Banner_Consumer.jpg"); }
+
+.topic-nav-photo-business-spanish {
+  background-image: url("../images/Topic_Banner_Business_Spanish.jpg"); }
 
 .topic-nav-photo-plant {
   background-image: url("../images/Topic_Banner_Earth.jpg"); }
@@ -6947,8 +6973,8 @@ ol {
     padding-right: 4rem;
     color: #4b4b4d;
     background-color: white;
-    background-image: url(../uswds-0.12.1/img/close.png);
-    background-image: url(../uswds-0.12.1/img/close.svg);
+    background-image: url(../images/close.png);
+    background-image: url(../images/close.svg);
     background-repeat: no-repeat;
     background-position: right 1rem center;
     background-size: 2rem; }
@@ -7379,7 +7405,13 @@ one list of links into two columns in the footer.
     height: 5rem; }
   .usa-menu-btn {
     height: 5rem;
-    font-size: 1.7rem; }
+    font-size: 1.7rem;
+    padding-bottom: 2.8rem;
+    line-height: 2.8rem;
+    background-image: url(../images/Icon_MenuSearch.svg);
+    background-repeat: no-repeat;
+    background-position: center bottom 7px;
+    background-size: 23px; }
   .usa-header-extended .usa-nav-primary button[aria-expanded=true] {
     padding-left: 1rem; } }
 
