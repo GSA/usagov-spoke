@@ -158,7 +158,7 @@ if ( request_uri() !== '/' ) {
 
     <div class="usa-navbar">
         <?php print $preMenuHTML; ?>
-        <button class="usa-menu-btn"><?php print t('Menu'); ?></button>
+        <button class="usa-menu-btn"><?php if ($variables['siteID'] == 'gobierno') print ('MENÚ'); else print ('MENU'); ?></button>
     </div>
     <nav role="navigation" class="usa-nav">
         <div class="usa-nav-inner">
