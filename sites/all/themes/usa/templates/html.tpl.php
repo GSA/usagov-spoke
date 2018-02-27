@@ -166,6 +166,15 @@ if ( request_uri() !== '/' ) {
 
             <ul class="usa-nav-primary usa-accordion">
                 <?php
+                #for https://ctac.myjetbrains.com/youtrack/issue/usagov-102110
+                if ($variables['siteID'] == 'gobierno')
+                {
+                    print '<li><a class="usa-nav-link" href="/servicios-informacion"><span>Más temas y servicios</span></a></li>';
+                }
+                else {
+                    print '<li><a class="usa-nav-link" href="/topics"><span>More Topics and Services</span></a></li>';
+                }
+
                 //Printing out the main menu
                 $siteStructureVocab = taxonomy_vocabulary_machine_name_load('site_strucutre_taxonomy');
                 $menuTerms = taxonomy_get_tree($siteStructureVocab->vid, 0, 2, TRUE);
