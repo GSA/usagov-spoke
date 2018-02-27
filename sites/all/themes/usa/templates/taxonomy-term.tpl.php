@@ -54,7 +54,7 @@ if( !empty($term->field_meta_description['und'][0]['value']) ) {
             '#tag' => 'meta',
             '#attributes' => array(
                 'name' => 'description',
-                'content' =>  $term->field_meta_description['und'][0]['value'],
+                'content' =>  $term->field_real_meta_description['und'][0]['value'],
             )
         ),
         'usa_custom_meta_tag_descriptionfromtaxonomy'
@@ -889,10 +889,10 @@ function buildMenu($term){
                 if(empty($childItem->field_css_class['und'][0]['safe_value'])){
                     $childrenMenuItems[$key]->field_css_class['und'][0]['safe_value'] = 'not-set-in-cmp';
                 }
-                if(empty($childItem->field_meta_description['und'][0]['value'])){
-                    $childrenMenuItems[$key]->field_meta_description['und'][0]['value'] = 'not-set-in-cmp';
+                if(empty($childItem->field_real_meta_description['und'][0]['value'])){
+                    $childrenMenuItems[$key]->field_real_meta_description['und'][0]['value'] = 'not-set-in-cmp';
                 }
-                array_push($menuBlock, ['name' => $childItem->name, 'url' => $childItem->field_friendly_url['und'][0]['safe_value'], 'class' => $childItem->field_css_class['und'][0]['safe_value'], 'desc' => $childItem->field_meta_description['und'][0]['value']]);
+                array_push($menuBlock, ['name' => $childItem->name, 'url' => $childItem->field_friendly_url['und'][0]['safe_value'], 'class' => $childItem->field_css_class['und'][0]['safe_value'], 'desc' => $childItem->field_real_meta_description['und'][0]['value']]);
             }
         }
     }
