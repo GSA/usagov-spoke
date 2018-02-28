@@ -47,7 +47,7 @@ if ( !empty($term->tid) ) {
 }
 
 
-if( !empty($term->field_meta_description['und'][0]['value']) ) {
+if( !empty($term->field_description_meta['und'][0]['value']) ) {
 
     drupal_add_html_head(
         array(
@@ -360,9 +360,9 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
                     <div class="usa-width-two-thirds topic-nav-box1">
                         <div class="topic-nav-photo topic-nav-photo-<?php print $css; ?>"></div>
 
-                        <?php if (!empty($term->field_meta_description['und'][0]['value'])): ?>
+                        <?php if (!empty($term->field_description_meta['und'][0]['value'])): ?>
                             <div class="topic-nav-tagline">
-                                <span class="topic-nav-<?php print $css; ?>"><p><?php print $term->field_meta_description['und'][0]['value']; ?></p></span>
+                                <span class="topic-nav-<?php print $css; ?>"><p><?php print $term->field_description_meta['und'][0]['value']; ?></p></span>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -889,10 +889,10 @@ function buildMenu($term){
                 if(empty($childItem->field_css_class['und'][0]['safe_value'])){
                     $childrenMenuItems[$key]->field_css_class['und'][0]['safe_value'] = 'not-set-in-cmp';
                 }
-                if(empty($childItem->field_meta_description['und'][0]['value'])){
-                    $childrenMenuItems[$key]->field_meta_description['und'][0]['value'] = 'not-set-in-cmp';
+                if(empty($childItem->field_description_meta['und'][0]['value'])){
+                    $childrenMenuItems[$key]->field_description_meta['und'][0]['value'] = 'not-set-in-cmp';
                 }
-                array_push($menuBlock, ['name' => $childItem->name, 'url' => $childItem->field_friendly_url['und'][0]['safe_value'], 'class' => $childItem->field_css_class['und'][0]['safe_value'], 'desc' => $childItem->field_meta_description['und'][0]['value']]);
+                array_push($menuBlock, ['name' => $childItem->name, 'url' => $childItem->field_friendly_url['und'][0]['safe_value'], 'class' => $childItem->field_css_class['und'][0]['safe_value'], 'desc' => $childItem->field_description_meta['und'][0]['value']]);
             }
         }
     }
@@ -917,10 +917,10 @@ function buildMenu($term){
                 if(empty($includedTerm['taxonomy_term']->field_css_class['und'][0]['safe_value'])){
                     $includedTerms[$key]['taxonomy_term']->field_css_class['und'][0]['safe_value'] = 'not-set-in-cmp';
                 }
-                if(empty($includedTerm['taxonomy_term']->field_meta_description['und'][0]['value'])){
-                    $includedTerms[$key]['taxonomy_term']->field_meta_description['und'][0]['value'] = 'not-set-in-cmp';
+                if(empty($includedTerm['taxonomy_term']->field_description_meta['und'][0]['value'])){
+                    $includedTerms[$key]['taxonomy_term']->field_description_meta['und'][0]['value'] = 'not-set-in-cmp';
                 }
-                array_push($menuBlock, ['name' => $includedTerm['taxonomy_term']->name, 'url' => $includedTerm['taxonomy_term']->field_friendly_url['und'][0]['safe_value'], 'class' => $includedTerm['taxonomy_term']->field_css_class['und'][0]['safe_value'], 'desc' => $includedTerm['taxonomy_term']->field_meta_description['und'][0]['value']]);
+                array_push($menuBlock, ['name' => $includedTerm['taxonomy_term']->name, 'url' => $includedTerm['taxonomy_term']->field_friendly_url['und'][0]['safe_value'], 'class' => $includedTerm['taxonomy_term']->field_css_class['und'][0]['safe_value'], 'desc' => $includedTerm['taxonomy_term']->field_description_meta['und'][0]['value']]);
             }
         }
     }

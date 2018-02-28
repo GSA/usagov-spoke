@@ -46,14 +46,14 @@
 <?php
 
 // If there is a "Meta Description" set for this page, create the meta-tag
-if ( !empty($term->field_meta_description['und'][0]['value']) ) {
+if ( !empty($term->field_description_meta['und'][0]['value']) ) {
 
     drupal_add_html_head(
         array(
             '#tag' => 'meta',
             '#attributes' => array(
                 'name' => 'description',
-                'content' =>  trim($term->field_meta_description['und'][0]['value']),
+                'content' =>  trim($term->field_description_meta['und'][0]['value']),
                 'CoderBookmark' => 'CB-W860YKW-BC'
             )
         ),
@@ -361,7 +361,7 @@ elseif (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term
                             if (@!empty($term->field_show_social_media_icon['und'][0]['value']) && $term->field_show_social_media_icon['und'][0]['value'] == 'Yes') {
                                 $url = "https://kids.usa.gov".$term->field_friendly_url['und'][0]['value'];
                                 $image = str_replace('s3://', 'http://' . $s3BucketName . '.s3.amazonaws.com/',$imageNode->field_file_media_url['und'][0]['value']);
-                                $desc = $term->field_meta_description['und'][0]['value'].' from @Kidsgov';
+                                $desc = $term->field_description_meta['und'][0]['value'].' from @Kidsgov';
 
                                 $markup .= '<div class="rxbodyfield">
                                                 <div class="feeds clearfix">&nbsp;&nbsp;&nbsp;&nbsp;';
