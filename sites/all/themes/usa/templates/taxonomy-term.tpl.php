@@ -360,9 +360,9 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
                     <div class="usa-width-two-thirds topic-nav-box1">
                         <div class="topic-nav-photo topic-nav-photo-<?php print $css; ?>"></div>
 
-                        <?php if (!empty($term->field_page_intro['und'][0]['value'])): ?>
+                        <?php if (!empty($term->field_meta_description['und'][0]['value'])): ?>
                             <div class="topic-nav-tagline">
-                                <span class="topic-nav-<?php print $css; ?>"><p><?php print $term->field_page_intro['und'][0]['value']; ?></p></span>
+                                <span class="topic-nav-<?php print $css; ?>"><p><?php print $term->field_meta_description['und'][0]['value']; ?></p></span>
                             </div>
                         <?php endif; ?>
                     </div>
