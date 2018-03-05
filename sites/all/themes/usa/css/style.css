@@ -7343,7 +7343,7 @@ one list of links into two columns in the footer.
     float: right;
     height: 40px;
     width: 40px;
-    background: url("../images/minus.svg") no-repeat;
+    background: url("../images/minus.png") no-repeat;
     background-position: center center;
     background-size: 1.7rem;
     /*background-color: $floating-box;*/
@@ -7351,7 +7351,7 @@ one list of links into two columns in the footer.
   div.mrtpc {
     height: 40px;
     width: 40px;
-    background: url("../images/plus.svg") no-repeat;
+    background: url("../images/plus.png") no-repeat;
     background-position: center center;
     background-size: 1.7rem;
     /*background-color: $floating-box;*/
