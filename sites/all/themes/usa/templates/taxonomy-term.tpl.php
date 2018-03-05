@@ -47,7 +47,7 @@ if ( !empty($term->tid) ) {
 }
 
 
-if( !empty($term->field_description_meta['und'][0]['value']) ) {
+if( !empty($term->field_real_meta_description['und'][0]['value']) ) {
 
     drupal_add_html_head(
         array(

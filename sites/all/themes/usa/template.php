@@ -324,14 +324,14 @@ function _usa_preprocess_html_home_term( &$variables )
     }
 
     //setting the meta description
-    if( !empty($variables['term']->field_description_meta['und'][0]['value']) )
+    if( !empty($variables['term']->field_real_meta_description['und'][0]['value']) )
     {
         drupal_add_html_head(
             array(
                 '#tag' => 'meta',
                 '#attributes' => array(
                     'name' => 'description',
-                    'content' =>  $variables['term']->field_description_meta['und'][0]['value'],
+                    'content' =>  $variables['term']->field_real_meta_description['und'][0]['value'],
                 )
             ),
             'usa_custom_meta_tag_descriptionforhome'
@@ -341,7 +341,7 @@ function _usa_preprocess_html_home_term( &$variables )
                 '#tag' => 'meta',
                 '#attributes' => array(
                     'name' => 'og:description',
-                    'content' =>  $variables['term']->field_description_meta['und'][0]['value'],
+                    'content' =>  $variables['term']->field_real_meta_description['und'][0]['value'],
                 )
             ),
             'usa_custom_meta_tag_descriptionforhome'
