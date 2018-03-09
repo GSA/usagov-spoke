@@ -169,10 +169,10 @@ if ( request_uri() !== '/' ) {
                 #for https://ctac.myjetbrains.com/youtrack/issue/usagov-102110
                 if ($variables['siteID'] == 'gobierno')
                 {
-                    print '<li><a class="usa-nav-link" href="/servicios-informacion"><span>Más temas y servicios</span></a></li>';
+                    print '<li><a class="usa-nav-link" href="/servicios-informacion"><span>Todos los temas y servicios</span></a></li>';
                 }
                 else {
-                    print '<li><a class="usa-nav-link" href="/topics"><span>More Topics and Services</span></a></li>';
+                    print '<li><a class="usa-nav-link" href="/topics"><span>All Topics and Services</span></a></li>';
                 }
 
                 //Printing out the main menu
