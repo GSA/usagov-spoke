@@ -47,15 +47,17 @@
 if ( request_uri() !== '/' ) {
     $term = menu_get_object('taxonomy_term', 2);
     $pagetype='';
-    if (!empty($term) && !empty($term->field_type_of_page_to_generate['und'][0]['value'])){
+
+    if(drupal_is_front_page()){
+        $pagetype='home';
+    }
+    elseif (!empty($term) && !empty($term->field_type_of_page_to_generate['und'][0]['value'])){
         $pagetype=$term->field_type_of_page_to_generate['und'][0]['value'];
     }
     elseif(isset($pagetypeddl)){
         $pagetype=$pagetypeddl;
     }
-    elseif(drupal_is_front_page()){
-        $pagetype='home';
-    }
+
 }
 ?><!DOCTYPE html>
 <html <?php print $htmlTagAttribs; ?> >
