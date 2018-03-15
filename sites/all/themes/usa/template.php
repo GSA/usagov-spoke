@@ -604,6 +604,7 @@ function _usa_preprocess_html_toggles( &$variables, $entity )
     if ( in_array($path[0], array('site-index', 'sitio-indice')) )
     {
         unset($variables['toggleHTML']);
+        $variables["pagetypeddl"]='site-index';
         if ( $variables['siteID']==='usa' )
         {
             drupal_add_html_head(
