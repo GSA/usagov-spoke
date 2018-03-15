@@ -53,6 +53,9 @@ if ( request_uri() !== '/' ) {
     elseif(isset($pagetypeddl)){
         $pagetype=$pagetypeddl;
     }
+    elseif(drupal_is_front_page()){
+        $pagetype='home';
+    }
 }
 ?><!DOCTYPE html>
 <html <?php print $htmlTagAttribs; ?> >

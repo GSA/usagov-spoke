@@ -291,6 +291,7 @@ function _usa_preprocess_html_page_entity( &$variables )
         $variables['page_entity'] = taxonomy_term_load($tid);
     } elseif ( strpos($entitySystemPath, 'node') !== false ) {
         $nid = str_replace('node/', '', $entitySystemPath);
+        $variables["pagetypeddl"]='feature';
         $variables['page_entity'] = node_load($nid);
     }
     elseif( strpos($currentPath, 'federal-agencies') !== false || strpos($currentPath, 'agencias-federales') !== false){
@@ -300,9 +301,11 @@ function _usa_preprocess_html_page_entity( &$variables )
         $variables['state-business'] = true;
     }
     elseif( strpos($currentPath, 'forms') !== false ){
+        $variables["pagetypeddl"]='forms';
         $variables['gov-forms'] = true;
     }
     elseif( strpos($currentPath, 'find-government-contracts') !== false ){
+        $variables["pagetypeddl"]='find-government-contracts';
         $variables['gov-contracts'] = true;
     }
 }
