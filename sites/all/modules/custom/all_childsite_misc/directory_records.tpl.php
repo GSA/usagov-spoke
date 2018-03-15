@@ -190,7 +190,7 @@ if ( strpos($_SERVER['HTTP_HOST'], 'gobierno') === false ) {
             <?php
             if ((isset($_REQUEST['letter']) && strtoupper($_REQUEST['letter']) == $k) || (!isset($_REQUEST['letter']) && $k == 'A') ) {
                 $link_count = 0;
-                print '<h2>' . $k . '</h2>';
+                print '<header><h2>' . $k . '</h2></header>';
                 ?>
                 <ul class="one_column_bullet">
                     <?php
