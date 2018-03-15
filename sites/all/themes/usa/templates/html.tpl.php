@@ -46,11 +46,20 @@
 //getting the term variable when needed
 if ( request_uri() !== '/' ) {
     $term = menu_get_object('taxonomy_term', 2);
+    $pagetype='Feature';
+    if (!empty($term) && !empty($term->field_type_of_page_to_generate['und'][0]['value'])){
+        $pagetype=$term->field_type_of_page_to_generate['und'][0]['value'];
+    }
 }
 ?><!DOCTYPE html>
 <html <?php print $htmlTagAttribs; ?> >
 
 <head>
+    <script>
+        dataLayer = [{
+            'pageType': '<?php print$pagetype; ?>'
+        }];
+    </script>
 
     <!– Google Tag Manager –>
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
