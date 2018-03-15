@@ -46,9 +46,12 @@
 //getting the term variable when needed
 if ( request_uri() !== '/' ) {
     $term = menu_get_object('taxonomy_term', 2);
-    $pagetype='Feature';
+    $pagetype='';
     if (!empty($term) && !empty($term->field_type_of_page_to_generate['und'][0]['value'])){
         $pagetype=$term->field_type_of_page_to_generate['und'][0]['value'];
+    }
+    elseif(isset($pagetypeddl)){
+        $pagetype=$pagetypeddl;
     }
 }
 ?><!DOCTYPE html>

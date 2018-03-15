@@ -243,12 +243,15 @@ function usa_preprocess_html(&$variables)
         _usa_preprocess_html_toggles(   $variables, $variables['page_entity'] );
     }
     else if (!empty($variables['directory-page'])){
+        $variables["pagetypeddl"]='directory-record-page';
         _usa_preprocess_html_toggles(   $variables, $variables['directory-page'] );
     }
     else if (!empty($variables['state-business'])){
+        $variables["pagetypeddl"]='state-business';
         _usa_preprocess_html_toggles(   $variables, $variables['state-business'] );
     }
     else if ($path === 'features' || $path === 'novedades'){
+        $variables["pagetypeddl"]='feature-landing';
         _usa_preprocess_html_toggles(   $variables, $variables['feature-landing'] );
     }
 
@@ -1183,6 +1186,7 @@ function usa_preprocess_node(&$variables) {
             $variables['labelText_DateLabel'] = 'Date:';
         endif;
     }
+    $variables["pagetypeddl"]='Feature';
     _usa_preprocess_html_toggles(   $variables, $variables['node'] );
 
 }
