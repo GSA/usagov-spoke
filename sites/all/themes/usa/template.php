@@ -114,7 +114,7 @@ function usa_preprocess_page(&$variables)
         $topLvlTerm = taxonomy_term_load($tltTid);
 
         $variables['term'] = $topLvlTerm;
-
+        $variables['pagetypeddl'] = 'home';
         // Alert node
         $variables['alertNid'] = false;
         $variables['alertNode'] = false;
