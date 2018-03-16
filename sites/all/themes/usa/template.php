@@ -297,15 +297,19 @@ function _usa_preprocess_html_page_entity( &$variables )
         $variables['page_entity'] = node_load($nid);
     }
     elseif( strpos($currentPath, 'federal-agencies') !== false || strpos($currentPath, 'agencias-federales') !== false){
-        $variables["pagetypeddl"]='letter-page';
+        $variables["pagetypeddl"]='directory-letter-page';
         $variables['directory-page'] = true;
     }
     elseif( strpos($currentPath, 'state-business') !== false ){
         $variables["pagetypeddl"]='state-page';
         $variables['state-business'] = true;
     }
+    elseif( strpos($currentPath, 'state-government') !== false ){
+        $variables["pagetypeddl"]='state-page';
+        $variables['state-government'] = true;
+    }
     elseif( strpos($currentPath, 'forms') !== false ){
-        $variables["pagetypeddl"]='forms';
+        $variables["pagetypeddl"]='forms-letter-page';
         $variables['gov-forms'] = true;
     }
     elseif( strpos($currentPath, 'find-government-contracts') !== false ){
