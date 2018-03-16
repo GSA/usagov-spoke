@@ -243,7 +243,9 @@ function usa_preprocess_html(&$variables)
         _usa_preprocess_html_toggles(   $variables, $variables['page_entity'] );
     }
     else if (!empty($variables['directory-page'])){
-        $variables["pagetypeddl"]='directory-record-page';
+        if ($variables["pagetypeddl"] != 'letter-page') {
+            $variables["pagetypeddl"] = 'directory-record-page';
+        }
         _usa_preprocess_html_toggles(   $variables, $variables['directory-page'] );
     }
     else if (!empty($variables['state-business'])){
@@ -322,6 +324,7 @@ function _usa_preprocess_html_page_entity( &$variables )
 }
 function _usa_preprocess_html_home_term( &$variables )
 {
+    $variables["pagetypeddl"] = 'home';
     $tltTid = db_query("
         SELECT t.entity_id
         FROM field_data_field_type_of_page_to_generate t
