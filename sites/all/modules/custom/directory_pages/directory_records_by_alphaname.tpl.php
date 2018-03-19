@@ -327,7 +327,6 @@ if (isset($timestamp) && !empty($timestamp)) {
 <?php
 print _print_social_media();
 ?>
-<p class="volver clearfix"><a href="#skiptarget"><span class="icon-backtotop-dwnlvl"><?php print t('Back to Top'); ?></span></a></p>
 <?php print survey_on_pages(); ?>
 <?php
 
