@@ -297,10 +297,10 @@ function _usa_preprocess_html_page_entity( &$variables )
         $variables['page_entity'] = node_load($nid);
     }
     elseif( strpos($currentPath, 'federal-agencies') !== false || strpos($currentPath, 'agencias-federales') !== false){
-        $ar= str_replace('federal-agencies/', '', $currentPath);
-        $ar= str_replace('agencias-federales/', '', $ar);
+        $ar= str_replace('federal-agencies', '', $currentPath);
+        $ar= str_replace('agencias-federales', '', $ar);
         $ar=str_replace('/', '', $ar);
-        
+
         if(strlen($ar) == 1){
             $variables["pagetypeddl"]='directory-letter-page';
         }

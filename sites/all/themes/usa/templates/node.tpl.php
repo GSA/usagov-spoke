@@ -329,7 +329,7 @@ if ( ( !empty($node->field_for_use_by_text) && in_array_r('Feature', $node->fiel
                     <article>
                         <ul class="usa-accordion-bordered">
                             <li class="transcript_img">
-                                <button class="usa-accordion-button" data-toggledtext="Hide the Video Transcript" data-initialtext="Show the Video Transcript" aria-expanded="false" aria-controls="amendment-b-1">
+                                <button class="usa-accordion-button" data-toggledtext="<?php print t('Hide the Video Transcript');?>" data-initialtext="<?php print t('Show the Video Transcript');?>" aria-expanded="false" aria-controls="amendment-b-1">
                                     <?php print t('Show the Video Transcript'); ?>
                                 </button>
                                 <div id="amendment-b-1" class="usa-accordion-content" aria-hidden="true">
