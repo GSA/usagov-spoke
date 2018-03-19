@@ -44,7 +44,7 @@ var htmlMain = ""
 	htmlMain += "<p>";
 	htmlMain += "<label for='product_description'>";
 	htmlMain += "<b>What did you purchase from the company?</b> Describe the product or service that you purchased in the text box.<br>";
-	htmlMain += "<span class='helptext'>Include any important details: product name, serial number, service to be performed, order number, invoice number, price, discounts used, confirmation number, or name of the customer service representative. For example, â€œI bought a radio produced by Great Sounds Manufacturers, serial number 123456 on receipt #415 for $150.â€</span>";
+	htmlMain += "<span class='helptext'>Include any important details: product name, serial number, service to be performed, order number, invoice number, price, discounts used, confirmation number, or name of the customer service representative. For example, “I bought a radio produced by Great Sounds Manufacturers, serial number 123456 on receipt #415 for $150.”</span>";
 	htmlMain += "</label>";
 	htmlMain += "</p>";
 	htmlMain += "<textarea id='product_description'></textarea>";
@@ -60,7 +60,7 @@ var htmlMain = ""
 	htmlMain += "<p>";
 	htmlMain += "<legend>";
 	htmlMain += "<b>Where will you be sending the complaint?</b><br>";
-	htmlMain += "<span class='helptext'>Itâ€™s best to send your complaint letter directly to the local seller or service provider. But if they canâ€™t resolve the complaint, you may want to send it to the customer service department at corporate headquarters.</span>";
+	htmlMain += "<span class='helptext'>It’s best to send your complaint letter directly to the local seller or service provider. But if they can’t resolve the complaint, you may want to send it to the customer service department at corporate headquarters.</span>";
 	htmlMain += "</legend>";
 	htmlMain += "</p>";
 	htmlMain += "<div class='radio_buttons'>";
@@ -136,7 +136,7 @@ var htmlMain = ""
 	htmlMain += "<label for='problem_description'>";
 	htmlMain += "Unfortunately, I was dissatisfied for the following reason(s):<br>";
 	htmlMain += "Type in a detailed explanation about your problem, your purchase, or service.<br>";
-	htmlMain += "<span class='helptext'>You can be dissatisfied for several reasons: due to malfunction, bad customer service, incorrect billing, or delayed delivery. For example, â€œI was dissatisfied with my purchase because the volume knob fell off the radio the day I bought it. I tried to return it with my receipt, but the customer service representative at your store, Susan Smith, would not accept the return or give me a refund.â€</span>";
+	htmlMain += "<span class='helptext'>You can be dissatisfied for several reasons: due to malfunction, bad customer service, incorrect billing, or delayed delivery. For example, “I was dissatisfied with my purchase because the volume knob fell off the radio the day I bought it. I tried to return it with my receipt, but the customer service representative at your store, Susan Smith, would not accept the return or give me a refund.”</span>";
 	htmlMain += "</label>";
 	htmlMain += "</p>";
 	htmlMain += "<textarea id='problem_description'></textarea>";
@@ -174,3 +174,14 @@ var htmlMain = ""
 	htmlMain += "</p>";
 	htmlMain += "</div>";
 	htmlMain += "</div>";
+  
+  
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-28227333-1']);
+  //_gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
