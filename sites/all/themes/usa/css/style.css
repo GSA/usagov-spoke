@@ -982,14 +982,14 @@ div#vocModal {
   content: "";
   height: 80px;
   width: 100%;
-  background-image: url("/sites/all/themes/usa/images/Logo_USA_Survey.png");
+  background-image: url("../images/Logo_USA_Survey.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
   background-color: #FFF; }
 
 html:lang(es) #vocModal:before {
-  background-image: url("/sites/all/themes/usa/images/Logo_Gobierno_Survey.png"); }
+  background-image: url("../images/Logo_Gobierno_Survey.png"); }
 
 #vocModal p {
   width: 100%;
@@ -2565,7 +2565,6 @@ p.err-label {
   color: #4b4b4d;
   padding: 12px 0 15px 65px;
   margin: 0 auto 0 auto;
-  max-width: 855px;
   height: auto;
   border-bottom: 1px solid #d9d9d9;
   background: #d9d9d9 url("../images/Contact_Center_Icon.png") left 20px top 12px no-repeat; }
@@ -6925,7 +6924,7 @@ ol {
     position: relative;
     background-image: url(../img/minus-white.png);
     /* TODO: Add png for white minus icon */
-    background-image: url(../uswds-0.12.1/img/minus-white.svg);
+    background-image: url(../images/minus-white.svg);
     background-color: #11385B;
     color: #fff;
     padding: 1rem 2rem 1rem 0rem; }
