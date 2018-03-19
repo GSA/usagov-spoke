@@ -297,14 +297,21 @@ function _usa_preprocess_html_page_entity( &$variables )
         $variables['page_entity'] = node_load($nid);
     }
     elseif( strpos($currentPath, 'federal-agencies') !== false || strpos($currentPath, 'agencias-federales') !== false){
-        $variables["pagetypeddl"]='directory-letter-page';
+        $args = arg();
+        if(strlen($args[1]) == 1){
+            $variables["pagetypeddl"]='directory-letter-page';
+        }
+        else{
+            $variables["pagetypeddl"]='directory-record';
+        }
+
         $variables['directory-page'] = true;
     }
     elseif( strpos($currentPath, 'state-business') !== false ){
         $variables["pagetypeddl"]='state-page';
         $variables['state-business'] = true;
     }
-    elseif( strpos($currentPath, 'state-government') !== false ){
+    elseif( strpos($currentPath, 'state-government') !== false || strpos($currentPath, 'gobiernos-estatales') !== false){
         $variables["pagetypeddl"]='state-page';
         $variables['state-government'] = true;
     }
@@ -316,7 +323,7 @@ function _usa_preprocess_html_page_entity( &$variables )
         $variables["pagetypeddl"]='find-government-contracts';
         $variables['gov-contracts'] = true;
     }
-    elseif( strpos($currentPath, 'state-consumer') !== false ){
+    elseif( strpos($currentPath, 'state-consumer') !== false || strpos($currentPath, 'organizaciones-consumidor') !== false ){
         $variables["pagetypeddl"]='state-page';
     }
     elseif( strpos($currentPath, 'site-index') !== false ){
