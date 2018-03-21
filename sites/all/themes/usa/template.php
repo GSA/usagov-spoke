@@ -243,9 +243,6 @@ function usa_preprocess_html(&$variables)
         _usa_preprocess_html_toggles(   $variables, $variables['page_entity'] );
     }
     else if (!empty($variables['directory-page'])){
-        if ($variables["pagetypeddl"] != 'letter-page') {
-            $variables["pagetypeddl"] = 'directory-record-page';
-        }
         _usa_preprocess_html_toggles(   $variables, $variables['directory-page'] );
     }
     else if (!empty($variables['state-business'])){
