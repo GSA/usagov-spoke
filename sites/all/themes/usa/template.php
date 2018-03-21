@@ -304,7 +304,6 @@ function _usa_preprocess_html_page_entity( &$variables )
         else{
             $variables["pagetypeddl"]='directory-record';
         }
-        $variables["pagetypeddl"] = $ar;
 
         $variables['directory-page'] = true;
     }
