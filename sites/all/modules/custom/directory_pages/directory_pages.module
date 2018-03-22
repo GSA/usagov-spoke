@@ -702,17 +702,15 @@ function directory_pages_menuCallbackRouter($doOverrideRuri = 'MenuCallBackSetsT
         if ( $siteIsUSA ) {
 
             $spanToggleURL = '';
-            if ( !empty($records[0]->field_spanish_toggle['und'][0]['endpoints']['und']) ) {
-                foreach ( $records[0]->field_spanish_toggle['und'][0]['endpoints']['und'] as $toggRelation ) {
-                    if ( $records[0]->nid != $toggRelation['entity_id'] ) {
-                        $engToggleNodeId = $toggRelation['entity_id'];
+            if ( !empty($records[0]->field_spanish_toggle_en['und'][0]['target_id']) ) {
+
+                        $engToggleNodeId = $records[0]->field_spanish_toggle_en['und'][0]['target_id'];
                         $spanToggleURL = '/node/'.$engToggleNodeId;
                         $toggleNode = node_load($engToggleNodeId);
                         if ( $toggleNode !== false ) {
                             $spanToggleURL = directory_pages_getUrlToDirectoryRecord($toggleNode, false);
                         }
-                    }
-                }
+
                 $spanToggleURL = $gobgovURL.ltrim($spanToggleURL, '/');
             }
 
@@ -729,17 +727,15 @@ function directory_pages_menuCallbackRouter($doOverrideRuri = 'MenuCallBackSetsT
         } else {
 
             $engToggleURL = '';
-            if ( !empty($records[0]->field_english_toggle['und'][0]['endpoints']['und']) ) {
-                foreach ( $records[0]->field_english_toggle['und'][0]['endpoints']['und'] as $toggRelation ) {
-                    if ( $records[0]->nid != $toggRelation['entity_id'] ) {
-                        $engToggleNodeId = $toggRelation['entity_id'];
+            if ( !empty($records[0]->field_english_toggle_en['und'][0]['target_id']) ) {
+
+                        $engToggleNodeId = $records[0]->field_english_toggle_en['und'][0]['target_id'];
                         $engToggleURL = '/node/'.$engToggleNodeId;
                         $toggleNode = node_load($engToggleNodeId);
                         if ( $toggleNode !== false ) {
                             $engToggleURL = directory_pages_getUrlToDirectoryRecord($toggleNode, true);
                         }
-                    }
-                }
+
                 $engToggleURL = $usagovURL.ltrim($engToggleURL, '/');
             }
 
@@ -770,45 +766,29 @@ function directory_pages_menuCallbackRouter($doOverrideRuri = 'MenuCallBackSetsT
         }
         // Determine child record node
         $relatedChildNode = array();
-        if ( !empty($records[0]->field_child_records['und'][0]['endpoints']['und']) ) {
-            foreach ( $records[0]->field_child_records['und'] as $relValues ) {
-                foreach ( $relValues['endpoints']['und'] as $relation ) {
-                    if ( intval($relation['entity_id']) != intval($records[0]->nid) ) {
-                        $relatedChildNode[] = node_load($relation['entity_id']);
-                    }
-                }
+        if ( !empty($records[0]->field_child_records_en['und'][0]['target_id']) ) {
+            foreach ( $records[0]->field_child_records_en['und'] as $relValues ) {
+                $relatedChildNode[] = node_load($relValues['target_id']);
             }
 
         }
 
         // Determine parent record node
         $relatedParentNode = false;
-        if ( !empty($records[0]->field_parent_record['und'][0]['endpoints']['und']) ) {
-            foreach ( $records[0]->field_parent_record['und'][0]['endpoints']['und'] as $relation ) {
-                if ( intval($relation['entity_id']) != intval($records[0]->nid) ) {
-                    $relatedParentNode = node_load($relation['entity_id']);
-                }
-            }
+        if ( !empty($records[0]->field_parent_record_en['und'][0]['target_id']) ) {
+            $relatedParentNode = node_load($records[0]->field_parent_record_en['und'][0]['target_id']);
         }
 
         // Determine parent record node
         $relatedEngToggleNode = false;
-        if ( !empty($records[0]->field_english_toggle['und'][0]['endpoints']['und']) ) {
-            foreach ( $records[0]->field_english_toggle['und'][0]['endpoints']['und'] as $relation ) {
-                if ( intval($relation['entity_id']) != intval($records[0]->nid) ) {
-                    $relatedEngToggleNode = node_load($relation['entity_id']);
-                }
-            }
+        if ( !empty($records[0]->field_english_toggle_en['und'][0]['target_id']) ) {
+            $relatedEngToggleNode = node_load($records[0]->field_english_toggle_en['und'][0]['target_id']);
         }
 
         // Determine parent record node
         $relatedSpanToggleNode = false;
-        if ( !empty($records[0]->field_spanish_toggle['und'][0]['endpoints']['und']) ) {
-            foreach ( $records[0]->field_spanish_toggle['und'][0]['endpoints']['und'] as $relation ) {
-                if ( intval($relation['entity_id']) != intval($records[0]->nid) ) {
-                    $relatedSpanToggleNode = node_load($relation['entity_id']);
-                }
-            }
+        if ( !empty($records[0]->field_spanish_toggle_en['und'][0]['target_id']) ) {
+            $relatedSpanToggleNode = node_load($records[0]->field_spanish_toggle_en['und'][0]['target_id']);
         }
 
         $lastreviewtime = get_node_lastReviewedDate(array($records[0]->nid));
