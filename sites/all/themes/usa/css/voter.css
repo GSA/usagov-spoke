@@ -138,7 +138,7 @@ border-right:1px solid #E4EAEE;
  content: "State";
 }
 #voteage td:nth-of-type(1):before {
- content: "Earlist Age";
+ content: "Earliest Age";
 }
  caption {
  margin: 10px 10px 10px 0px;
