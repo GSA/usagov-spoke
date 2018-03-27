@@ -1935,8 +1935,8 @@ a > span.scayt-misspell-word {
   display: block;
   color: #fff;
   padding: 12px 0 15px 65px;
-  margin: 0 auto 0 auto;
-  max-width: 855px;
+  margin: 0 0 0 0;
+  /*max-width: 855px;*/
   height: auto;
   background: #154285 url("../images/Related_Content_Icon.png") left 20px top 12px no-repeat; }
 
