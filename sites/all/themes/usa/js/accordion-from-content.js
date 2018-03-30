@@ -31,7 +31,7 @@ function accordionify(){
 			uaid='unique-accordion-id-'+id+'-'+accordionCount+'-'+unique;
 			var buttonBase=jQuery(this);
 			var buttonContent=buttonBase.text();
-			if(buttonBase.parent("header")){
+			if(buttonBase.parent("header").length){
 				buttonBase=buttonBase.parent("header");
 			}
 			var li=jQuery("<li></li>");
