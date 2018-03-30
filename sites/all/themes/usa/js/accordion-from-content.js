@@ -57,7 +57,7 @@ function accordionify(){
 				next=buttonBase.next();
 			}
 			//If next is another part of the same accordion increment unique. Otherwise reset unique to start a new accordion.
-			if(next.length && next.is('header') && next.find(headingLevel).length){
+			if(next.length && ((next.is('header') && next.find(headingLevel).length) || next.is(headingLevel))){
 				unique++;
 			}else{
 				unique=0; accordionCount++;
