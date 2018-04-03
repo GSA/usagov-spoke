@@ -81,8 +81,8 @@ function media_link_alter_getLinkAlterationTemplates() {
     $default_templates = array(
         'pdf'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">PDF, <a href="https://get.adobe.com/reader/">Download Adobe Reader</a></span>)',
         'xls'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">XLS, <a href="http://www.microsoft.com/en-us/download/details.aspx?id=10">Download Excel Reader</a></span>)',
-        'doc'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">DOC, <a href="http://www.microsoft.com/en-us/download/details.aspx?id=4">Download Word Reader</a></span>)',
-        'docx' => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">DOCX, <a href="http://www.microsoft.com/en-us/download/details.aspx?id=4">Download Word Reader</a></span>)',
+        'doc'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">DOC, <a href="https://support.microsoft.com/en-us/help/891090/how-to-obtain-the-latest-word-viewer">Download Word Reader</a></span>)',
+        'docx' => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">DOCX, <a href="https://support.microsoft.com/en-us/help/891090/how-to-obtain-the-latest-word-viewer">Download Word Reader</a></span>)',
         'ppt'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">PPT, <a href="http://www.microsoft.com/en-us/download/details.aspx?id=13">Download Power Point Reader</a></span>)',
     );
 
@@ -91,8 +91,8 @@ function media_link_alter_getLinkAlterationTemplates() {
         $default_templates = array(
             'pdf'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">PDF, <a href="https://get.adobe.com/es/reader/">descargar Adobe Reader</a></span>)',
             'xls'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">XLS, <a href="http://www.microsoft.com/es-es/download/details.aspx?id=10">descargar Excel Reader</a></span>)',
-            'doc'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">DOC, <a href="http://www.microsoft.com/es-es/download/details.aspx?id=4">descargar Word Reader</a></span>)',
-            'docx' => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">DOCX, <a href="http://www.microsoft.com/es-es/download/details.aspx?id=4">descargar Word Reader</a></span>)',
+            'doc'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">DOC, <a href="https://support.microsoft.com/en-us/help/891090/how-to-obtain-the-latest-word-viewer">descargar Word Reader</a></span>)',
+            'docx' => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">DOCX, <a href="https://support.microsoft.com/en-us/help/891090/how-to-obtain-the-latest-word-viewer">descargar Word Reader</a></span>)',
             'ppt'  => '(<span aria-labelledby="usorg[ID]" aria-describedby="usorg[ID]">PPT, <a href="http://www.microsoft.com/es-es/download/details.aspx?id=13">descargar Power Point Reader</a></span>)',
         );
     }
