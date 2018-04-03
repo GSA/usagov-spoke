@@ -43,12 +43,12 @@ var htmlMain = ""
 	htmlMain += "<h2>Step 1: Information About the Product or Service</h2>";
 	htmlMain += "<p>";
 	htmlMain += "<label for='product_description'>";
-	htmlMain += "<b>What did you purchase from the company?</b> Describe the product or service that you purchased in the text box.<br>";
+	htmlMain += "What did you purchase from the company? Describe the product or service that you purchased in the text box.<br>";
 	htmlMain += "<span class='helptext'>Include any important details: product name, serial number, service to be performed, order number, invoice number, price, discounts used, confirmation number, or name of the customer service representative. For example, “I bought a radio produced by Great Sounds Manufacturers, serial number 123456 on receipt #415 for $150.”</span>";
 	htmlMain += "</label>";
 	htmlMain += "</p>";
 	htmlMain += "<textarea id='product_description'></textarea>";
-	htmlMain += "<p class='clear'><br><b>When did the transaction happen?</b> (Use the dropdowns to select the date when you made your purchase)</br>";
+	htmlMain += "<p class='clear'><br>When did the transaction happen? (Use the dropdowns to select the date when you made your purchase)</br>";
 	htmlMain += "<span class='helptext'>If you don't know the exact date of your purchase or service, use the dropdowns to choose an approximate date.</span></p>";
 	htmlMain += "<div id='transactionDateErrorContainer'><p id='transactionDateError' class='dateError'></p></div>";
 	htmlMain += "<fieldset>";
@@ -59,7 +59,7 @@ var htmlMain = ""
 	htmlMain += "<fieldset>";
 	htmlMain += "<p>";
 	htmlMain += "<legend>";
-	htmlMain += "<b>Where will you be sending the complaint?</b><br>";
+	htmlMain += "Where will you be sending the complaint?<br>";
 	htmlMain += "<span class='helptext'>It’s best to send your complaint letter directly to the local seller or service provider. But if they can’t resolve the complaint, you may want to send it to the customer service department at corporate headquarters.</span>";
 	htmlMain += "</legend>";
 	htmlMain += "</p>";
@@ -73,7 +73,7 @@ var htmlMain = ""
 	htmlMain += "<fieldset>";
 	htmlMain += "<p>";
 	htmlMain += "<legend>";
-	htmlMain += "<b>Are you going to send copies of supporting documents (receipts, work orders, photos) with your letter?</b><br>";
+	htmlMain += "Are you going to send copies of supporting documents (receipts, work orders, photos) with your letter?</b>";
 	htmlMain += "<span class='helptext'>Including this evidence can improve the chances of getting your problem resolved, but is not required.</span>";
 	htmlMain += "</legend>";
 	htmlMain += "</p>";
@@ -165,9 +165,9 @@ var htmlMain = ""
 	htmlMain += "<p class='helptext'>The text that you will need to edit on your actual letter is highlighted and enclosed in brackets. When you download the letter, the text won't be highlighted, and you can fill in the information that is surrounded by [&nbsp]. After you download, be sure to add your name, address, subject, and phone number. You can also edit your letter.</p><br>";
 	htmlMain += "<div class='letter_container' id='letter_container'></div>";
 	htmlMain += "</div>";
-	htmlMain += "<div class='cah-bottom-buttons'>";
-	htmlMain += "<button id='back_button'>BACK</button>";
-	htmlMain += "<button id='next_button'>NEXT</button>";
+	htmlMain += "<div class='cah-bottom-buttons clearfix'>";
+	htmlMain += "<button id='back_button'>Back</button>";
+	htmlMain += "<button id='next_button'>Next</button>";
 	htmlMain += "<button id='download_rtf_button'>DOWNLOAD (.rtf) LETTER</button>";
 	htmlMain += "<p id='download_help' class='helptext'>";
 	htmlMain += "Are you having trouble viewing the letter? You can download a <a id='download_plain_button' href='#'>plain text version (.txt)</a> of the letter instead.";
