@@ -7,6 +7,7 @@ $states = [
     "4"=>"American Samoa",
     "AZ"=>"Arizona",
     "AR"=>"Arkansas",
+    "AL"=>"Alabama",
     "CA"=>"California",
     "CO"=>"Colorado",
     "CT"=>"Connecticut",
