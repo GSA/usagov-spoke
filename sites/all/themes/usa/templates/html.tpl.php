@@ -210,7 +210,7 @@ if(isset($pagetypeddl)){
                             if(!empty($menuTerm->field_friendly_url['und'][0]['value']) && !empty($menuTerm->field_css_class['und'][0]['value']) && !empty($menuTerm->name)){
 
 
-                                if($menuTerm->tid != $lastItem){
+                               // if($menuTerm->tid != $lastItem){
                                     $allChildrenItems = [];
                                     $menuTermChildren = [];
                                     $childItems = taxonomy_get_children($menuTerm->tid);
@@ -254,7 +254,7 @@ if(isset($pagetypeddl)){
                                         print '</ul>';
                                     }
                                     print '</li>';
-                                } else {
+                               /* } else {
                                     $allChildrenItems = [];
                                     $menuTermChildren = taxonomy_get_children($menuTerm->tid);
                                     $self[] = $menuTerm;
@@ -287,10 +287,7 @@ if(isset($pagetypeddl)){
                                         print '</ul>';
                                     }
                                     print '</li>';
-                                }
-
-
-
+                                }*/
 
                             }
                         }
