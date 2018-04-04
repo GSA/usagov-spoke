@@ -3,11 +3,11 @@
 /// https://www.usps.com/business/web-tools-apis/welcome.htm
 $states = [
     "OU"=>"Outside U.S.",
+    "AL"=>"Alabama",
     "AK"=>"Alaska",
     "4"=>"American Samoa",
     "AZ"=>"Arizona",
     "AR"=>"Arkansas",
-    "AL"=>"Alabama",
     "CA"=>"California",
     "CO"=>"Colorado",
     "CT"=>"Connecticut",
