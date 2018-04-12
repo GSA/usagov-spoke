@@ -7763,30 +7763,24 @@ section.feature-hvr h2:hover {
   background-image: url(../images/angle-arrow-down-primary.png);
   background-image: url(../images/angle-arrow-down-primary.svg); }
 
-/*@media screen and (min-width: 481px){
-.usa-banner-button[aria-expanded=true]::after {
+@media screen and (min-width: 481px) {
+  .usa-banner-button[aria-expanded=true]::after {
     background-image: url(../images/angle-arrow-up-primary.png);
-    background-image: url(../images/angle-arrow-up-primary.svg);
-  }
-}
+    background-image: url(../images/angle-arrow-up-primary.svg); } }
 
-@media screen and (min-width: 481px){
-.usa-banner-button[aria-expanded=true]:hover::after {
+@media screen and (min-width: 481px) {
+  .usa-banner-button[aria-expanded=true]:hover::after {
     background-image: url(../images/angle-arrow-up-primary.png);
-    background-image: url(../images/angle-arrow-up-primary.svg);
-  }
-}
+    background-image: url(../images/angle-arrow-up-primary.svg); } }
 
 article .usa-accordion-button[aria-expanded=false] {
-    background-image: url(../images/transcript_plus.png);
-    background-image: url(../images/transcript_plus.svg);
-}
+  background-image: url(../images/transcript_plus.png);
+  background-image: url(../images/transcript_plus.svg); }
 
 article .usa-accordion-button {
-    background-image: url(../images/transcript_minus.png);
-    background-image: url(../images/transcript_minus.svg);
-}
-*/
+  background-image: url(../images/transcript_minus.png);
+  background-image: url(../images/transcript_minus.svg); }
+
 @media screen and (min-width: 481px) {
   .usa-banner-button {
     padding-top: 0;
