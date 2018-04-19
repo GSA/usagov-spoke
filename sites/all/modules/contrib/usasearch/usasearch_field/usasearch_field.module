@@ -78,7 +78,6 @@ function usasearch_field_field_is_empty($item, $field) {
  * Implements hook_field_formatter_view().
  */
 function usasearch_field_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
-
   $element = array();
   list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
   $field_name = $field['field_name'];
@@ -156,14 +155,27 @@ function usasearch_field_form_submit($form, &$form_state) {
  */
 function usasearch_field_forms($form_id, $args) {
   $forms = array();
-
-  if (strpos($form_id, 'usasearch_field_search_box_') !== FALSE) {
-    $forms[$form_id] = array(
-      'callback' => 'search_box',
-      'callback arguments' => array($form_id),
-    );
+ 
+  if (strpos($form_id, 'usasearch_field_search_box_') !== FALSE ) {
+    
+    if( module_exists('search')){
+      $forms[$form_id] = array(
+        'callback' => 'search_box',
+        'callback arguments' => array($form_id),
+      );
+    }
+    elseif (module_exists('usasearch_hosted')) { 
+      $forms[$form_id] = array(
+        'callback' => 'usasearch_hosted_box',
+        'callback arguments' => array($form_id),
+      );
+    } 
+    else { 
+      return; 
+    }
+    
   }
-
+  
   return $forms;
 }
 

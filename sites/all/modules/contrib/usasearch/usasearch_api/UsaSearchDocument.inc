@@ -31,7 +31,7 @@ class UsaSearchDocument {
   public function setDocumentId($document_id) {
     // @todo add validation for web-safe string.
     if (!preg_match('/[A-Za-z0-9_-]+/', $document_id)) {
-      throwException("The document id property must be a web safe string, containing only alpanumeric characters and/or the following characters: '-, _'");
+      throw new Exception("The document id property must be a web safe string, containing only alpanumeric characters and/or the following characters: '-, _'");
     }
 
     $this->document_id = $document_id;
@@ -51,7 +51,7 @@ class UsaSearchDocument {
    */
   public function setTitle($title) {
     if (!is_string($title)) {
-      throwException("The title property must be a string!");
+      throw new Exception("The title property must be a string!");
     }
 
     $this->title = $title;
@@ -108,7 +108,7 @@ class UsaSearchDocument {
    */
   public function setDescription($description) {
     if (!is_string($description)) {
-      throwException("The description property must be a string!");
+      throw new Exception("The description property must be a string!");
     }
 
     $this->description = $description;
@@ -128,7 +128,7 @@ class UsaSearchDocument {
    */
   public function setPromote($promote) {
     if (!is_bool($promote)) {
-      throwException("The promote property must be a boolean value, either TRUE or FALSE.");
+      throw new Exception("The promote property must be a boolean value, either TRUE or FALSE.");
     }
 
     $this->promote = $promote;
@@ -148,7 +148,7 @@ class UsaSearchDocument {
    */
   public function setContent($content) {
     if (!is_string($content)) {
-      throwException("The content property must be a string!");
+      throw new Exception("The content property must be a string!");
     }
 
     $this->content = $content;
@@ -168,7 +168,7 @@ class UsaSearchDocument {
    */
   public function setTags($tag) {
     if (!is_string($tag)) {
-      throwException("The tags property must be a string!");
+      throw new Exception("The tags property must be a string!");
     }
     if (isset($this->tags)) {
       $this->tags .= ', ' . $tag;

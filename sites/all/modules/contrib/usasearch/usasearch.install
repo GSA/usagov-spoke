@@ -19,6 +19,7 @@ function usasearch_update_1() {
 function usasearch_uninstall() {
   variable_del('usasearch_affiliate_name');
   variable_del('usasearch_action_domain');
+  variable_del('usasearch_alternate_baseurl');
   variable_del('usasearch_search_page');
   variable_del('usasearch_use_rules');
 }
@@ -66,6 +67,9 @@ function usasearch_update_7001() {
  * Add index_status field to the {digitalgovsearch} table.
  */
 function usasearch_update_7002() {
+    if (db_field_exists('digitalgovsearch', 'index_status')) {
+        return;
+    }
     db_add_field(
         'digitalgovsearch',
         'index_status',

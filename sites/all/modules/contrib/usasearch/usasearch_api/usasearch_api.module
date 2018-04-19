@@ -1,9 +1,4 @@
 <?php
-use GuzzleHttp\Client;
-
-if (file_exists('vendor/autoload.php')) {
-  require 'vendor/autoload.php';
-}
 
 /**
  * @file
@@ -13,9 +8,8 @@ if (file_exists('vendor/autoload.php')) {
 /**
  * Implements hook_node_insert().
  */
-function usasearch_api_node_insert($node)
-{
-  if (!variable_get('usasearch_use_rules')) {
+function usasearch_api_node_insert($node) {
+  if (!variable_get('usasearch_use_rules') && !isset($node->workbench_moderation_state_current)) {
     usasearch_api_index_document($node, 'insert');
   }
 }
@@ -24,7 +18,7 @@ function usasearch_api_node_insert($node)
  * Implements hook_node_update().
  */
 function usasearch_api_node_update($node) {
-  if (!variable_get('usasearch_use_rules')) {
+  if (!variable_get('usasearch_use_rules') && !isset($node->workbench_moderation_state_current)) {
     usasearch_api_index_document($node, 'update');
   }
 }
@@ -33,39 +27,51 @@ function usasearch_api_node_update($node) {
  * Implements hook_node_delete().
  */
 function usasearch_api_node_delete($node) {
-  if (!variable_get('usasearch_use_rules')) {
+  if (!variable_get('usasearch_use_rules') && !isset($node->workbench_moderation_state_current)) {
     usasearch_api_index_document($node, 'delete');
   }
 }
 
-function usasearch_api_index_document($node, $action)
-{
-  $document = usasearch_api_convert_node_to_document($node);
+function usasearch_api_index_document($node, $action) {
+  if (!variable_get('usasearch_i14y_enabled', TRUE)) {
+    return;
+  }
+  $force = $action == 'delete' || $node->status == 0;
+  $document = usasearch_api_convert_node_to_document($node, $force);
   if ($document) {
     switch ($action) {
       case 'insert':
-        if ($node->status == 0 || !usasearch_api_indexing_allowed($node)) {
+        if (module_exists('workbench_moderation') && !$node->workbench_moderation['current']->state == 'published') {
+          break;
+        }
+        else if ($node->status === 0 || !usasearch_api_indexing_allowed($node)) {
           break;
         }
         usasearch_api_request('POST', 'api/v1/documents', array('json' => $document->json()));
         setIndexStatus($node, 1);
         break;
       case 'update':
-        // Delete from index if node has been unpublished
-        $indexing_allowed = usasearch_api_indexing_allowed($node);
-        $values = usasearch_getIndexStatus($node);
-        $index_status = $values['index_status'];
-        if (($node->status == 0 || $indexing_allowed == 0) && $index_status == 1) {
-          usasearch_api_node_delete($node);
-          return FALSE;
-        } else {
-          // if the node is changing from unpublished to published or index settings have changed insert it
-          if ((isset($node->original) && $node->original->status == 0) || ($index_status == 0 && $indexing_allowed)) {
-            usasearch_api_node_insert($node);
-          } elseif ($index_status > 0) {
-            // update index
-            usasearch_api_request('PUT', 'api/v1/documents/' . $document->getDocumentId(), array('json' => $document->json()));
-            setIndexStatus($node, 1);
+        if (!module_exists('workbench_moderation')) {
+          // Delete from index if node has been unpublished
+          $indexing_allowed = usasearch_api_indexing_allowed($node);
+          $values = usasearch_getIndexStatus($node);
+          $index_status = $values['index_status'];
+          if (($node->status == 0 || $indexing_allowed == 0) && $index_status == 1) {
+            usasearch_api_request('DELETE', 'api/v1/documents/' . $document->getDocumentId());
+            db_update('digitalgovsearch')->condition('nid', $node->nid)->fields(array('index_status' => 0))->execute();
+            break;
+          }
+          else {
+            // if the node is changing from unpublished to published or index settings have changed insert it
+            if ((isset($node->original) && $node->original->status == 0) || ($index_status == 0 && $indexing_allowed)) {
+              usasearch_api_request('POST', 'api/v1/documents', array('json' => $document->json()));
+              setIndexStatus($node, 1);
+            }
+            elseif ($index_status > 0) {
+              // update index
+              usasearch_api_request('PUT', 'api/v1/documents/' . $document->getDocumentId(), array('json' => $document->json()));
+              setIndexStatus($node, 1);
+            }
           }
         }
         break;
@@ -104,7 +110,6 @@ function usasearch_api_indexing_allowed ($node){
 }
 
 /**
- /**
  *
  * @param string $method
  *   The HTTP method to be used via Guzzle.
@@ -119,44 +124,58 @@ function usasearch_api_indexing_allowed ($node){
  * @see http://docs.guzzlephp.org/en/latest/
  */
 function usasearch_api_request($method, $url, $request_options = array()) {
-  $client = new Client([
-    'base_uri' => 'https://i14y.usa.gov',
-    'timeout' => 2.0,
-    'connect_timeout' => 2.0,
-    'auth' => array(variable_get('usasearch_drawer_handle', ''), variable_get('usasearch_api_password', '')),
-    ]
-  );
 
   try {
-    $response = $client->request($method, $url, $request_options);
-    watchdog('usasearch_api', '@response_code: Sucessfully updated USASearch index via @method request to @url with options: !options.', array(
-        '@method' => $method,
-        '@url' => $url,
-        '!options' => '<pre>' . check_plain(print_r($request_options, TRUE)) . '</pre>',
-        '@response_code' => $response->getStatusCode(),
-      ), WATCHDOG_INFO);
-  }
-  catch(Exception$e) {
-    watchdog('usasearch_api', 'The JSON sent to ' . $url . 'was &nbsp;<br />' . '<pre>' . check_plain(print_r($request_options, TRUE)) . '</pre>', array('!options' => '<pre>' . check_plain(print_r($request_options, TRUE)) . '</pre>'), WATCHDOG_ERROR);
-    if ($e->hasResponse()) {
-      watchdog('usasearch_api', 'Error updating USASearch index via @method request to @url with options: !options. Got a @response_code response with body "@response_body".', array(
-          '@method' => $method,
-          '@url' => $url,
-          '!options' => '<pre>' . check_plain(print_r($request_options, TRUE)) . '</pre>',
-          '@response_code' => $e->getResponse()->getStatusCode(),
-          '@response_body' => $e->getResponse()->getBody()->getContents(),
-        ), WATCHDOG_INFO);
+    $options = array(
+      'method' => $method,
+      'data' => drupal_json_encode($request_options['json']),
+      'headers' => array(
+        'Content-Type' => 'application/json',
+        'Accept' => 'application/json',
+      )
+    );
+    $request_url = 'https://' . variable_get('usasearch_drawer_handle', '') . ':' . variable_get('usasearch_api_password', '') . '@i14y.usa.gov/' . $url;
+    $response = drupal_http_request($request_url , $options);
+
+    if ($response->code < 200 || $response->code > 299) {
+      // it wasn't a good response, log it
+      watchdog('usasearch_api', 'The JSON sent to @url was &nbsp;<br />' . '<pre>@options</pre> was returned with response <pre>@response</pre>', array(
+        '@options'  => print_r($request_options, TRUE),
+        '@url'      => $url,
+        '@response' => print_r($response, TRUE),
+      ), WATCHDOG_ERROR);
     }
   }
-}
-
-/**
- * Implements hook_preprocess_node().
- */
-function usasearch_api_preprocess_node(&$vars) {
-  $vars['title'] = '';
-  if ($vars['content']['links']) {
-    unset($vars['content']['links']);
+  catch (Exception $e) {
+    $log_exception = TRUE;
+    $message = 'Error updating USASearch index via @method request to @url.';
+    $variables = array(
+      '@method' => $method,
+      '@url' => $url,
+    );
+    if (!empty($request_options)) {
+      $message .= ' Passed options were: !options.';
+      $variables['!options'] = '<pre>' . check_plain(print_r($request_options, TRUE)) . '</pre>';
+    }
+    if (method_exists($e, 'hasResponse') && $e->hasResponse()) {
+      $response_code = $e->getResponse()->getStatusCode();
+      $response_body = $e->getResponse()->getBody()->getContents();
+      if ('DELETE' == $method && 400 == $response_code) {
+        // Do not watchdog exceptions on a 400 response to a DELETE request,
+        // since it always happens when a document has not been indexed before.
+        $log_exception = FALSE;
+      }
+      $message .= ' Got a @response_code response with body "@response_body".';
+      $variables['@response_code'] = $response_code;
+      $variables['@response_body'] = $response_body;
+    }
+    else {
+      $message .= ' Exception message: "@exception_message"';
+      $variables['@exception_message'] = $e->getMessage();
+    }
+    if ($log_exception) {
+      watchdog('usasearch_api', $message, $variables, WATCHDOG_ERROR);
+    }
   }
 }
 
@@ -170,32 +189,56 @@ function usasearch_api_preprocess_node(&$vars) {
  *   A UsaSearchDocument based on the provided $node object.
  */
 function usasearch_api_convert_node_to_document($node, $force = FALSE) {
-  global $user;
-  $anon_user = drupal_anonymous_user();
-  $original_uid = $user->uid;
+    global $user;
+    $original_user = $user;
+    $old_state = drupal_save_session();
+    drupal_save_session(FALSE);
+    $anon_user = drupal_anonymous_user();
 
-  if (node_access('view', $node, $anon_user) || $force) {
+    if (node_access('view', $node, $anon_user) || $force) {
     $document = new UsaSearchDocument();
     $document->setDocumentId($node->nid);
     $document->setTitle($node->title);
 
-    $view = node_view($node);
-
     $view_mode = variable_get('usasearch_view_modes');
+    $indexed_view_mode = variable_get('usasearch_content_view_modes');
     $available_view_modes = field_view_mode_settings('node', $node->type);
     if (!array_key_exists($view_mode, $available_view_modes) || !$available_view_modes[$view_mode]['custom_settings']) {
       $view_mode = 'teaser';
     }
-    $view_teaser = node_view($node, $view_mode);
-    $user->uid = 0;
+    if (!array_key_exists($indexed_view_mode, $available_view_modes) || !$available_view_modes[$indexed_view_mode]['custom_settings']) {
+      $indexed_view_mode = 'full';
+    }
+    // Render node as anonymouse user
+    $user = drupal_anonymous_user();
+    $view = node_view($node, $indexed_view_mode);
     $content = drupal_render($view);
+    //Remove title and links from search results
+    $view_teaser = node_view($node, $view_mode);
+    $title = $view_teaser['#node']->title;
+    if ($view_teaser['#node']->title) {
+      $view_teaser['#node']->title = "";
+    }
+    if ($view_teaser['links']) {
+      unset($view_teaser['links']);
+    }
     $description = drupal_render($view_teaser);
+    $view_teaser['#node']->title = $title;
     $document->setContent($content);
-
-    // Set Description to using teaser.
+    // Set Description to using teaser or view display that's been configured.
     $document->setDescription($description);
-    $user->uid = $original_uid;
-    $document->setPath(url(drupal_get_path_alias("node/{$node->nid}"), array('absolute' => TRUE)));
+
+    // Finish up as original user
+    $user = $original_user;
+    drupal_save_session($old_state);
+
+    $urlOptions = array('absolute' => TRUE);
+
+    if ($alternateDomain = variable_get('usasearch_alternate_baseurl', FALSE)) {
+      $urlOptions['base_url'] = $alternateDomain;
+    }
+
+    $document->setPath(url(drupal_get_path_alias("node/{$node->nid}"), $urlOptions));
     $document->setCreated(date('c', $node->created));
     $document->setPromote((bool)$node->promote);
 
@@ -310,12 +353,23 @@ function usasearch_api_cron() {
  */
 function usasearch_api_update_index() {
 
-  $limit = (int)variable_get('search_cron_limit', 100);
-  $result = db_query_range("SELECT n.nid FROM {node} n LEFT JOIN {search_dataset} d ON d.type = 'node' AND d.sid = n.nid WHERE d.sid IS NULL OR d.reindex <> 0 ORDER BY d.reindex ASC, n.nid ASC", 0, $limit);
+  $query = db_select('node', 'n');
+  $query->leftJoin('search_dataset', 'd', 'd.sid = n.nid AND d.type = :type', array(':type' => 'node'));
+  $reindex_criteria = db_or()
+    ->isNull('d.sid')
+    ->condition('d.reindex', 0, '<>');
+  $nids = $query
+    ->fields('n', array('nid'))
+    ->condition($reindex_criteria)
+    ->orderBy('d.reindex')
+    ->orderBy('n.nid')
+    ->range(0, (int)variable_get('search_cron_limit', 100))
+    ->execute()
+    ->fetchCol();
 
-  foreach ($result as $node) {
+  foreach ($nids as $nid) {
 
-    $node = node_load($node->nid);
+    $node = node_load($nid);
 
     // Save the changed time of the most recent indexed node, for the search
     // results half-life calculation.
@@ -337,6 +391,23 @@ function usasearch_api_update_index() {
     // Update index
     search_index($node->nid, 'node', $text);
   }
+}
+
+/**
+ * Helper function to get all node types that can be indexed.
+ *
+ * @return array
+ */
+function _usasearch_api_indexable_node_types() {
+  $indexable_types = &drupal_static(__FUNCTION__);
+  if (!isset($indexable_types)) {
+    foreach (node_type_get_types() as $type => $info) {
+      if (variable_get("usasearch_node_include_{$type}", TRUE)) {
+        $indexable_types[] = $type;
+      }
+    }
+  }
+  return $indexable_types;
 }
 
 /**
@@ -382,3 +453,27 @@ function usasearch_api_get_entity_terms($entity_type, $bundle, $entity, $keyed_b
     return array_unique($terms);
   }
 }
+
+/**
+ * Allows modules to respond to state transitions.
+ *
+ * @param $node
+ *  The node that is being transitioned.
+ *
+ * @param $previous_state
+ *  The state of the revision before the transition occurred.
+ *
+ * @param $new_state
+ *  The new state of the revision.
+ */
+function usasearch_api_workbench_moderation_transition($node, $previous_state, $new_state) {
+  // Add newly published content to the index as new
+  if ($new_state == 'published') {
+    usasearch_api_index_document($node, 'insert');
+  }
+  // Delete unpublished content from index
+  if ($new_state !== 'published') {
+    usasearch_api_index_document($node, 'delete');
+  }
+}
+

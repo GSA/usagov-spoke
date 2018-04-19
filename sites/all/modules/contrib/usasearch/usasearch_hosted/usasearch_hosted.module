@@ -16,7 +16,7 @@ function usasearch_hosted_menu_alter(&$items) {
     'type' => MENU_CALLBACK,
     'file' => drupal_get_path('module', 'usasearch_hosted') . '/usasearch_hosted.inc',
   );
-  $items['search/*'] = array(
+  $items['search/%'] = array(
     'access arguments' => array('search content'),
     'description' => 'Search Results',
     'page callback' => 'usasearch_hosted_redirect',
@@ -32,11 +32,11 @@ function usasearch_hosted_menu_alter(&$items) {
  * Changes elements in the search block, search theme form, search page form.
  */
 function usasearch_hosted_form_alter(&$form, &$form_state, $form_id) {
-
   // Search block and search box have similar form structure.
   if ($form_id == 'search_block_form'
     || $form_id == 'search_theme_form'
     || $form_id == 'search_form'
+    || $form_id == 'usasearch_hosted_box'
     || strpos($form_id, 'usasearch_field_search_box_') !== FALSE
   ) {
     $action_domain = check_plain(variable_get('usasearch_action_domain', 'https://search.usa.gov'));
@@ -44,6 +44,10 @@ function usasearch_hosted_form_alter(&$form, &$form_state, $form_id) {
 
     // Set action method, location and read affiliate from variable.
     $form['#method'] = 'get';
+    $parsed = parse_url($action_domain);
+    if (empty($parsed['scheme'])) {
+      $action_domain = 'https://' . ltrim($action_domain, '/');
+    }
     $form['#action'] = $action_domain . '/search';
 
     $form['affiliate']['#type'] = 'hidden';
@@ -72,3 +76,101 @@ function usasearch_hosted_form_alter(&$form, &$form_state, $form_id) {
   }
 }
 
+/**
+ * Implements hook_permission().
+ */
+function usasearch_hosted_permission() {
+  return array(
+    'use usasearch hosted block' => array(
+      'title' => t('Use the DigitalGov USA Search block'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function usasearch_hosted_block_info() {
+  $blocks['form']['info'] = t('USA Search form');
+  
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function usasearch_hosted_block_view($delta = '') {
+  if (user_access('use usasearch hosted block')) {
+    $block['content'] = drupal_get_form('usasearch_hosted_box', NULL, NULL);
+  }
+  
+  return $block;
+}
+
+/**
+ * Form builder; Output a search form for the search block's search box.
+ *
+ * @ingroup forms
+ * @see usasearch-hosted-block-form.tpl.php
+ */
+function usasearch_hosted_box($form, &$form_state, $form_id) {
+  if (empty($form_id)) {
+    $form_id = 'usasearch_hosted_box';
+  }
+  
+  $form[$form_id] = array(
+    '#type' => 'textfield',
+    '#title' => t('Search'),
+    '#title_display' => 'invisible',
+    '#size' => 15,
+    '#default_value' => '',
+    '#attributes' => array(
+      'name' => 'query'
+    ),  
+  );
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array('#type' => 'submit', '#value' => t('Search'));
+  
+  return $form;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function usasearch_hosted_theme() {
+  return array(
+    'usasearch_hosted_box' => array(
+      'render element' => 'form',
+      'template' => 'usasearch-hosted-block-form',
+    ),
+  );
+}
+
+/**
+ * Process variables for search-block-form.tpl.php.
+ *
+ * The $variables array contains the following arguments:
+ * - $form
+ *
+ * @see usasearch-hosted-block-form.tpl.php
+ */
+function template_preprocess_usasearch_hosted_box(&$variables) {
+  $variables['usasearch'] = array();
+  $hidden = array();
+
+  // Provide variables named after form keys so themers can print each element independently.
+  foreach (element_children($variables['form']) as $key) {
+    $type = isset($variables['form'][$key]['#type']) ? $variables['form'][$key]['#type'] : '';
+    if ($type == 'hidden' || $type == 'token') {
+      $hidden[] = drupal_render($variables['form'][$key]);
+    }
+    else {
+      $variables['usasearch'][$key] = drupal_render($variables['form'][$key]);
+    }
+  }
+  // Hidden form elements have no value to themers. No need for separation.
+  $variables['usasearch']['hidden'] = implode($hidden);
+  // Collect all form elements to make it easier to print the whole form.
+  
+  $variables['usasearch_form'] = implode($variables['usasearch']);
+}

@@ -51,6 +51,15 @@ function usasearch_admin() {
     '#description' => t('<strong>Only change this field if you have completed set up for a CNAME with DigitalGov Search and in your agency\'s external DNS records!</strong > This will change the search form action to submit search requests to the search domain entered . If you would like a domain mask for your search results page, but have not yet requested a CNAME be set up for your site, send a request to search@support . digitalgov . gov .'),
     '#required' => FALSE,
   );
+  $form['usasearch_alternate_baseurl'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Alternate indexing domain'),
+    '#default_value' => variable_get('usasearch_alternate_baseurl', ''),
+    '#size' => 30,
+    '#maxlength' => 50,
+    '#description' => t('If set, the value of this field will be used when assembling the path to which indexed records should refer.  This is useful in cases when you use a non-public edit domain and want to ensure that search records reference the public domain rather than the edit domain.'),
+    '#required' => FALSE,
+  );
   $form['usasearch_use_rules'] = array(
       '#type' => 'checkbox',
       '#title' => t('Use rules to index content'),
@@ -59,10 +68,17 @@ function usasearch_admin() {
   );
   $form['usasearch_view_modes'] = array(
     '#type' => 'select',
-    '#title' => t('Description view mode'),
+    '#title' => t('Results description view mode'),
     '#options' => usasearch_entity_view_modes('node'),
-    '#default_value' => 'teaser',
+    '#default_value' => variable_get('usasearch_view_modes', 'teaser'),
     '#description' => t('Select a preferred view mode to define description shown in search results. The view mode will need to be enabled and configured for each content type. <strong>If the view mode is not available for a content type "Teaser" will be used.</strong>'),
+  );
+  $form['usasearch_content_view_modes'] = array(
+    '#type' => 'select',
+    '#title' => t('Indexed content view mode'),
+    '#options' => usasearch_entity_view_modes('node'),
+    '#default_value' => variable_get('usasearch_content_view_modes', 'full'),
+    '#description' => t('Select a preferred view mode to define the content that gets indexed. The view mode will need to be enabled and configured for each content type. <strong>If the view mode is not available for a content type "Default" will be used.</strong>'),
   );
   $form['usasearch_include_if_not_excluded'] = array(
     '#type' => 'checkbox',
@@ -71,6 +87,15 @@ function usasearch_admin() {
     '#default_value' => variable_get('usasearch_include_if_not_excluded', TRUE),
   );
   return system_settings_form($form);
+}
+
+/**
+ * Validate settings form.
+ */
+function usasearch_admin_validate($form, &$form_state){
+    if ($form_state['values']['usasearch_alternate_baseurl'] && !valid_url($form_state['values']['usasearch_alternate_baseurl'], TRUE)) {
+        form_set_error('usasearch_alternate_base_url', 'If set, the value of Alternate Indexing Domain must be a valid domain.');
+    }
 }
 
 /**

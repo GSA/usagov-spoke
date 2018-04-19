@@ -116,7 +116,7 @@ function usasearch_form_node_type_form_alter(&$form, &$form_state, $form_id) {
  * Changes elements in the search block, search theme form, search page form.
  */
 function usasearch_form_alter(&$form, &$form_state, $form_id) {
-  if ($form_id == 'search_block_form' || $form_id == 'search_theme_form' || $form_id == 'search_form') {
+  if ($form_id == 'search_block_form' || $form_id == 'search_theme_form' || $form_id == 'search_form' || $form_id == 'usasearch_hosted_box') {
     $affiliate_name = check_plain(variable_get('usasearch_affiliate_name', ''));
     if ($affiliate_name) {
 
