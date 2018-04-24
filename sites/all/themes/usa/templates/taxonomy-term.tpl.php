@@ -823,7 +823,7 @@ if (isset($term->field_type_of_page_to_generate['und'][0]['value']) && $term->fi
                     else {
                         $url = _sanitzie_path($item['url']);
                     }
-                    print '<li><a class="url" href="' . $url . '" >' . _strtoupper($item['state']) . '</a></li>';
+                    print '<li><a class="url state_50_url" href="' . $url . '" >' . _strtoupper($item['state']) . '</a></li>';
                 }
 
 

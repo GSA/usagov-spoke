@@ -8,7 +8,7 @@ function alterMediaLinks(linkTemplates) {
 
         jQuery('#content a[href*=".'+key+'."]').addClass('lnk-media-exclude');
 
-        jQuery('#content a[href*=".'+key+'"]').not('.lnk-media-altered').not('.lnk-media-exclude').each( function () {
+        jQuery('#content a[href*=".'+key+'"]').not('.lnk-media-altered, .lnk-media-exclude, .state_50_url').each( function () {
             var jqThis = jQuery(this);
 
             if (jqThis.prop('href').toLowerCase().search("\." + key + "([#?]|$)") != null) {
