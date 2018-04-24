@@ -608,10 +608,10 @@ function _list_fbobizopp_data(){
                             <button class="usa-accordion-button" aria-controls="filter3" aria-expanded="false" type="button"> Filter by Posted Date</button>
                             <div id="filter3" class="usa-accordion-content usa-input-error no-error no-future-date-error" aria-hidden="true"><fieldset>
                               <p>Select a date to view opportunities that have been posted <strong>on and after that date</strong>. You must select a day, month, and year before today’s date.</p>
-                              <span class="usa-input-error-message future-date-error-message" role="alert">Error: You must select a date in the past to search by posted date.</span>
+                              <span class="usa-input-error-message future-date-error-message" aria-atomic="true" role="alert">Error: You must select a date in the past to search by posted date.</span>
                               <div class="col-md-4 col-sm-6 col-xs-12 usa-input-error no-error">
                                 <label for="monthselect">Month</label>
-                                <span class="usa-input-error-message" id="month-error-message" role="alert">Error: To search by posted date, you must select a month</span>
+                                <span class="usa-input-error-message" id="month-error-message" aria-atomic="true" role="alert">Error: To search by posted date, you must select a month</span>
                                 <div class="posted-select">
                                   <select id="monthselect" name="monthselect" onkeypress="return event.keyCode != 13;" class="kpd" aria-describedby="month-error-message">
                                     <option value="">Select</option>
@@ -632,14 +632,14 @@ function _list_fbobizopp_data(){
                               </div>
                               <div class="col-md-4 col-sm-6 col-xs-12 usa-input-error no-error">
                                 <label for="dayselect">Day</label>
-                                <span class="usa-input-error-message" id="day-error-message" role="alert" aria-describedby="day-error-message">Error: To search by posted date, you must select a day</span>
+                                <span class="usa-input-error-message" id="day-error-message" role="alert" aria-atomic="true" aria-describedby="day-error-message">Error: To search by posted date, you must select a day</span>
                                 <div class="posted-select">
                                 '.$day.'
                                 </div>
                               </div>
                               <div class="col-md-4 col-sm-6 col-xs-12 usa-input-error no-error">
                                 <label for="yearselect">Year</label>
-                                <span class="usa-input-error-message" id="year-error-message" role="alert" aria-describedby="year-error-message">Error: To search by posted date, you must select a year</span>
+                                <span class="usa-input-error-message" id="year-error-message" role="alert" aria-atomic="true" aria-describedby="year-error-message">Error: To search by posted date, you must select a year</span>
                                 <div class="posted-select">
                                     '.$year.'
                                 </div>
