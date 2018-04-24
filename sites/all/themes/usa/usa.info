@@ -23,6 +23,5 @@ scripts[] = js/respond.js
 scripts[] = js/jquery-2.1.1.min.js
 scripts[] = js/platform.js
 scripts[] = js/menu.js
-scripts[] = js/states.js
 scripts[] = js/standardsModifications.js
 scripts[] = js/modal.js

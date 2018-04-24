@@ -116,7 +116,14 @@ if(isset($pagetypeddl)){
     if ( !empty($term->field_head_html['und'][0]['value']) && !drupal_is_front_page() ) {
         print $term->field_head_html['und'][0]['value'];
     }
+
+    if ($pagetype == '50-state-page') {
+?>
+        <script type="text/javascript" src="/sites/all/themes/usa/js/states.js"></script>
+    <?php
+    }
     ?>
+
 
 
 </head>
