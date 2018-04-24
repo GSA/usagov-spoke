@@ -602,7 +602,6 @@ function _list_fbobizopp_data(){
                         <div class="state-select">   <label for="stateselect"> Find your state or territory: </label></div>
                               <div class="custom-select">
                                '.$state.'
-                              </div><button id="statego">Go</button>
                             </div>
                           </li>
                           <li class="filter-box">
