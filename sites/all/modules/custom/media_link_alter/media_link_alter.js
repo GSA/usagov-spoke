@@ -6,10 +6,12 @@ function alterMediaLinks(linkTemplates) {
 
     for ( key in linkTemplates ) {
 
-        jQuery('#content a[href*=".'+key+'"]').not('.lnk-media-altered').each( function () {
+        jQuery('#content a[href*=".'+key+'."]').addClass('lnk-media-exclude');
+
+        jQuery('#content a[href*=".'+key+'"]').not('.lnk-media-altered').not('.lnk-media-exclude').each( function () {
             var jqThis = jQuery(this);
 
-            if (jqThis.prop('href').toLowerCase().search("\."+key+"([#?]|$)") != null){
+            if (jqThis.prop('href').toLowerCase().search("\." + key + "([#?]|$)") != null) {
 
                 linkUniqId++;
 
