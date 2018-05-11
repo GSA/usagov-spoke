@@ -112,8 +112,8 @@ if(isset($pagetypeddl)){
 
     <?php
     }
-    // Print the "Head-HTML" field of this S.S.-taxonomy-term
-    if ( !empty($term->field_head_html['und'][0]['value']) && !drupal_is_front_page() ) {
+    // Print the "Head-HTML" field of this S.S.-taxonomy-term && !drupal_is_front_page()
+    if ( !empty($term->field_head_html['und'][0]['value'])  ) {
         print $term->field_head_html['und'][0]['value'];
     }
 
