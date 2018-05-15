@@ -154,8 +154,8 @@ var htmlMain = ""
 	htmlMain += "<div id='resolution_date'>"
 	htmlMain += "<fieldset>"
 	htmlMain += "<div id='resolutionDateErrorContainer'><p id='resolutionDateError' class='dateError'></p></div>"
-	htmlMain += "<div class='dropDownUnit'><label for='resolutionYearSelect' class='dropDownLabel'>Month</label><select class='monthDropDown' id='resolutionMonthSelect'></select></div>";
-	htmlMain += "<div class='dropDownUnit'><label for='resolutionYearSelect' class='dropDownLabel'>Day</label><select class='dayDropDown' id='resolutionDaySelect'></select></div>";
+	htmlMain += "<div class='dropDownUnit'><label for='resolutionMonthSelect' class='dropDownLabel'>Month</label><select class='monthDropDown' id='resolutionMonthSelect'></select></div>";
+	htmlMain += "<div class='dropDownUnit'><label for='resolutionDaySelect' class='dropDownLabel'>Day</label><select class='dayDropDown' id='resolutionDaySelect'></select></div>";
 	htmlMain += "<div class='dropDownUnit'><label for='resolutionYearSelect' class='dropDownLabel'>Year</label><select class='yearDropDown' id='resolutionYearSelect'></select></div>";
 	htmlMain += "</fieldset>"
 	htmlMain += "</div>";
