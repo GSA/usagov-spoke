@@ -5091,7 +5091,8 @@ dfn {
 
 @media screen and (min-width: 600px) {
   .usa-alert-body {
-    padding-left: 5rem; } }
+    padding-left: 5rem;
+    padding-top: 1rem; } }
 
 .usa-alert-heading {
   margin-bottom: .3rem;
