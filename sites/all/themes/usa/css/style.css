@@ -2552,6 +2552,9 @@ p.err-label {
   margin-bottom: 0;
   font-size: 90%; }
 
+.label-optional-gray {
+  color: #4b4b4d; }
+
 /***********************
 11. Contact Center Box
 ***********************/
@@ -5088,7 +5091,8 @@ dfn {
 
 @media screen and (min-width: 600px) {
   .usa-alert-body {
-    padding-left: 5rem; } }
+    padding-left: 5rem;
+    padding-top: 1rem; } }
 
 .usa-alert-heading {
   margin-bottom: .3rem;
@@ -7780,91 +7784,6 @@ article .usa-accordion-button[aria-expanded=false] {
 article .usa-accordion-button {
   background-image: url(../images/transcript_minus.png);
   background-image: url(../images/transcript_minus.svg); }
-
-@media screen and (min-width: 481px) {
-  .usa-banner-button {
-    padding-top: 0;
-    padding-left: 0;
-    display: inline;
-    height: initial;
-    margin-left: 3px;
-    position: relative;
-    vertical-align: middle;
-    width: initial; } }
-
-.usa-banner-button:hover {
-  color: #205493;
-  text-decoration: underline; }
-
-.usa-banner-button[aria-expanded=false] {
-  background-image: none; }
-
-.usa-banner-button[aria-expanded=false]::after {
-  background-image: url(../images/angle-arrow-down-primary.png);
-  background-image: url(../images/angle-arrow-down-primary.svg);
-  background-size: 100%;
-  content: '';
-  display: inline-block;
-  height: 1rem;
-  width: 1rem;
-  margin-left: 0; }
-
-.usa-banner-button[aria-expanded=false]:hover::after {
-  background-image: url(../images/angle-arrow-down-primary-hover.png);
-  background-image: url(../images/angle-arrow-down-primary-hover.svg); }
-
-.usa-banner-button[aria-expanded=false]::after {
-  background-position-y: 1px; }
-
-.usa-banner-button[aria-expanded=true] {
-  background-image: none;
-  height: 5.6rem; }
-
-.usa-banner-button[aria-expanded=true]::after {
-  background-image: url(../images/close.png);
-  background-image: url(../images/close.svg);
-  background-size: 100%;
-  content: '';
-  display: inline-block;
-  height: 1.3rem;
-  width: 1.3rem;
-  margin-left: 0; }
-
-@media screen and (min-width: 481px) {
-  .usa-banner-button[aria-expanded=true] {
-    height: initial;
-    padding: 0;
-    position: relative; }
-  .usa-banner-button[aria-expanded=true]::after {
-    background-image: url(../images/angle-arrow-up-primary.png);
-    background-image: url(../images/angle-arrow-up-primary.svg);
-    background-size: 100%;
-    content: '';
-    display: inline-block;
-    height: 1rem;
-    width: 1rem;
-    margin-left: 0; }
-  .usa-banner-button[aria-expanded=true]:hover::after {
-    background-image: url(../images/angle-arrow-up-primary-hover.png);
-    background-image: url(../images/angle-arrow-up-primary-hover.svg); }
-  .usa-banner-button[aria-expanded=true]::after {
-    background-position-y: 1px; } }
-
-.usa-banner-button[aria-expanded=true]::after {
-  position: absolute;
-  right: 1.5rem;
-  top: 2.15rem; }
-
-@media screen and (min-width: 481px) {
-  .usa-banner-button[aria-expanded=true]::after {
-    position: static; } }
-
-.usa-banner-button[aria-expanded=true] .usa-banner-button-text {
-  display: none; }
-
-@media screen and (min-width: 481px) {
-  .usa-banner-button[aria-expanded=true] .usa-banner-button-text {
-    display: inline; } }
 
 @media screen and (min-width: 481px) {
   .usa-banner-button {
