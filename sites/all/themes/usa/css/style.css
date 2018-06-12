@@ -1646,6 +1646,9 @@ color: #000;
 .infobytpc .topic-business-spanish {
   background: url("../images/Topic_Icon_Business_Spanish.png") 5px 0 no-repeat; }
 
+.infobytpc .topic-disability {
+  background: url("../images/Topic_Icon_Disability.png") 5px 0 no-repeat; }
+
 @media (max-width: 991px) {
   .infobytpc ul.dwnlvl li p {
     line-height: 20px; }
@@ -3072,6 +3075,9 @@ button.submit .icon-search {
 .topic-nav-ballot {
   background-image: url("../images/Topic_Icon_Voting_White.svg"); }
 
+.topic-nav-disability {
+  background-image: url("../images/Topic_Icon_Disability_White.svg"); }
+
 .topic-nav-photo {
   height: 9rem;
   background-size: 100% 100%; }
@@ -3129,6 +3135,9 @@ button.submit .icon-search {
 
 .topic-nav-photo-ballot {
   background-image: url("../images/Topic_Banner_voting.jpg"); }
+
+.topic-nav-photo-disability {
+  background-image: url("../images/Topic_Banner_Disability.jpg"); }
 
 @media (max-width: 992px) {
   .navItems [class^="icon-"], .navItems [class*=" icon-"] {
@@ -8020,7 +8029,7 @@ body, html {
   #facetedsearch ol li,
   #facetedsearch div.term-listing-heading ul li {
     line-height: 1.5;
-    margin-top: 15px; }
+    margin: 15px auto auto auto; }
   #facetedsearch div.term-listing-heading ul.pagination li {
     line-height: 40px; }
   #facetedsearch .open-close-filters {
@@ -8763,9 +8772,9 @@ body, html {
       #facetedsearch article ol li,
       #facetedsearch div.term-listing-heading ul li {
         line-height: 1.5;
-        margin-top: 15px;
-        padding-right: 0;
-        width: 100%; }
+        margin: 15px auto auto auto;
+        width: 100%;
+        height: auto; }
       #facetedsearch article ul li:last-child {
         margin-bottom: 0px; }
       #facetedsearch section > .usa-grid {
