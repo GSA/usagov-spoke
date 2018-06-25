@@ -8031,7 +8031,8 @@ body, html {
     line-height: 1.5;
     margin: 15px auto auto auto; }
   #facetedsearch div.term-listing-heading ul.pagination li {
-    line-height: 40px; }
+    line-height: 40px;
+    margin: 15px 5px 15px 5px; }
   #facetedsearch .open-close-filters {
     width: 100%;
     margin: 0 0 0 0;
