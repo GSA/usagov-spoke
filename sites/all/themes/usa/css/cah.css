@@ -5,7 +5,7 @@ select:focus {
 	display: block;
 	color: #a50000;
 	padding: 10px 8px 10px 55px !important;
-	background-image: url('https://gsa-cmp-fileupload.s3.amazonaws.com/Icon_Alert.png');
+	background-image: url('https://app_usa_prod_eqffnyamdzrb.s3.amazonaws.com/Icon_Alert.png');
 	background-repeat: no-repeat;
 	background-position-x: 8px;
 	background-position-y: center;
@@ -52,7 +52,7 @@ legend {
 	display: block;
 	padding: 10px 8px 10px 55px;
 	background: #ebe6de;
-	background-image: url('https://gsa-cmp-fileupload.s3.amazonaws.com/Topic_Icon_Lightbulb.png');
+	background-image: url('https://app_usa_prod_eqffnyamdzrb.s3.amazonaws.com/Topic_Icon_Lightbulb.png');
 	background-repeat: no-repeat;
 	background-position-x: 3px;
 	background-position-y: center;
@@ -157,7 +157,7 @@ legend {
 }
 #cah-container select {
 	font-size: 80%;
-	background-image: url('https://gsa-cmp-fileupload.s3.amazonaws.com/Icon_Arrow_Dropdown.png');
+	background-image: url('https://app_usa_prod_eqffnyamdzrb.s3.amazonaws.com/Icon_Arrow_Dropdown.png');
 	background-position: center right 5px;
 	background-repeat: no-repeat;
 	margin: 0px 0 10px 0;
