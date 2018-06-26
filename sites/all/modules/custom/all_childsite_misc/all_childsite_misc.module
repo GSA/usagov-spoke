@@ -534,6 +534,7 @@ function _all_childsite_misc_get_AtoZ_list($a_to_z_list = TRUE) {
         $sql = "SELECT DISTINCT LEFT(field_browser_title_value,1) as letter FROM field_data_field_browser_title p
                   INNER JOIN taxonomy_term_data t ON t.tid = p.entity_id AND t.vid=42
                   INNER JOIN field_data_field_generate_page m ON m.entity_id = p.entity_id AND field_generate_page_value LIKE 'yes'
+                  INNER JOIN field_data_field_generate_menu mm ON mm.entity_id = p.entity_id AND field_generate_menu_value LIKE 'yes'
                   INNER JOIN field_data_field_friendly_url f ON f.entity_id=p.entity_id ORDER BY LEFT(field_browser_title_value,1) ";
     }
     else {
@@ -542,6 +543,7 @@ function _all_childsite_misc_get_AtoZ_list($a_to_z_list = TRUE) {
                   FROM field_data_field_browser_title p
                   INNER JOIN taxonomy_term_data t ON t.tid = p.entity_id AND t.vid=42
                   INNER JOIN field_data_field_generate_page m ON m.entity_id = p.entity_id AND field_generate_page_value LIKE 'yes'
+                  INNER JOIN field_data_field_generate_menu mm ON mm.entity_id = p.entity_id AND field_generate_menu_value LIKE 'yes'
                   INNER JOIN field_data_field_friendly_url f ON f.entity_id=p.entity_id  ORDER BY field_browser_title_value";
     }
 
