@@ -18,15 +18,15 @@ var widget_init = 1;
 var iphone = false;
 
 var resolutionList = [["Select a Resolution", ""],
-											["Repair", "I would like you to repair the product."], 
+											["Repair", "I would like you to repair the product."],
 											["Replace", "I would like you to replace the product."],
-											["Full refund", "I would like a full refund."], 
+											["Full refund", "I would like a full refund."],
 											["Partial refund", "I would like you to give me a partial refund of [fill in amount requested]."],
 											["Discount/Credit/Other", "Please issue a coupon or gift card to use on a future purchase."]];
-											
-var months = [ "January", "February", "March", "April", "May", "June", 
+
+var months = [ "January", "February", "March", "April", "May", "June",
 							"July", "August", "September", "October", "November", "December" ];
-							
+
 var todays_date_string = months[today.getMonth()] + " " + today.getDate() + ", " + today.getFullYear();
 
 var htmlMain = ""
@@ -44,7 +44,7 @@ var htmlMain = ""
 	htmlMain += "<p>";
 	htmlMain += "<label for='product_description'>";
 	htmlMain += "What did you purchase from the company? Describe the product or service that you purchased in the text box.<br>";
-	htmlMain += "<span class='helptext'>Include any important details: product name, serial number, service to be performed, order number, invoice number, price, discounts used, confirmation number, or name of the customer service representative. For example, “I bought a radio produced by Great Sounds Manufacturers, serial number 123456 on receipt #415 for $150.”</span>";
+	htmlMain += "<span class='helptext'>Include any important details: product name, serial number, service to be performed, order number, invoice number, price, discounts used, confirmation number, or name of the customer service representative. For example, "I bought a radio produced by Great Sounds Manufacturers, serial number 123456 on receipt #415 for $150."</span>";
 	htmlMain += "</label>";
 	htmlMain += "</p>";
 	htmlMain += "<textarea id='product_description'></textarea>";
@@ -60,7 +60,7 @@ var htmlMain = ""
 	htmlMain += "<p>";
 	htmlMain += "<legend>";
 	htmlMain += "Where will you be sending the complaint?<br>";
-	htmlMain += "<span class='helptext'>It’s best to send your complaint letter directly to the local seller or service provider. But if they can’t resolve the complaint, you may want to send it to the customer service department at corporate headquarters.</span>";
+	htmlMain += "<span class='helptext'>It's best to send your complaint letter directly to the local seller or service provider. But if they can't resolve the complaint, you may want to send it to the customer service department at corporate headquarters.</span>";
 	htmlMain += "</legend>";
 	htmlMain += "</p>";
 	htmlMain += "<div class='radio_buttons'>";
@@ -136,7 +136,7 @@ var htmlMain = ""
 	htmlMain += "<label for='problem_description'>";
 	htmlMain += "Unfortunately, I was dissatisfied for the following reason(s):<br>";
 	htmlMain += "Type in a detailed explanation about your problem, your purchase, or service.<br>";
-	htmlMain += "<span class='helptext'>You can be dissatisfied for several reasons: due to malfunction, bad customer service, incorrect billing, or delayed delivery. For example, “I was dissatisfied with my purchase because the volume knob fell off the radio the day I bought it. I tried to return it with my receipt, but the customer service representative at your store, Susan Smith, would not accept the return or give me a refund.”</span>";
+	htmlMain += "<span class='helptext'>You can be dissatisfied for several reasons: due to malfunction, bad customer service, incorrect billing, or delayed delivery. For example, "I was dissatisfied with my purchase because the volume knob fell off the radio the day I bought it. I tried to return it with my receipt, but the customer service representative at your store, Susan Smith, would not accept the return or give me a refund."</span>";
 	htmlMain += "</label>";
 	htmlMain += "</p>";
 	htmlMain += "<textarea id='problem_description'></textarea>";
@@ -150,7 +150,7 @@ var htmlMain = ""
 	htmlMain += "<textarea id='resolution_text'></textarea>";
 	htmlMain += "</p>";
 	htmlMain += "<p class='clear'>Set a due date for the company to resolve the problem. (Use the dropdowns below to select the date.)<br>";
-	htmlMain += "<span class='helptext'>Typically, you want to give companies a minimum of two weeks from the date of your letter to respond.</span></p>";	
+	htmlMain += "<span class='helptext'>Typically, you want to give companies a minimum of two weeks from the date of your letter to respond.</span></p>";
 	htmlMain += "<div id='resolution_date'>"
 	htmlMain += "<fieldset>"
 	htmlMain += "<div id='resolutionDateErrorContainer'><p id='resolutionDateError' class='dateError'></p></div>"
@@ -159,7 +159,7 @@ var htmlMain = ""
 	htmlMain += "<div class='dropDownUnit'><label for='resolutionYearSelect' class='dropDownLabel'>Year</label><select class='yearDropDown' id='resolutionYearSelect'></select></div>";
 	htmlMain += "</fieldset>"
 	htmlMain += "</div>";
-	htmlMain += "</div>";	
+	htmlMain += "</div>";
 	htmlMain += "<div id='step5_div'>";
 	htmlMain += "<h2>Step 5: Preview</h2>";
 	htmlMain += "<p class='helptext'>The text that you will need to edit on your actual letter is highlighted and enclosed in brackets. When you download the letter, the text won't be highlighted, and you can fill in the information that is surrounded by [&nbsp]. After you download, be sure to add your name, address, subject, and phone number. You can also edit your letter.</p><br>";
@@ -174,8 +174,8 @@ var htmlMain = ""
 	htmlMain += "</p>";
 	htmlMain += "</div>";
 	htmlMain += "</div>";
-  
-  
+
+
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-28227333-1']);
   //_gaq.push(['_trackPageview']);
