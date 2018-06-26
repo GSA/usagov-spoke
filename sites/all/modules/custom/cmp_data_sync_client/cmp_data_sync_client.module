@@ -1008,7 +1008,7 @@ function _cdsc_add_node_to_drupal($node)
         /// so we must update the existing id with ours
         _cdsc_log('Info: CDSC '.__FUNCTION__.'.'.__LINE__.' correcting site nid from='.$incorrect_nid.' to='.$node->nid);
         try {
-            db_query("UPDATE {node} SET nid=:correct_uuid WHERE nid=:incorrect_nid AND uuid=:uuid",
+            db_query("UPDATE {node} SET nid=:correct_nid WHERE nid=:incorrect_nid AND uuid=:uuid",
                     array(':correct_nid'=>$node->nid,':incorrect_nid'=>$incorrect_nid,':uuid'=>$node->uuid));
         } catch ( Exception $e ) {
             _cdsc_log('Fail: CDSC '.__FUNCTION__.'.'.__LINE__.' Exception: '.$e->getMessage() .' : '. $e->getTraceAsString() );
