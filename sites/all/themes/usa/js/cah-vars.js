@@ -44,7 +44,7 @@ var htmlMain = ""
 	htmlMain += "<p>";
 	htmlMain += "<label for='product_description'>";
 	htmlMain += "What did you purchase from the company? Describe the product or service that you purchased in the text box.<br>";
-	htmlMain += "<span class='helptext'>Include any important details: product name, serial number, service to be performed, order number, invoice number, price, discounts used, confirmation number, or name of the customer service representative. For example, "I bought a radio produced by Great Sounds Manufacturers, serial number 123456 on receipt #415 for $150."</span>";
+	htmlMain += "<span class='helptext'>Include any important details: product name, serial number, service to be performed, order number, invoice number, price, discounts used, confirmation number, or name of the customer service representative. For example,  &#34;I bought a radio produced by Great Sounds Manufacturers, serial number 123456 on receipt #415 for $150. &#34;</span>";
 	htmlMain += "</label>";
 	htmlMain += "</p>";
 	htmlMain += "<textarea id='product_description'></textarea>";
@@ -136,7 +136,7 @@ var htmlMain = ""
 	htmlMain += "<label for='problem_description'>";
 	htmlMain += "Unfortunately, I was dissatisfied for the following reason(s):<br>";
 	htmlMain += "Type in a detailed explanation about your problem, your purchase, or service.<br>";
-	htmlMain += "<span class='helptext'>You can be dissatisfied for several reasons: due to malfunction, bad customer service, incorrect billing, or delayed delivery. For example, "I was dissatisfied with my purchase because the volume knob fell off the radio the day I bought it. I tried to return it with my receipt, but the customer service representative at your store, Susan Smith, would not accept the return or give me a refund."</span>";
+	htmlMain += "<span class='helptext'>You can be dissatisfied for several reasons: due to malfunction, bad customer service, incorrect billing, or delayed delivery. For example,  &#34;I was dissatisfied with my purchase because the volume knob fell off the radio the day I bought it. I tried to return it with my receipt, but the customer service representative at your store, Susan Smith, would not accept the return or give me a refund. &#34;</span>";
 	htmlMain += "</label>";
 	htmlMain += "</p>";
 	htmlMain += "<textarea id='problem_description'></textarea>";
