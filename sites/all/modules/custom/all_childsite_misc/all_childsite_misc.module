@@ -49,7 +49,8 @@ function all_childsite_misc_init()
             $currentUrl = substr($currentUrl, 1);
             $urlArray = explode('/', $currentUrl);
             $nid = $urlArray[1];
-
+            $currentUrl = explode("?", $currentUrl);
+            $currentUrl = $currentUrl[0];
             if(is_numeric($nid) && $pos1){
                 $friendlyUrl = db_query('SELECT alias FROM {url_alias} WHERE source=:source',
                     array(':source'=>'node/'.$nid) )->fetchColumn();
