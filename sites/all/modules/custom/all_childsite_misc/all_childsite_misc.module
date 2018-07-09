@@ -10,33 +10,11 @@ $GLOBALS['include_tracking_html'] = false;
  */
 function all_childsite_misc_init()
 {
-    /// this is a job for nginx not drupal
-    // if ( !drupal_is_cli() ) { // this if-condition is required in order to allow drush to work
-    //     header('Strict-Transport-Security: max-age=31536000');
-    //     if ( empty($_SERVER['HTTPS']) ) {
-    //         if ( strpos($_SERVER['REQUEST_URI'], '-DEBUG-NO-HTTPS-REDIRECT-') === false ) {
-    //             while ( @ob_get_length() ) { @ob_end_clean(); }
-    //             header('Location: https://'.$_SERVER['HTTP_HOST'].request_uri_path());
-    //             http_response_code(301);
-    //             drupal_add_http_header('Location', 'https://'.$_SERVER['HTTP_HOST'].request_uri_path());
-    //             exit();
-    //         }
-    //     }
-    // }
-
-    //if ( strtolower(getenv('CMP_DRUPAL_ENVIRONMENT_NAME')) !== 'prod' )
-    // if ( !empty(getenv('CMP_DRUPAL_USASEARCH_DISABLED')) )
-    // {
-
-    /// turn off usasearch for all items
-    /// we don't want the module to do update the index on-change anymore
     global $conf;
     foreach ( node_type_get_names() as $node_type=>$node_name )
     {
         $conf['usasearch_node_include_'.$node_type] = FALSE;
     }
-
-    // }
 
     global $user;
     $currentUrl = $_SERVER["REQUEST_URI"];
