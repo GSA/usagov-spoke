@@ -49,7 +49,12 @@ if ( request_uri() !== '/' ) {
     $pagetype='';
 
     if (!empty($term) && !empty($term->field_type_of_page_to_generate['und'][0]['value'])){
-        $pagetype=$term->field_type_of_page_to_generate['und'][0]['value'];
+        $pagetype = $term->field_type_of_page_to_generate['und'][0]['value'];
+    }
+    if ($pagetype == 'generic-content-page'){
+        foreach($term->field_asset_order_content['und'] as $cont) {
+            $assetId[] = $cont['target_id'];
+        }
     }
 }
 if(isset($pagetypeddl)){
@@ -62,6 +67,11 @@ if(isset($pagetypeddl)){
     <script>
         dataLayer = [{
             'pageType': '<?php print$pagetype; ?>'
+            <?php
+                if (isset($assetId)) {
+        print "'assetIDs': '".join($assetId, ', ')."'";
+                }
+            ?>
         }];
     </script>
 
