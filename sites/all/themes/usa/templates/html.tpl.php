@@ -51,6 +51,7 @@ if ( request_uri() !== '/' ) {
     if (!empty($term) && !empty($term->field_type_of_page_to_generate['und'][0]['value'])){
         $pagetype = $term->field_type_of_page_to_generate['und'][0]['value'];
     }
+    
     if ($pagetype == 'generic-content-page'){
         foreach($term->field_asset_order_content['und'] as $cont) {
             $assetId[] = $cont['target_id'];
