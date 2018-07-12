@@ -67,7 +67,7 @@ if(isset($pagetypeddl)){
 <head>
     <script>
         dataLayer = [{
-            'pageType': '<?php print$pagetype; ?>'
+            'pageType': '<?php print$pagetype; ?>'<?php (isset($assetId))? print ",\n":"\n";  ?>
             <?php
                 if (isset($assetId)) {
         print "'assetIDs': '".join($assetId, ', ')."' \n";
