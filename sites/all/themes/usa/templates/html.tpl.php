@@ -49,7 +49,13 @@ if ( request_uri() !== '/' ) {
     $pagetype='';
 
     if (!empty($term) && !empty($term->field_type_of_page_to_generate['und'][0]['value'])){
-        $pagetype=$term->field_type_of_page_to_generate['und'][0]['value'];
+        $pagetype = $term->field_type_of_page_to_generate['und'][0]['value'];
+    }
+
+    if ($pagetype == 'generic-content-page'){
+        foreach($term->field_asset_order_content['und'] as $cont) {
+            $assetId[] = $cont['target_id'];
+        }
     }
 }
 if(isset($pagetypeddl)){
@@ -60,8 +66,32 @@ if(isset($pagetypeddl)){
 
 <head>
     <script>
+        <?php
+            $parents = taxonomy_get_parents_all($term->tid);
+            $last = count($parents);
+            $p=0;
+            $maxLevel = 6;    
+        ?>
+
         dataLayer = [{
-            'pageType': '<?php print$pagetype; ?>'
+             'pageType': '<?php print $pagetype; ?>', <?php 
+                if (isset($assetId)) {
+                    print "\n             'assetIDs': '". join($assetId, ', ')."',";
+                }
+                $parents = array_reverse($parents,true);
+                foreach ( $parents as $ptid=>$parent ) {
+                    $p++; /// so we start at 1
+                    print "\n             'TaxLevel{$p}': '".$parent->name."'";
+                    if ( $p != $last ) {
+                        print ",";
+                    }
+                }
+                for( $p=$p+1; $p<=$maxLevel; $p++ )
+                {
+                    print ",\n             'TaxLevel{$p}': '".$parent->name."'";
+                }
+            ?>
+
         }];
     </script>
 
@@ -112,8 +142,8 @@ if(isset($pagetypeddl)){
 
     <?php
     }
-    // Print the "Head-HTML" field of this S.S.-taxonomy-term
-    if ( !empty($term->field_head_html['und'][0]['value']) && !drupal_is_front_page() ) {
+    // Print the "Head-HTML" field of this S.S.-taxonomy-term && !drupal_is_front_page()
+    if ( !empty($term->field_head_html['und'][0]['value'])  ) {
         print $term->field_head_html['und'][0]['value'];
     }
 
@@ -357,16 +387,6 @@ if(@!empty($dirEndHtml)){
     print $dirEndHtml;
 }
 ?>
-<!-- Start of Async HubSpot Analytics Code -->
-<script type="text/javascript">
-    (function(d,s,i,r) {
-        if (d.getElementById(i)){return;}
-        var n=d.createElement(s),e=d.getElementsByTagName(s)[0];
-        n.id=i;n.src='//js.hs-analytics.net/analytics/'+(Math.ceil(new Date()/r)*r)+'/532040.js';
-        e.parentNode.insertBefore(n, e);
-    })(document,"script","hs-analytics",300000);
-</script>
-<!-- End of Async HubSpot Analytics Code -->
 
 <script type="text/javascript" src="/sites/all/themes/usa/js/uswds.js"></script>
 </body>

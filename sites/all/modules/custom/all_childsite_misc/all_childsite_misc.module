@@ -10,33 +10,11 @@ $GLOBALS['include_tracking_html'] = false;
  */
 function all_childsite_misc_init()
 {
-    /// this is a job for nginx not drupal
-    // if ( !drupal_is_cli() ) { // this if-condition is required in order to allow drush to work
-    //     header('Strict-Transport-Security: max-age=31536000');
-    //     if ( empty($_SERVER['HTTPS']) ) {
-    //         if ( strpos($_SERVER['REQUEST_URI'], '-DEBUG-NO-HTTPS-REDIRECT-') === false ) {
-    //             while ( @ob_get_length() ) { @ob_end_clean(); }
-    //             header('Location: https://'.$_SERVER['HTTP_HOST'].request_uri_path());
-    //             http_response_code(301);
-    //             drupal_add_http_header('Location', 'https://'.$_SERVER['HTTP_HOST'].request_uri_path());
-    //             exit();
-    //         }
-    //     }
-    // }
-
-    //if ( strtolower(getenv('CMP_DRUPAL_ENVIRONMENT_NAME')) !== 'prod' )
-    // if ( !empty(getenv('CMP_DRUPAL_USASEARCH_DISABLED')) )
-    // {
-
-    /// turn off usasearch for all items
-    /// we don't want the module to do update the index on-change anymore
     global $conf;
     foreach ( node_type_get_names() as $node_type=>$node_name )
     {
         $conf['usasearch_node_include_'.$node_type] = FALSE;
     }
-
-    // }
 
     global $user;
     $currentUrl = $_SERVER["REQUEST_URI"];
@@ -49,7 +27,8 @@ function all_childsite_misc_init()
             $currentUrl = substr($currentUrl, 1);
             $urlArray = explode('/', $currentUrl);
             $nid = $urlArray[1];
-
+            $currentUrl = explode("?", $currentUrl);
+            $currentUrl = $currentUrl[0];
             if(is_numeric($nid) && $pos1){
                 $friendlyUrl = db_query('SELECT alias FROM {url_alias} WHERE source=:source',
                     array(':source'=>'node/'.$nid) )->fetchColumn();
@@ -534,6 +513,7 @@ function _all_childsite_misc_get_AtoZ_list($a_to_z_list = TRUE) {
         $sql = "SELECT DISTINCT LEFT(field_browser_title_value,1) as letter FROM field_data_field_browser_title p
                   INNER JOIN taxonomy_term_data t ON t.tid = p.entity_id AND t.vid=42
                   INNER JOIN field_data_field_generate_page m ON m.entity_id = p.entity_id AND field_generate_page_value LIKE 'yes'
+                  INNER JOIN field_data_field_generate_menu mm ON mm.entity_id = p.entity_id AND field_generate_menu_value LIKE 'yes'
                   INNER JOIN field_data_field_friendly_url f ON f.entity_id=p.entity_id ORDER BY LEFT(field_browser_title_value,1) ";
     }
     else {
@@ -542,6 +522,7 @@ function _all_childsite_misc_get_AtoZ_list($a_to_z_list = TRUE) {
                   FROM field_data_field_browser_title p
                   INNER JOIN taxonomy_term_data t ON t.tid = p.entity_id AND t.vid=42
                   INNER JOIN field_data_field_generate_page m ON m.entity_id = p.entity_id AND field_generate_page_value LIKE 'yes'
+                  INNER JOIN field_data_field_generate_menu mm ON mm.entity_id = p.entity_id AND field_generate_menu_value LIKE 'yes'
                   INNER JOIN field_data_field_friendly_url f ON f.entity_id=p.entity_id  ORDER BY field_browser_title_value";
     }
 
