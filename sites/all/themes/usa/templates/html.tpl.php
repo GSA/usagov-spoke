@@ -66,13 +66,32 @@ if(isset($pagetypeddl)){
 
 <head>
     <script>
+        <?php
+            $parents = taxonomy_get_parents_all($term->tid);
+            $last = count($parents);
+            $p=0;
+            $maxLevel = 6;    
+        ?>
+
         dataLayer = [{
-            'pageType': '<?php print$pagetype; ?>'<?php (isset($assetId))? print ",\n":"\n";  ?>
-            <?php
+             'pageType': '<?php print $pagetype; ?>', <?php 
                 if (isset($assetId)) {
-        print "'assetIDs': '".join($assetId, ', ')."' \n";
+                    print "\n             'assetIDs': '". join($assetId, ', ')."',";
+                }
+                $parents = array_reverse($parents,true);
+                foreach ( $parents as $ptid=>$parent ) {
+                    $p++; /// so we start at 1
+                    print "\n             'TaxLevel{$p}': '".$parent->name."'";
+                    if ( $p != $last ) {
+                        print ",";
+                    }
+                }
+                for( $p=$p+1; $p<=$maxLevel; $p++ )
+                {
+                    print ",\n             'TaxLevel{$p}': '".$parent->name."'";
                 }
             ?>
+
         }];
     </script>
 
