@@ -51,9 +51,13 @@ if ( request_uri() !== '/' ) {
     if (!empty($term) && !empty($term->field_type_of_page_to_generate['und'][0]['value'])){
         $pagetype = $term->field_type_of_page_to_generate['und'][0]['value'];
     }
-
-    if ($pagetype == 'generic-content-page'){
-        foreach($term->field_asset_order_content['und'] as $cont) {
+    $assetId = [];
+    // if ($pagetype == 'generic-content-page'){
+    if (   !empty($term->field_asset_order_content)
+        && !empty($term->field_asset_order_content['und']) ) 
+    {
+        foreach($term->field_asset_order_content['und'] as $cont) 
+        {
             $assetId[] = $cont['target_id'];
         }
     }
@@ -74,17 +78,16 @@ if(isset($pagetypeddl)){
         ?>
 
         dataLayer = [{
-             'pageType': '<?php print $pagetype; ?>', <?php 
-                if (isset($assetId)) {
-                    print "\n             'assetIDs': '". join($assetId, ', ')."',";
+             'pageType': '<?php print $pagetype; ?>', 
+             'assetIDs': <?php echo !empty($assetId) ? "'".join($assetId, ', ')."'" : 'null' ?><?php
+                $parents = array_reverse($parents);
+                if ( count($parents)>2 && $parents[1]->name=='All Topics and Services' )
+                {
+                    unset($parents[1]);
                 }
-                $parents = array_reverse($parents,true);
-                foreach ( $parents as $ptid=>$parent ) {
+                foreach ( $parents as $parent ) {
                     $p++; /// so we start at 1
-                    print "\n             'TaxLevel{$p}': '".$parent->name."'";
-                    if ( $p != $last ) {
-                        print ",";
-                    }
+                    print ",\n             'TaxLevel{$p}': '".$parent->name."'";
                 }
                 for( $p=$p+1; $p<=$maxLevel; $p++ )
                 {
