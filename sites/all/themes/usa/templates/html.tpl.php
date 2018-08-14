@@ -64,6 +64,17 @@ if ( request_uri() !== '/' ) {
 }
 if(isset($pagetypeddl)){
     $pagetype=$pagetypeddl;
+    if($pagetype == 'home'){
+        //print_r($term);exit;
+        foreach($term->field_home_howdoi_assets['und'] as $cont)
+        {
+            $assetId[] = $cont['target_id'];
+        }
+        foreach($term->field_home_whats_new_asset['und'] as $cont)
+        {
+            $assetId[] = $cont['target_id'];
+        }
+    }
 }
 ?><!DOCTYPE html>
 <html <?php print $htmlTagAttribs; ?> >
