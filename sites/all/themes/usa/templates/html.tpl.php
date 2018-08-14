@@ -79,7 +79,7 @@ if(isset($pagetypeddl)){
 
         dataLayer = [{
              'pageType': '<?php print $pagetype; ?>', 
-             'assetIDs': <?php echo !empty($assetId) ? "'".join($assetId, ', ')."'" : 'null' ?><?php
+             'assetIDs': <?php echo !empty($assetId) ? "'".join($assetId, ', ')."'" : '\'null\'' ?><?php
                 $parents = array_reverse($parents);
                 if ( count($parents)>2 && $parents[1]->name=='All Topics and Services' )
                 {
