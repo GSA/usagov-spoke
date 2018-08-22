@@ -64,6 +64,17 @@ if ( request_uri() !== '/' ) {
 }
 if(isset($pagetypeddl)){
     $pagetype=$pagetypeddl;
+    if($pagetype == 'home'){
+        //print_r($term);exit;
+        foreach($term->field_home_howdoi_assets['und'] as $cont)
+        {
+            $assetId[] = $cont['target_id'];
+        }
+        foreach($term->field_home_whats_new_asset['und'] as $cont)
+        {
+            $assetId[] = $cont['target_id'];
+        }
+    }
 }
 ?><!DOCTYPE html>
 <html <?php print $htmlTagAttribs; ?> >
@@ -79,7 +90,7 @@ if(isset($pagetypeddl)){
 
         dataLayer = [{
              'pageType': '<?php print $pagetype; ?>', 
-             'assetIDs': <?php echo !empty($assetId) ? "'".join($assetId, ', ')."'" : 'null' ?><?php
+             'assetIDs': <?php echo !empty($assetId) ? "'".join($assetId, ', ')."'" : '\'null\'' ?><?php
                 $parents = array_reverse($parents);
                 if ( count($parents)>2 && $parents[1]->name=='All Topics and Services' )
                 {
