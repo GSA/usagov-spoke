@@ -28,6 +28,9 @@ function usasearch_menu()
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function usasearch_form_node_form_alter(&$form, &$form_state, $form_id) {
+  if (!variable_get('usasearch_i14y_enabled', TRUE)) {
+    return;
+  }
   // Include/exclude node from usasearch index
   $node = $form['#node'];
   $usasearch_content_type_settings = variable_get("usasearch_node_include_{$node->type}", TRUE);
@@ -94,6 +97,9 @@ function usasearch_save_per_node_settings($node, $setting){
  * Implements hook_form_FORM_ID_alter().
  */
 function usasearch_form_node_type_form_alter(&$form, &$form_state, $form_id) {
+  if (!variable_get('usasearch_i14y_enabled', TRUE)) {
+    return;
+  }
   $node_type = $form['#node_type']->type;
   $variable_name = "usasearch_node_include_{$node_type}";
   $form['usasearch_settings'] = array(

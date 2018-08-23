@@ -22,6 +22,7 @@ function usasearch_uninstall() {
   variable_del('usasearch_alternate_baseurl');
   variable_del('usasearch_search_page');
   variable_del('usasearch_use_rules');
+  variable_del('usasearch_i14y_enabled');
 }
 
 /**

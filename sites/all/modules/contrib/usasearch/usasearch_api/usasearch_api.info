@@ -9,9 +9,8 @@ dependencies[] = usasearch
 dependencies[] = ctools
 
 
-; Information added by Drupal.org packaging script on 2018-02-22
-version = "7.x-5.9"
+; Information added by Drupal.org packaging script on 2018-07-25
+version = "7.x-5.10"
 core = "7.x"
 project = "usasearch"
-datestamp = "1519316587"
-
+datestamp = "1532542989"

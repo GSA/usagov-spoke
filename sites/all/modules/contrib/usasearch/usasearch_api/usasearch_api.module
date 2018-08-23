@@ -37,44 +37,56 @@ function usasearch_api_index_document($node, $action) {
     return;
   }
   $force = $action == 'delete' || $node->status == 0;
-  $document = usasearch_api_convert_node_to_document($node, $force);
+  try {
+    $document = usasearch_api_convert_node_to_document($node, $force);
+  }
+  catch(Exception$e) {
+    $variables = array(
+      '@nid' => $node->nid,
+      '%title' => $node->title,
+    );
+    $variables += _drupal_decode_exception($e);
+    watchdog('usasearch_api', '%type: !message in %function (line %line of %file) while converting "%title" (node @nid) to a UsaSearchDocument: ', $variables, WATCHDOG_ERROR, url('node/' . $node->nid));
+  }
   if ($document) {
     switch ($action) {
       case 'insert':
-        if (module_exists('workbench_moderation') && !$node->workbench_moderation['current']->state == 'published') {
+        if (module_exists('workbench_moderation') && ((isset($node->workbench_moderation_state_new) && $node->workbench_moderation_state_new != 'published') || (array_key_exists('published', $node->workbench_moderation) && $node->workbench_moderation['published']->state != 'published'))) {
           break;
         }
-        else if ($node->status === 0 || !usasearch_api_indexing_allowed($node)) {
+        elseif ($node->status === 0 || !usasearch_api_indexing_allowed($node)) {
           break;
         }
         usasearch_api_request('POST', 'api/v1/documents', array('json' => $document->json()));
         setIndexStatus($node, 1);
         break;
+
       case 'update':
-        if (!module_exists('workbench_moderation')) {
-          // Delete from index if node has been unpublished
-          $indexing_allowed = usasearch_api_indexing_allowed($node);
-          $values = usasearch_getIndexStatus($node);
-          $index_status = $values['index_status'];
-          if (($node->status == 0 || $indexing_allowed == 0) && $index_status == 1) {
-            usasearch_api_request('DELETE', 'api/v1/documents/' . $document->getDocumentId());
-            db_update('digitalgovsearch')->condition('nid', $node->nid)->fields(array('index_status' => 0))->execute();
-            break;
+        //        if (!module_exists('workbench_moderation')) {
+        // Delete from index if node has been unpublished
+        $indexing_allowed = usasearch_api_indexing_allowed($node);
+        $values = usasearch_getIndexStatus($node);
+        $index_status = $values['index_status'];
+        if (($node->status == 0 || $indexing_allowed == 0) && $index_status == 1) {
+          usasearch_api_request('DELETE', 'api/v1/documents/' . $document->getDocumentId());
+          db_update('digitalgovsearch')->condition('nid', $node->nid)->fields(array('index_status' => 0))->execute();
+          break;
+        }
+        else {
+          // if the node is changing from unpublished to published or index settings have changed insert it
+          if (((isset($node->original) && $node->original->status == 0) || ($index_status == 0 && $indexing_allowed)) && $node->status == 1) {
+            usasearch_api_request('POST', 'api/v1/documents', array('json' => $document->json()));
+            setIndexStatus($node, 1);
           }
-          else {
-            // if the node is changing from unpublished to published or index settings have changed insert it
-            if ((isset($node->original) && $node->original->status == 0) || ($index_status == 0 && $indexing_allowed)) {
-              usasearch_api_request('POST', 'api/v1/documents', array('json' => $document->json()));
-              setIndexStatus($node, 1);
-            }
-            elseif ($index_status > 0) {
-              // update index
-              usasearch_api_request('PUT', 'api/v1/documents/' . $document->getDocumentId(), array('json' => $document->json()));
-              setIndexStatus($node, 1);
-            }
+          elseif ($index_status > 0) {
+            // update index
+            usasearch_api_request('PUT', 'api/v1/documents/' . $document->getDocumentId(), array('json' => $document->json()));
+            setIndexStatus($node, 1);
           }
         }
+        //        }
         break;
+
       case 'delete':
         usasearch_api_request('DELETE', 'api/v1/documents/' . $document->getDocumentId());
         db_update('digitalgovsearch')->condition('nid', $node->nid)->fields(array('index_status' => 0))->execute();
@@ -97,7 +109,7 @@ function setIndexStatus($node, $status) {
   }
 }
 
-function usasearch_api_indexing_allowed ($node){
+function usasearch_api_indexing_allowed($node) {
   $index_allowed = variable_get("usasearch_node_include_{$node->type}", TRUE);
   if ($index_allowed) {
     $index_allowed = db_query("SELECT search_include FROM {digitalgovsearch} WHERE nid = :nid", array(':nid' => $node->nid))->fetchField();
@@ -128,25 +140,25 @@ function usasearch_api_request($method, $url, $request_options = array()) {
   try {
     $options = array(
       'method' => $method,
-      'data' => drupal_json_encode($request_options['json']),
+      'data' => ((!empty($request_options)) ? drupal_json_encode($request_options['json']) : ''),
       'headers' => array(
         'Content-Type' => 'application/json',
         'Accept' => 'application/json',
-      )
+      ),
     );
     $request_url = 'https://' . variable_get('usasearch_drawer_handle', '') . ':' . variable_get('usasearch_api_password', '') . '@i14y.usa.gov/' . $url;
-    $response = drupal_http_request($request_url , $options);
+    $response = drupal_http_request($request_url, $options);
 
     if ($response->code < 200 || $response->code > 299) {
       // it wasn't a good response, log it
       watchdog('usasearch_api', 'The JSON sent to @url was &nbsp;<br />' . '<pre>@options</pre> was returned with response <pre>@response</pre>', array(
-        '@options'  => print_r($request_options, TRUE),
-        '@url'      => $url,
-        '@response' => print_r($response, TRUE),
-      ), WATCHDOG_ERROR);
+          '@options' => print_r($request_options, TRUE),
+          '@url' => $url,
+          '@response' => print_r($response, TRUE),
+        ), WATCHDOG_ERROR);
     }
   }
-  catch (Exception $e) {
+  catch(Exception$e) {
     $log_exception = TRUE;
     $message = 'Error updating USASearch index via @method request to @url.';
     $variables = array(
@@ -189,13 +201,13 @@ function usasearch_api_request($method, $url, $request_options = array()) {
  *   A UsaSearchDocument based on the provided $node object.
  */
 function usasearch_api_convert_node_to_document($node, $force = FALSE) {
-    global $user;
-    $original_user = $user;
-    $old_state = drupal_save_session();
-    drupal_save_session(FALSE);
-    $anon_user = drupal_anonymous_user();
+  global $user;
+  $original_user = $user;
+  $old_state = drupal_save_session();
+  drupal_save_session(FALSE);
+  $anon_user = drupal_anonymous_user();
 
-    if (node_access('view', $node, $anon_user) || $force) {
+  if (node_access('view', $node, $anon_user) || $force) {
     $document = new UsaSearchDocument();
     $document->setDocumentId($node->nid);
     $document->setTitle($node->title);
@@ -335,7 +347,8 @@ function usasearch_api_form_search_admin_settings_alter(&$form, &$form_state, $f
  * @see search_cron()
  */
 function usasearch_api_cron() {
-  if (!variable_get('usasearch_use_rules')) { //If using rules then rules should handle all indexing
+  // If using rules then rules should handle all indexing
+  if (!variable_get('usasearch_use_rules')) {
     // We register a shutdown function to ensure that search_total is always up
     // to date.
     drupal_register_shutdown_function('search_update_totals');
@@ -355,17 +368,8 @@ function usasearch_api_update_index() {
 
   $query = db_select('node', 'n');
   $query->leftJoin('search_dataset', 'd', 'd.sid = n.nid AND d.type = :type', array(':type' => 'node'));
-  $reindex_criteria = db_or()
-    ->isNull('d.sid')
-    ->condition('d.reindex', 0, '<>');
-  $nids = $query
-    ->fields('n', array('nid'))
-    ->condition($reindex_criteria)
-    ->orderBy('d.reindex')
-    ->orderBy('n.nid')
-    ->range(0, (int)variable_get('search_cron_limit', 100))
-    ->execute()
-    ->fetchCol();
+  $reindex_criteria = db_or()->isNull('d.sid')->condition('d.reindex', 0, '<>');
+  $nids = $query->fields('n', array('nid'))->condition($reindex_criteria)->orderBy('d.reindex')->orderBy('n.nid')->range(0, (int)variable_get('search_cron_limit', 100))->execute()->fetchCol();
 
   foreach ($nids as $nid) {
 
@@ -435,6 +439,9 @@ function usasearch_api_get_entity_terms($entity_type, $bundle, $entity, $keyed_b
             if ($tid) {
               if ($keyed_by_vocabulary) {
                 $term = taxonomy_term_load($tid['tid']);
+                if (empty($term)) {
+                  continue;
+                }
                 $terms[$term->vocabulary_machine_name][$term->tid] = $term->name;
               }
               else {
@@ -469,10 +476,18 @@ function usasearch_api_get_entity_terms($entity_type, $bundle, $entity, $keyed_b
 function usasearch_api_workbench_moderation_transition($node, $previous_state, $new_state) {
   // Add newly published content to the index as new
   if ($new_state == 'published') {
-    usasearch_api_index_document($node, 'insert');
+    if (isset($node->is_new) && $node->is_new == TRUE) {
+      usasearch_api_index_document($node, 'insert');
+    }
+    else {
+      usasearch_api_index_document($node, 'update');
+    }
   }
   // Delete unpublished content from index
-  if ($new_state !== 'published') {
+  if (isset($node->is_draft_revision) && $node->is_draft_revision == TRUE) {
+    return;
+  }
+  elseif ($new_state !== 'published' && (isset($node->is_new) && $node->is_new == FALSE)) {
     usasearch_api_index_document($node, 'delete');
   }
 }
