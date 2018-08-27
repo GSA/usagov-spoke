@@ -8472,8 +8472,7 @@ body, html {
   #facetedsearch .usa-accordion-content .usa-input-error {
     border: none; }
   #facetedsearch .usa-input-error label {
-    margin-top: 0;
-    margin-left: 12px; }
+    margin-top: 0; }
   #facetedsearch .usa-input-error.no-error {
     border-left: none; }
   #facetedsearch .usa-input-error.no-error .usa-input-error-message {
@@ -8818,5 +8817,8 @@ body, html {
         margin-right: 100px; }
       #facetedsearch #cntctbx {
         width: 100%; } }
+  @media screen and (max-width: 320px) {
+    #facetedsearch .posted-select, #facetedsearch .posted-select select {
+      width: 170px; } }
 
 /*# sourceMappingURL=maps/style.css.map */
