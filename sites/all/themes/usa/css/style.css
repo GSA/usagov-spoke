@@ -1357,7 +1357,8 @@ p.embedTtl {
   margin: 10px auto 10px auto;
   /*sg 8/1/16 - changed from auto auto auto auto*/
   width: 100%;
-  max-width: 586px; }
+  max-width: 100%;
+  /*max-width: 586px;*/ }
 
 .embed iframe {
   width: 100%;
