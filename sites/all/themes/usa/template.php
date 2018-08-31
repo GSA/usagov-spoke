@@ -1230,12 +1230,14 @@ function _get_whatsnew_nid($nid) {
 
     //get image
     if ( !empty($n->field_related_multimedia_two) ) {
-        $nidMultMedia = $n->field_related_multimedia_two['und'][0]['target_id'];
-        $nodeMultMedia = node_load($nidMultMedia);
-        if ( !empty( $nodeMultMedia->field_file_media_url['und'][0]['value'] ) ) {
-            $imgSrc = $nodeMultMedia->field_file_media_url['und'][0]['value'];
-        } else {
-            $imgSrc = false;
+        $imgSrc = false;
+        foreach($n->field_related_multimedia_two['und'] as $relMultimedia) {
+            $nidMultMedia = $relMultimedia['target_id'];
+            $nodeMultMedia = node_load($nidMultMedia);
+            if (!empty($nodeMultMedia->field_file_media_url['und'][0]['value'])) {
+                $imgSrc = $nodeMultMedia->field_file_media_url['und'][0]['value'];
+                break;
+            }
         }
     } else {
         $imgSrc = false;
