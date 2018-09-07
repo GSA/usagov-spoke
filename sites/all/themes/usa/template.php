@@ -830,7 +830,7 @@ function _usa_preprocess_html_title( &$variables )
             .$brand; /* the name of this WebSite, you can change this from /admin/config/system/site-information */
     } elseif (!empty($variables['gov-forms'])){
         $arg1 = arg(1);
-        $l = empty($arg1)? 'A': strtoupper($arg1);
+        $l = ( empty($arg1) || strlen($arg1)!=1 || preg_match('^[a-zA-Z]$',$arg1) ) ? 'A' : strtoupper($arg1);
 
         $variables['page_title'] = $l.' | Government Forms'/* page title */
             ." &#124; " /* a pipe("|") */
