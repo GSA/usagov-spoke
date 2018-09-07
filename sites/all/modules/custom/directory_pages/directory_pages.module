@@ -157,7 +157,16 @@ function directory_pages_menu() {
 }
 
 function directory_pages_forms_goToCorrectPath(){
-    $_REQUEST['letter'] = 'A';
+    $arg1 = arg(1);
+    if ( empty($arg1) || strlen($arg1)!=1 || preg_match('^[a-zA-Z]$',$arg1) ) {
+        if (empty($arg1)) {
+            $_REQUEST['letter'] = 'A';
+        }
+        else{
+            drupal_not_found();
+        }
+    }
+
     $block = module_invoke('all_childsite_misc', 'block_view', 'directory_record_contact_form');
     return $block['content'];
 }
