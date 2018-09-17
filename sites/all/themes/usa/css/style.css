@@ -7280,6 +7280,8 @@ usa-alert-success {
     border-top: 1px solid #fff; }
   .usa-footer-big ul:last-child {
     border-bottom: 1px solid #fff; }
+  .usa-footer-big ul:last-child .noborder {
+    border-bottom: none; }
   .usa-footer-big ul.noline {
     border-bottom: 1px solid transparent; }
   .usa-footer-big ul.hidden .usa-footer-primary-link {
