@@ -7280,8 +7280,6 @@ usa-alert-success {
     border-top: 1px solid #fff; }
   .usa-footer-big ul:last-child {
     border-bottom: 1px solid #fff; }
-  .usa-footer-big ul:last-child .noborder {
-    border-bottom: none; }
   .usa-footer-big ul.noline {
     border-bottom: 1px solid transparent; }
   .usa-footer-big ul.hidden .usa-footer-primary-link {
@@ -7290,6 +7288,8 @@ usa-alert-success {
   .usa-footer-big ul .usa-footer-primary-link {
     background-image: url(../images/arrow-up-white.png);
     background-image: url(../images/arrow-up-white.svg); }
+  div.usa-footer-contact-links ul.noborder {
+    border-bottom: none; }
   .usa-link-email {
     background-image: url("../images/Icon_Connect_Email.png");
     margin: 0 0 0 1rem;
