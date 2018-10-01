@@ -1011,7 +1011,6 @@ function do_you_need_help(){
                     <ul>
                         <li><a href="/phone">Call USA.gov</a></li>
                         <li><a href="/chat">Chat with USA.gov</a></li>
-                        <li><a href="/email">Email USA.gov</a></li>
                     </ul>
                 </div>';
     } else {
@@ -1021,7 +1020,6 @@ function do_you_need_help(){
                     <ul>
                         <li><a href="/centro-de-llamadas">Llame a GobiernoUSA.gov</a></li>
                         <li><a href="/chat">Chatee con GobiernoUSA.gov</a></li>
-                        <li><a href="/email">Contáctenos por email</a></li>
                     </ul>
                 </div>';
     }
